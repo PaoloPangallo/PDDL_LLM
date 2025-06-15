@@ -1,0 +1,54 @@
+(define (domain sword-and-dragon))
+
+   (:requirements :strips :equality)
+
+   (:types agent object sword dragon hero)
+   (:predicates
+      (at ?x ?y)           ; Agent is at location
+      (has ?a ?b)          ; Agent has an object
+      (hidden ?cave)       ; Cave is hidden or not
+      (sleeping ?dragon)   ; Dragon is sleeping or awake
+      (defeated ?dragon)   ; Dragon has been defeated
+   )
+
+   (:action move-to
+      :parameters (?x agent) (?y location)
+      :precondition (and (at ?x ?loc) (not (= ?y ?loc)))
+      :effect (and (not (at ?x ?loc)) (at ?x ?y))
+   )
+
+   (:action search-cave
+      :parameters (?agent agent) (?cave location)
+      :precondition (at ?agent ?loc)
+      :effect (if (hidden ?cave) (not (hidden ?cave)) nil)
+   )
+
+   (:action take-object
+      :parameters (?a agent) (?b object)
+      :precondition (and (at ?a ?loc) (on-ground ?b))
+      :effect (and (not (on-ground ?b)) (has ?a ?b))
+   )
+
+   (:action wake-dragon
+      :parameters (?agent agent)
+      :precondition (and (at ?agent cave) (has ?agent sword))
+      :effect (sleeping nil) (defeated nil)
+   )
+
+   (:action defeat-dragon
+      :parameters (?agent agent)
+      :precondition (and (at ?agent dragon) (has ?agent sword))
+      :effect (defeated ?dragon)
+   )
+
+   (:action sleep-dragon
+      :parameters (?agent agent)
+      :precondition (at ?agent dragon)
+      :effect (sleeping ?dragon)
+   )
+
+   (:action drop-object
+      :parameters (?a agent) (?b object)
+      :precondition (and (has ?a ?b))
+      :effect (on-ground ?b) (not (has ?a ?b))
+   )

@@ -1,0 +1,5 @@
+(define (problem swords-victory)
+     (:objects hero dragon sword cave)
+     (:init (and (at hero village) (hidden cave) (sleeping dragon)))
+     (:goal (and (has hero sword) (defeated dragon)))
+     (:domain swords-and-dragons))

@@ -1,0 +1,30 @@
+(define (domain swords-and-dragons)
+     :requirements ((eq (world-type) "fantasy"))
+
+     :types agent location action hero dragon sword
+     :predicates
+       (at ?a ?l) ; l'agente ?a si trova nella località ?l
+       (has ?h ?s) ; ?h ha la spada ?s
+       (asleep ?d) ; il drago ?d è dormiente
+       (defeated ?d) ; il drago ?d è stato sconfitto
+
+     :action move
+       :parameters (?a ?l1 ?l2)
+       :precondition (and (at ?a ?l1) (not (eq ?l1 ?l2)))
+       :effect (and (not (at ?a ?l1)) (at ?a ?l2))
+
+     :action take-sword
+       :parameters (?h ?s)
+       :precondition (and (at hero cave) (hidden sword cave))
+       :effect (and (not (hidden sword cave)) (has hero ?s))
+
+     :action wake-dragon
+       :parameters (?d)
+       :precondition (and (asleep ?d) (at hero cave))
+       :effect (and (not (asleep ?d)) (defeated ?d))
+
+     :action fight
+       :parameters (?h ?s ?d)
+       :precondition (and (has ?h ?s) (awake ?d))
+       :effect (and (defeated ?d) (not (alive ?d)))
+   )

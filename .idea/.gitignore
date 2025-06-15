@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.egg-info/
+*.log
+
+# Environments
+.env
+.venv/
+venv/
+ENV/
+env.bak/
+*.env
+
+# VSCode / IDE
+.vscode/
+.idea/
+
+# Uploads e output generati
+uploads/
+*.plan
+*.sas
+*.pddl
+*.csv
+*.json
+*.txt
+
+# Cache
+.cache/
+*.swp
+
+# Flask specific
+instance/
+*.db
+
+# Planner outputs
+planner/output/
+*.output
+*.stderr
+*.stdout
+
+# Jupyter e notebook temporanei
+*.ipynb_checkpoints
+
+# macOS
+.DS_Store

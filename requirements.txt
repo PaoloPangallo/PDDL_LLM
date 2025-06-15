@@ -1,0 +1,12 @@
+# Interazione con LLM locale (Ollama)
+requests
+
+# Utility per analisi e I/O
+pandas
+tqdm
+
+# Web app (opzionale per Fase 2)
+flask
+
+# Se prevedi JSON complessi o validazione
+jsonschema

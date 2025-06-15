@@ -1,0 +1,13 @@
+{
+  "valid_syntax": false,
+  "missing_sections": [
+    "(:types",
+    "(:predicates",
+    "(:action"
+  ],
+  "undefined_objects_in_goal": [
+    "has"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}

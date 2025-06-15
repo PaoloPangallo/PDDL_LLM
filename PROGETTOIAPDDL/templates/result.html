@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="it">
+    
+<head>
+    <meta charset="UTF-8">
+    <title>Risultato - QuestMaster</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="session-id" content="{{ session }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
+    <script src="{{ url_for('static', filename='js/result.js') }}" defer></script>
+    {% if validation_json %}
+    <script id="validationData" type="application/json">
+        {{ validation_json | tojson }}
+    </script>
+    {% endif %}
+</head>
+<body>
+    <h1>📜 Risultato della Pianificazione</h1>
+   {% if session %}
+<div class="result-section info">
+    <h2>📂 File Generati</h2>
+    <ul>
+        <li><a class="download" href="{{ url_for('core.download_file', session=session, filename='domain.pddl') }}" download>📄 Scarica <strong>domain.pddl</strong></a></li>
+        <li><a class="download" href="{{ url_for('core.download_file', session=session, filename='problem.pddl') }}" download>📄 Scarica <strong>problem.pddl</strong></a></li>
+        {% if plan %}
+        <li><a class="download" href="{{ url_for('core.download_file', session=session, filename='plan.json') }}" download>📈 Scarica <strong>plan.json</strong></a></li>
+        {% endif %}
+        {% if suggestion %}
+        <li><a class="download" href="{{ url_for('core.download_file', session=session, filename='llm_suggestion.pddl') }}" download>🤖 Scarica <strong>suggerimento LLM</strong></a></li>
+        {% endif %}
+    </ul>
+</div>
+{% endif %}
+
+{% if examples %}
+<div class="result-section info">
+    <h2>📚 Esempi PDDL utilizzati (RAG)</h2>
+    <ul>
+        {% for example in examples %}
+            <li><code>{{ example }}</code></li>
+        {% endfor %}
+    </ul>
+    <p>🔎 Questi esempi sono stati selezionati automaticamente in base alla lore per guidare la generazione.</p>
+</div>
+{% endif %}
+
+
+
+    
+{% if validation %}
+<div class="result-section warning">
+    <h2>❌ Esito Validazione</h2>
+    <pre>{{ validation }}</pre>
+
+    {% if validation_json and not validation_json.valid_syntax %}
+    <div class="explanation">
+        <p>⚠️ I file PDDL non sono validi per i seguenti motivi:</p>
+        {% if validation_json.missing_sections %}
+        <p>🚫 Sezioni mancanti:</p>
+        <ul>
+            {% for section in validation_json.missing_sections %}
+            <li><code>{{ section }}</code></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if validation_json.undefined_objects_in_goal %}
+        <p>❓ Oggetti non definiti nel goal:</p>
+        <ul>
+            {% for obj in validation_json.undefined_objects_in_goal %}
+            <li><code>{{ obj }}</code></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if validation_json.undefined_actions %}
+        <p>❓ Azioni non definite ma usate:</p>
+        <ul>
+            {% for act in validation_json.undefined_actions %}
+            <li><code>{{ act }}</code></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <p>🧠 Il file potrebbe essere stato generato con sintassi LISP o DSL non compatibile con il formato standard PDDL.</p>
+        <p>✏️ Puoi chiedere all'LLM: <em>"Puoi rigenerare i file usando solo la sintassi PDDL standard, includendo tutte le sezioni richieste come <code>(:types)</code>, <code>(:predicates)</code>, <code>(:init)</code>, <code>(:goal)</code>, <code>(:action ...)</code>, ecc.?"</em></p>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+
+
+    {% if planner_error %}
+    <div class="result-section error">
+        <h2>🛠️ Errore dal Planner</h2>
+        <pre>{{ planner_error }}</pre>
+        <p>💡 Puoi usare queste informazioni per correggere i file oppure inviarle all’LLM tramite la chat sottostante.</p>
+        <button id="askPlannerError">🧠 Chiedi spiegazione all’LLM</button>
+    </div>
+    {% endif %}
+
+    {% if plan %}
+    <div class="result-section success">
+        <h2>📈 Piano Generato</h2>
+        <table class="plan-table">
+            <thead>
+                <tr><th>#</th><th>Timestamp</th><th>Azione</th></tr>
+            </thead>
+            <tbody>
+                {% for step in plan %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ "%.3f"|format(step.time) }}s</td>
+                    <td><code>{{ step.action }}</code></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="result-section warning">
+        <h2>⚠️ Nessun Piano Disponibile</h2>
+        {% if suggestion %}
+        <p>Il planner non ha trovato una soluzione. È stato generato un suggerimento dall'LLM per correggere il dominio/problem.</p>
+        {% else %}
+        <p>Il planner non ha trovato una soluzione e non è disponibile alcun suggerimento.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if domain %}
+    <div class="result-section info">
+        <h2>📄 Contenuto di <code>domain.pddl</code></h2>
+        <textarea class="readonly-textarea" readonly rows="15">{{ domain }}</textarea>
+    </div>
+    {% endif %}
+
+    {% if problem %}
+    <div class="result-section info">
+        <h2>🧹 Contenuto di <code>problem.pddl</code></h2>
+        <textarea class="readonly-textarea" readonly rows="15">{{ problem }}</textarea>
+    </div>
+    {% endif %}
+
+    {% if suggestion %}
+    <div class="result-section info">
+        <h2>🤖 Suggerimento dell'LLM</h2>
+        <textarea class="readonly-textarea" readonly rows="15">{{ suggestion }}</textarea>
+        <form action="{{ url_for('refine.apply_fix') }}" method="post">
+    <input type="hidden" name="session" value="{{ session }}">
+    <button type="submit" class="highlight-btn">🔁 Applica Correzione (domain + problem) e Rigenera Piano</button>
+</form>
+
+    </div>
+    {% endif %}
+
+    <div class="result-section">
+        <a href="{{ url_for('index') }}">🔙 Torna alla Home</a>
+    </div>
+
+    <div class="result-section">
+        {% if chat_history %}
+<div class="result-section info">
+    <h2>🗨️ Cronologia Conversazione</h2>
+    <div class="chat-history-box">
+        {% for msg in chat_history %}
+            {% if msg.role == 'user' %}
+                <div class="chat-bubble user">
+                    <strong>👤 Tu:</strong> {{ msg.content }}
+                </div>
+            {% elif msg.role == 'assistant' %}
+                <div class="chat-bubble assistant">
+                    <strong>🤖 LLM:</strong> {{ msg.content }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="result-section">
+    <h2>🪄 Estrai Azione PDDL da frase naturale</h2>
+    <form id="naturalActionForm">
+        <textarea id="naturalInput" rows="3" placeholder="Es: Il mago lancia un incantesimo sul drago..." style="width:100%;"></textarea>
+        <button type="submit">🎯 Genera Azione PDDL</button>
+    </form>
+    <pre id="naturalResult" class="readonly-textarea" style="display:none; margin-top:1rem;"></pre>
+</div>
+
+
+        <h2>💬 Chatta con il Generatore</h2>
+        <textarea id="userMessage" rows="3" placeholder="Es: il piano non ha senso, il drago non viene mai incontrato..."></textarea>
+        <div style="margin: 10px 0;">
+            <button id="useSuggestionBtn" type="button">💡 Usa suggerimento automatico</button>
+            <button id="sendBtn">✉️ Invia Feedback</button>
+        </div>
+        <pre id="llmReply" class="readonly-textarea"></pre>
+        <details class="result-section info" style="margin-top: 1rem;">
+            <summary>🧾 Anteprima completa del messaggio per l'LLM</summary>
+            <pre id="fullPromptPreview" class="readonly-textarea" style="margin-top: 10px;"></pre>
+            <button id="copyPromptBtn" type="button" style="margin-top: 10px;">📋 Copia Prompt</button>
+        </details>
+    </div>
+
+    {% if validation_json %}
+    <details class="result-section info" style="margin-top: -10px;">
+        <summary>🔍 Mostra il messaggio che verrà inviato se lasci il campo vuoto</summary>
+        <pre id="autoPromptPreview" class="readonly-textarea" style="margin-top: 10px;"></pre>
+    </details>
+    {% endif %}
+</body>
+
+ <!-- ✅ SCRIPT inclusi prima della chiusura del body -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("naturalActionForm");
+        const input = document.getElementById("naturalInput");
+        const result = document.getElementById("naturalResult");
+
+        form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const sentence = input.value.trim();
+            if (!sentence) return;
+
+            result.style.display = "block";
+            result.textContent = "⌛ Elaborazione in corso...";
+
+            try {
+                const response = await fetch("/generate_action", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        session: document.querySelector("meta[name='session-id']")?.content,
+                        sentence: sentence
+                    })
+                });
+                const data = await response.json();
+                result.textContent = data.action || data.error || "❌ Nessuna azione trovata.";
+            } catch (err) {
+                result.textContent = "❌ Errore nella richiesta.";
+            }
+        });
+    });
+    </script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const sendBtn = document.getElementById("sendBtn");
+        const userMessage = document.getElementById("userMessage");
+        const replyBox = document.getElementById("llmReply");
+        const preview = document.getElementById("autoPromptPreview");
+        const fullPrompt = document.getElementById("fullPromptPreview");
+        const useSuggestionBtn = document.getElementById("useSuggestionBtn");
+
+        let defaultPrompt = "⚠️ Nessun messaggio predefinito.";
+        let validationSummary = "✅ I file sembrano sintatticamente corretti.";
+
+        try {
+            const valJson = JSON.parse(document.getElementById("validationData").textContent);
+            const missing = (valJson.missing_sections || []).join(", ");
+            const undefinedObjs = (valJson.undefined_objects_in_goal || []).join(", ");
+            const undefinedActs = (valJson.undefined_actions || []).join(", ");
+
+            if (!valJson.valid_syntax) {
+                validationSummary = "⚠️ Il file PDDL non è valido.\n";
+                if (missing) validationSummary += `- Sezioni mancanti: ${missing}\n`;
+                if (undefinedObjs) validationSummary += `- Oggetti non definiti nel goal: ${undefinedObjs}\n`;
+                if (undefinedActs) validationSummary += `- Azioni non definite: ${undefinedActs}\n`;
+            }
+
+            defaultPrompt = `I file PDDL generati sono invalidi. Mancano queste sezioni obbligatorie: ${missing}.
+Per favore, rigenera i file usando solo la sintassi PDDL standard, includendo tutte le sezioni richieste come (:types), (:predicates), (:init), (:goal), (:action ...), ecc.`;
+
+            if (preview) preview.textContent = defaultPrompt;
+        } catch (err) {
+            console.warn("validationData non disponibile o non valido");
+        }
+
+        const updateFullPromptPreview = () => {
+            const domain = document.querySelectorAll("textarea.readonly-textarea")[0]?.value || "(domain non disponibile)";
+            const problem = document.querySelectorAll("textarea.readonly-textarea")[1]?.value || "(problem non disponibile)";
+            const msg = userMessage.value.trim() || defaultPrompt;
+
+            const composed = `
+Questi sono i file PDDL generati:
+
+=== DOMAIN START ===
+${domain}
+=== DOMAIN END ===
+
+=== PROBLEM START ===
+${problem}
+=== PROBLEM END ===
+
+${validationSummary}
+
+L'utente ha detto:
+"${msg}"
+
+🔁 Rispondi in modo utile e dettagliato. Se necessario, suggerisci correzioni ai file PDDL (standard PDDL), includi sezioni mancanti, predicati non definiti o errori di goal.
+            `;
+            if (fullPrompt) fullPrompt.textContent = composed.trim();
+        };
+
+        userMessage.addEventListener("input", updateFullPromptPreview);
+        useSuggestionBtn?.addEventListener("click", () => {
+            userMessage.value = defaultPrompt;
+            updateFullPromptPreview();
+        });
+
+        updateFullPromptPreview();
+
+        sendBtn.addEventListener("click", async () => {
+            const message = userMessage.value.trim() || defaultPrompt;
+            sendBtn.disabled = true;
+            sendBtn.textContent = "⌛ Attendere...";
+            replyBox.textContent = "";
+
+            try {
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        session: document.querySelector("meta[name='session-id']").content,
+                        message: message
+                    })
+                });
+                const data = await response.json();
+                replyBox.textContent = data.reply || data.error || "⚠️ Nessuna risposta ricevuta.";
+            } catch (err) {
+                replyBox.textContent = "❌ Errore nella comunicazione con il server.";
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = "✉️ Invia Feedback";
+            }
+        });
+    });
+    </script>
+</html>
+
+
+
+   
+
+
+
+

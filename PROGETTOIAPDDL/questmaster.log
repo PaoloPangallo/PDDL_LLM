@@ -1,0 +1,843 @@
+2025-06-14 19:13:54,202 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 19:13:54,203 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 19:13:57,150 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 19:13:57,168 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 19:13:57,170 [INFO] 127.0.0.1 - - [14/Jun/2025 19:13:57] "GET / HTTP/1.1" 200 -
+2025-06-14 19:13:57,217 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 19:13:57,218 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 19:13:57,234 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 19:13:57,235 [INFO] 127.0.0.1 - - [14/Jun/2025 19:13:57] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 19:13:57,235 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 19:13:57,237 [INFO] 127.0.0.1 - - [14/Jun/2025 19:13:57] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 19:14:00,647 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 19:14:00,660 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 19:14:00,689 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 19:15:00,389 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 19:15:00,390 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 19:15:06,724 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 19:15:06,754 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 19:15:06,756 [INFO] 127.0.0.1 - - [14/Jun/2025 19:15:06] "GET / HTTP/1.1" 200 -
+2025-06-14 19:15:06,817 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 19:15:06,820 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 19:15:06,859 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 19:15:06,860 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 19:15:06,862 [INFO] 127.0.0.1 - - [14/Jun/2025 19:15:06] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 19:15:06,863 [INFO] 127.0.0.1 - - [14/Jun/2025 19:15:06] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 19:15:09,912 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 19:15:09,928 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 19:15:09,956 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 19:17:03,111 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 19:17:03,160 [INFO] ✅ File PDDL salvati.
+2025-06-14 19:17:03,175 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 19:17:03,177 [INFO] 127.0.0.1 - - [14/Jun/2025 19:17:03] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 19:17:03,195 [DEBUG] → REQUEST GET /result args={'session': 'c9120a1d-4c3e-44f5-a88b-612ad5eb51bd'} form_keys=[]
+2025-06-14 19:17:03,283 [ERROR] Exception on /result [GET]
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/app.py", line 171, in result
+    return render_template(
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/result.html", line 195, in template
+    {% endif %}
+jinja2.exceptions.TemplateSyntaxError: Unexpected end of template. Jinja was looking for the following tags: 'elif' or 'else' or 'endif'. The innermost block that needs to be closed is 'if'.
+2025-06-14 19:17:03,340 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-14 19:17:03,341 [DEBUG] ← RESPONSE GET /result status=500
+2025-06-14 19:17:03,343 [INFO] 127.0.0.1 - - [14/Jun/2025 19:17:03] "[35m[1mGET /result?session=c9120a1d-4c3e-44f5-a88b-612ad5eb51bd HTTP/1.1[0m" 500 -
+2025-06-14 19:19:30,413 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 19:19:30,415 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 19:19:30,416 [INFO] 127.0.0.1 - - [14/Jun/2025 19:19:30] "GET / HTTP/1.1" 200 -
+2025-06-14 19:19:30,454 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 19:19:30,459 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 19:19:30,467 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 19:19:30,468 [INFO] 127.0.0.1 - - [14/Jun/2025 19:19:30] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 19:19:30,469 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 19:19:30,470 [INFO] 127.0.0.1 - - [14/Jun/2025 19:19:30] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 19:19:33,285 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 19:19:33,300 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 19:19:33,328 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 19:21:39,560 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 19:21:39,604 [INFO] ✅ File PDDL salvati.
+2025-06-14 19:21:39,617 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 19:21:39,619 [INFO] 127.0.0.1 - - [14/Jun/2025 19:21:39] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 19:21:39,641 [DEBUG] → REQUEST GET /result args={'session': 'bb52f71f-057d-4da6-ba0e-496dd4a5edd6'} form_keys=[]
+2025-06-14 19:21:39,800 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-14 19:21:39,802 [INFO] 127.0.0.1 - - [14/Jun/2025 19:21:39] "GET /result?session=bb52f71f-057d-4da6-ba0e-496dd4a5edd6 HTTP/1.1" 200 -
+2025-06-14 19:21:39,859 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-14 19:21:39,866 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-14 19:21:39,884 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-14 19:21:39,885 [INFO] 127.0.0.1 - - [14/Jun/2025 19:21:39] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-14 19:21:39,891 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-14 19:21:39,892 [INFO] 127.0.0.1 - - [14/Jun/2025 19:21:39] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-14 19:48:29,771 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 19:48:29,784 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 19:48:29,811 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 19:51:55,448 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 19:51:55,534 [INFO] ✅ File PDDL salvati.
+2025-06-14 19:51:55,579 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 19:51:55,597 [INFO] 127.0.0.1 - - [14/Jun/2025 19:51:55] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 19:51:55,638 [DEBUG] → REQUEST GET /result args={'session': 'da91304e-722a-48d1-b928-b571284b73f3'} form_keys=[]
+2025-06-14 19:51:55,731 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-14 19:51:55,732 [INFO] 127.0.0.1 - - [14/Jun/2025 19:51:55] "GET /result?session=da91304e-722a-48d1-b928-b571284b73f3 HTTP/1.1" 200 -
+2025-06-14 19:51:55,837 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-14 19:51:55,847 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-14 19:51:55,888 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-14 19:51:55,891 [INFO] 127.0.0.1 - - [14/Jun/2025 19:51:55] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-14 19:51:55,909 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-14 19:51:55,911 [INFO] 127.0.0.1 - - [14/Jun/2025 19:51:55] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-14 20:10:50,371 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 20:10:50,373 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 20:10:52,534 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 20:10:52,550 [ERROR] Exception on / [GET]
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/app.py", line 43, in index
+    return render_template("index.html")
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/index.html", line 29, in top-level template code
+    <form action="{{ url_for('generate_from_lore') }}" method="post">
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'generate_from_lore'. Did you mean 'generate.generate_from_lore' instead?
+2025-06-14 20:10:52,568 [INFO] 127.0.0.1 - - [14/Jun/2025 20:10:52] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-06-14 20:10:52,607 [ERROR] Error on request:
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/app.py", line 43, in index
+    return render_template("index.html")
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/index.html", line 29, in top-level template code
+    <form action="{{ url_for('generate_from_lore') }}" method="post">
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'generate_from_lore'. Did you mean 'generate.generate_from_lore' instead?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/serving.py", line 331, in execute
+    application_iter = app(environ, start_response)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1514, in wsgi_app
+    response = self.handle_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 860, in handle_exception
+    server_error = self.ensure_sync(handler)(server_error)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/core.py", line 23, in internal_error
+    core_bp.logger.error(f"500 Internal Server Error: {e}")
+AttributeError: 'Blueprint' object has no attribute 'logger'
+2025-06-14 20:13:15,920 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 20:13:15,921 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 20:13:31,210 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 20:13:31,221 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 20:13:31,222 [INFO] 127.0.0.1 - - [14/Jun/2025 20:13:31] "GET / HTTP/1.1" 200 -
+2025-06-14 20:13:31,237 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 20:13:31,237 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 20:13:31,252 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 20:13:31,252 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 20:13:31,253 [INFO] 127.0.0.1 - - [14/Jun/2025 20:13:31] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 20:13:31,254 [INFO] 127.0.0.1 - - [14/Jun/2025 20:13:31] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 20:13:34,901 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 20:13:34,915 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 20:13:34,935 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 20:15:24,175 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 20:15:24,220 [INFO] ✅ File PDDL salvati.
+2025-06-14 20:15:24,235 [ERROR] Exception on /generate [POST]
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 83, in generate_from_lore
+    return redirect(url_for("result", session=session_id))
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/helpers.py", line 232, in url_for
+    return current_app.url_for(
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'result' with values ['session']. Did you mean 'result.result' instead?
+2025-06-14 20:15:24,258 [INFO] 127.0.0.1 - - [14/Jun/2025 20:15:24] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-14 20:15:24,303 [ERROR] Error on request:
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 83, in generate_from_lore
+    return redirect(url_for("result", session=session_id))
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/helpers.py", line 232, in url_for
+    return current_app.url_for(
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'result' with values ['session']. Did you mean 'result.result' instead?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/serving.py", line 331, in execute
+    application_iter = app(environ, start_response)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1514, in wsgi_app
+    response = self.handle_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 860, in handle_exception
+    server_error = self.ensure_sync(handler)(server_error)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/core.py", line 23, in internal_error
+    core_bp.logger.error(f"500 Internal Server Error: {e}")
+AttributeError: 'Blueprint' object has no attribute 'logger'
+2025-06-14 20:21:21,921 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 20:21:21,923 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 20:21:21,923 [INFO] 127.0.0.1 - - [14/Jun/2025 20:21:21] "GET / HTTP/1.1" 200 -
+2025-06-14 20:21:21,943 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 20:21:21,945 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 20:21:21,949 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 20:21:21,950 [INFO] 127.0.0.1 - - [14/Jun/2025 20:21:21] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 20:21:21,950 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 20:21:21,950 [INFO] 127.0.0.1 - - [14/Jun/2025 20:21:21] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 20:21:31,287 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 20:21:31,288 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 20:21:34,572 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 20:21:34,586 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 20:21:34,587 [INFO] 127.0.0.1 - - [14/Jun/2025 20:21:34] "GET / HTTP/1.1" 200 -
+2025-06-14 20:21:34,606 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 20:21:34,607 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 20:21:34,619 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 20:21:34,619 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 20:21:34,619 [INFO] 127.0.0.1 - - [14/Jun/2025 20:21:34] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 20:21:34,620 [INFO] 127.0.0.1 - - [14/Jun/2025 20:21:34] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 20:21:37,320 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 20:21:37,325 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 20:21:37,336 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 20:23:24,098 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 20:23:24,105 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-14 20:23:24,106 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 49, in generate_from_lore
+    raise ValueError("❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.")
+ValueError: ❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.
+2025-06-14 20:23:24,110 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-14 20:23:24,112 [INFO] 127.0.0.1 - - [14/Jun/2025 20:23:24] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-14 20:35:42,480 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 20:35:42,480 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 20:35:44,710 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 20:35:44,722 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 20:35:44,723 [INFO] 127.0.0.1 - - [14/Jun/2025 20:35:44] "GET / HTTP/1.1" 200 -
+2025-06-14 20:35:44,738 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 20:35:44,739 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 20:35:44,751 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 20:35:44,752 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 20:35:44,752 [INFO] 127.0.0.1 - - [14/Jun/2025 20:35:44] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 20:35:44,752 [INFO] 127.0.0.1 - - [14/Jun/2025 20:35:44] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 20:35:48,733 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 20:35:48,738 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 20:35:48,746 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 20:37:26,210 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 20:37:26,234 [INFO] ✅ File PDDL salvati.
+2025-06-14 20:37:26,244 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 20:37:26,246 [INFO] 127.0.0.1 - - [14/Jun/2025 20:37:26] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 20:37:26,262 [DEBUG] → REQUEST GET /result args={'session': '6ff125f5-a11c-4272-9b37-32045ed774b0'} form_keys=[]
+2025-06-14 20:37:26,307 [ERROR] Exception on /result [GET]
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/result.py", line 66, in result
+    return render_template(
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/result.html", line 25, in top-level template code
+    <li><a class="download" href="{{ url_for('download_file', session=session, filename='domain.pddl') }}" download>📄 Scarica <strong>domain.pddl</strong></a></li>
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'download_file' with values ['filename', 'session']. Did you mean 'core.download_file' instead?
+2025-06-14 20:37:26,330 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-14 20:37:26,331 [DEBUG] ← RESPONSE GET /result status=500
+2025-06-14 20:37:26,331 [INFO] 127.0.0.1 - - [14/Jun/2025 20:37:26] "[35m[1mGET /result?session=6ff125f5-a11c-4272-9b37-32045ed774b0 HTTP/1.1[0m" 500 -
+2025-06-14 21:26:07,393 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 21:26:07,494 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 21:26:07,517 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 21:27:47,795 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 21:27:47,826 [INFO] ✅ File PDDL salvati.
+2025-06-14 21:27:47,845 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 21:27:47,853 [INFO] 127.0.0.1 - - [14/Jun/2025 21:27:47] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 21:27:47,877 [DEBUG] → REQUEST GET /result args={'session': '05def73a-a564-46af-ba04-c30b713fb20e'} form_keys=[]
+2025-06-14 21:27:47,907 [ERROR] Exception on /result [GET]
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/result.py", line 66, in result
+    return render_template(
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/result.html", line 25, in top-level template code
+    <li><a class="download" href="{{ url_for('core.download_file', session=session, filename='domain.pddl') }}" download>📄 Scarica <strong>domain.pddl</strong></a></li>
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'download_file' with values ['filename', 'session']. Did you mean 'core.download_file' instead?
+2025-06-14 21:27:47,931 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-14 21:27:47,932 [DEBUG] ← RESPONSE GET /result status=500
+2025-06-14 21:27:47,932 [INFO] 127.0.0.1 - - [14/Jun/2025 21:27:47] "[35m[1mGET /result?session=05def73a-a564-46af-ba04-c30b713fb20e HTTP/1.1[0m" 500 -
+2025-06-14 21:31:07,610 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 21:31:07,613 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 21:31:07,614 [INFO] 127.0.0.1 - - [14/Jun/2025 21:31:07] "GET / HTTP/1.1" 200 -
+2025-06-14 21:31:07,644 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 21:31:07,652 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 21:31:07,668 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 21:31:07,669 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 21:31:07,669 [INFO] 127.0.0.1 - - [14/Jun/2025 21:31:07] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 21:31:07,669 [INFO] 127.0.0.1 - - [14/Jun/2025 21:31:07] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 21:31:10,177 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 21:31:10,182 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 21:31:10,209 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 21:32:14,257 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 21:32:14,276 [INFO] ✅ File PDDL salvati.
+2025-06-14 21:32:14,282 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 21:32:14,283 [INFO] 127.0.0.1 - - [14/Jun/2025 21:32:14] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 21:32:14,291 [DEBUG] → REQUEST GET /result args={'session': 'f675fdfa-3470-49c0-9fef-d8251f3e32d6'} form_keys=[]
+2025-06-14 21:32:14,322 [ERROR] Exception on /result [GET]
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/result.py", line 66, in result
+    return render_template(
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/result.html", line 25, in top-level template code
+    <li><a class="download" href="{{ url_for('core.download_file', session=session, filename='domain.pddl') }}" download>📄 Scarica <strong>domain.pddl</strong></a></li>
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'download_file' with values ['filename', 'session']. Did you mean 'core.download_file' instead?
+2025-06-14 21:32:14,326 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-14 21:32:14,327 [DEBUG] ← RESPONSE GET /result status=500
+2025-06-14 21:32:14,327 [INFO] 127.0.0.1 - - [14/Jun/2025 21:32:14] "[35m[1mGET /result?session=f675fdfa-3470-49c0-9fef-d8251f3e32d6 HTTP/1.1[0m" 500 -
+2025-06-14 21:36:36,636 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 21:36:36,636 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 21:36:40,831 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 21:36:40,844 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 21:36:40,845 [INFO] 127.0.0.1 - - [14/Jun/2025 21:36:40] "GET / HTTP/1.1" 200 -
+2025-06-14 21:36:40,862 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 21:36:40,863 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 21:36:40,874 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 21:36:40,874 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 21:36:40,875 [INFO] 127.0.0.1 - - [14/Jun/2025 21:36:40] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 21:36:40,876 [INFO] 127.0.0.1 - - [14/Jun/2025 21:36:40] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 21:36:44,619 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 21:36:44,693 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 21:36:44,801 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 21:38:07,864 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 21:38:07,928 [INFO] ✅ File PDDL salvati.
+2025-06-14 21:38:07,951 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 21:38:07,953 [INFO] 127.0.0.1 - - [14/Jun/2025 21:38:07] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 21:38:07,976 [DEBUG] → REQUEST GET /result args={'session': 'f4bbcfcf-dadd-47b1-9efe-edcc59272ed4'} form_keys=[]
+2025-06-14 21:38:08,140 [ERROR] Exception on /result [GET]
+Traceback (most recent call last):
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/result.py", line 66, in result
+    return render_template(
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/paolop/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/result.html", line 24, in top-level template code
+    <li><a class="download" href="{{ url_for('download_file', session=session, filename='domain.pddl') }}" download>📄 Scarica <strong>domain.pddl</strong></a></li>
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/paolop/.local/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/paolop/.local/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'download_file' with values ['filename', 'session']. Did you mean 'core.download_file' instead?
+2025-06-14 21:38:08,189 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-14 21:38:08,190 [DEBUG] ← RESPONSE GET /result status=500
+2025-06-14 21:38:08,192 [INFO] 127.0.0.1 - - [14/Jun/2025 21:38:08] "[35m[1mGET /result?session=f4bbcfcf-dadd-47b1-9efe-edcc59272ed4 HTTP/1.1[0m" 500 -
+2025-06-14 21:39:38,761 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 21:39:38,761 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 21:39:42,360 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 21:39:42,376 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 21:39:42,377 [INFO] 127.0.0.1 - - [14/Jun/2025 21:39:42] "GET / HTTP/1.1" 200 -
+2025-06-14 21:39:42,424 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 21:39:42,427 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 21:39:42,445 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 21:39:42,445 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 21:39:42,445 [INFO] 127.0.0.1 - - [14/Jun/2025 21:39:42] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 21:39:42,446 [INFO] 127.0.0.1 - - [14/Jun/2025 21:39:42] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 21:39:45,494 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 21:39:45,505 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 21:39:45,526 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 21:41:50,436 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 21:41:50,483 [INFO] ✅ File PDDL salvati.
+2025-06-14 21:41:50,500 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 21:41:50,502 [INFO] 127.0.0.1 - - [14/Jun/2025 21:41:50] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 21:41:50,525 [DEBUG] → REQUEST GET /result args={'session': '62894aa5-fe5c-47a7-8e53-784f2746c90f'} form_keys=[]
+2025-06-14 21:41:50,643 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-14 21:41:50,644 [INFO] 127.0.0.1 - - [14/Jun/2025 21:41:50] "GET /result?session=62894aa5-fe5c-47a7-8e53-784f2746c90f HTTP/1.1" 200 -
+2025-06-14 21:41:50,754 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-14 21:41:50,757 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-14 21:41:50,815 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-14 21:41:50,817 [INFO] 127.0.0.1 - - [14/Jun/2025 21:41:50] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-14 21:41:50,833 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-14 21:41:50,835 [INFO] 127.0.0.1 - - [14/Jun/2025 21:41:50] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-14 21:42:03,030 [DEBUG] → REQUEST POST /generate_action args={} form_keys=[]
+2025-06-14 21:42:03,032 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-14 21:42:03,036 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-14 21:42:29,356 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 1522
+2025-06-14 21:42:29,388 [DEBUG] ← RESPONSE POST /generate_action status=200
+2025-06-14 21:42:29,389 [INFO] 127.0.0.1 - - [14/Jun/2025 21:42:29] "POST /generate_action HTTP/1.1" 200 -
+2025-06-14 21:43:59,207 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form_keys=[]
+2025-06-14 21:43:59,208 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-06-14 21:43:59,209 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-14 21:43:59,210 [INFO] 127.0.0.1 - - [14/Jun/2025 21:43:59] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-14 21:43:59,225 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-14 21:43:59,225 [INFO] 127.0.0.1 - - [14/Jun/2025 21:43:59] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-14 21:44:05,199 [DEBUG] → REQUEST POST /generate_action args={} form_keys=[]
+2025-06-14 21:44:05,202 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-14 21:44:05,206 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-14 21:44:19,015 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 1338
+2025-06-14 21:44:19,046 [DEBUG] ← RESPONSE POST /generate_action status=200
+2025-06-14 21:44:19,047 [INFO] 127.0.0.1 - - [14/Jun/2025 21:44:19] "POST /generate_action HTTP/1.1" 200 -
+2025-06-14 21:48:56,818 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 21:48:56,821 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 21:48:58,993 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 21:48:59,014 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 21:48:59,016 [INFO] 127.0.0.1 - - [14/Jun/2025 21:48:59] "GET / HTTP/1.1" 200 -
+2025-06-14 21:48:59,043 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 21:48:59,046 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 21:48:59,064 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 21:48:59,064 [INFO] 127.0.0.1 - - [14/Jun/2025 21:48:59] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 21:48:59,065 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 21:48:59,067 [INFO] 127.0.0.1 - - [14/Jun/2025 21:48:59] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 21:49:02,574 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 21:49:02,588 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 21:49:02,609 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 21:51:34,289 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 21:51:34,334 [INFO] ✅ File PDDL salvati.
+2025-06-14 21:51:34,353 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 21:51:34,355 [INFO] 127.0.0.1 - - [14/Jun/2025 21:51:34] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 21:51:34,379 [DEBUG] → REQUEST GET /result args={'session': 'bff8be2b-c0ac-4895-9fe9-f4f7ee2a3a46'} form_keys=[]
+2025-06-14 21:51:34,539 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-14 21:51:34,541 [INFO] 127.0.0.1 - - [14/Jun/2025 21:51:34] "GET /result?session=bff8be2b-c0ac-4895-9fe9-f4f7ee2a3a46 HTTP/1.1" 200 -
+2025-06-14 21:51:34,645 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-14 21:51:34,647 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-14 21:51:34,668 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-14 21:51:34,670 [INFO] 127.0.0.1 - - [14/Jun/2025 21:51:34] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-14 21:51:34,714 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-14 21:51:34,716 [INFO] 127.0.0.1 - - [14/Jun/2025 21:51:34] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-14 23:03:22,537 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 23:03:22,548 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 23:03:22,566 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 23:06:07,755 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 23:06:07,848 [INFO] ✅ File PDDL salvati.
+2025-06-14 23:06:07,886 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 23:06:07,896 [INFO] 127.0.0.1 - - [14/Jun/2025 23:06:07] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 23:06:07,936 [DEBUG] → REQUEST GET /result args={'session': '866f9d08-7d8d-4ae9-ae0b-e228ea4ac10f'} form_keys=[]
+2025-06-14 23:06:08,051 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-14 23:06:08,053 [INFO] 127.0.0.1 - - [14/Jun/2025 23:06:08] "GET /result?session=866f9d08-7d8d-4ae9-ae0b-e228ea4ac10f HTTP/1.1" 200 -
+2025-06-14 23:06:08,158 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-14 23:06:08,163 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-14 23:06:08,194 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-14 23:06:08,196 [INFO] 127.0.0.1 - - [14/Jun/2025 23:06:08] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-14 23:06:08,219 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-14 23:06:08,229 [INFO] 127.0.0.1 - - [14/Jun/2025 23:06:08] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-14 23:12:51,130 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 23:12:51,131 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 23:12:55,460 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 23:12:55,475 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 23:12:55,477 [INFO] 127.0.0.1 - - [14/Jun/2025 23:12:55] "GET / HTTP/1.1" 200 -
+2025-06-14 23:12:55,503 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 23:12:55,506 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 23:12:55,520 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 23:12:55,520 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 23:12:55,521 [INFO] 127.0.0.1 - - [14/Jun/2025 23:12:55] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 23:12:55,522 [INFO] 127.0.0.1 - - [14/Jun/2025 23:12:55] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 23:12:59,622 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 23:12:59,635 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 23:12:59,661 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 23:15:51,162 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 23:15:51,214 [INFO] ✅ File PDDL salvati.
+2025-06-14 23:15:51,232 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 23:15:51,236 [INFO] 127.0.0.1 - - [14/Jun/2025 23:15:51] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 23:15:51,255 [DEBUG] → REQUEST GET /result args={'session': '1613e28a-62c4-4001-9db2-32cb2bf6064c'} form_keys=[]
+2025-06-14 23:15:51,403 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-14 23:15:51,404 [INFO] 127.0.0.1 - - [14/Jun/2025 23:15:51] "GET /result?session=1613e28a-62c4-4001-9db2-32cb2bf6064c HTTP/1.1" 200 -
+2025-06-14 23:15:51,454 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-14 23:15:51,458 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-14 23:15:51,467 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-14 23:15:51,468 [INFO] 127.0.0.1 - - [14/Jun/2025 23:15:51] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-14 23:15:51,496 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-14 23:15:51,497 [INFO] 127.0.0.1 - - [14/Jun/2025 23:15:51] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-14 23:32:20,249 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 23:32:20,251 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-14 23:32:23,760 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 23:32:23,776 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 23:32:23,777 [INFO] 127.0.0.1 - - [14/Jun/2025 23:32:23] "GET / HTTP/1.1" 200 -
+2025-06-14 23:32:23,803 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 23:32:23,805 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 23:32:23,827 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 23:32:23,828 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 23:32:23,828 [INFO] 127.0.0.1 - - [14/Jun/2025 23:32:23] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 23:32:23,829 [INFO] 127.0.0.1 - - [14/Jun/2025 23:32:23] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 23:32:26,919 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 23:32:26,928 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 23:32:26,948 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 23:35:31,088 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 23:35:31,142 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-14 23:35:31,147 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 49, in generate_from_lore
+    raise ValueError("❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.")
+ValueError: ❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.
+2025-06-14 23:35:31,183 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-14 23:35:31,197 [INFO] 127.0.0.1 - - [14/Jun/2025 23:35:31] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-14 23:37:08,921 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-14 23:37:08,932 [DEBUG] ← RESPONSE GET / status=200
+2025-06-14 23:37:08,934 [INFO] 127.0.0.1 - - [14/Jun/2025 23:37:08] "GET / HTTP/1.1" 200 -
+2025-06-14 23:37:08,975 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-14 23:37:08,980 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-14 23:37:08,997 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-14 23:37:08,997 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-14 23:37:08,998 [INFO] 127.0.0.1 - - [14/Jun/2025 23:37:08] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-14 23:37:08,999 [INFO] 127.0.0.1 - - [14/Jun/2025 23:37:08] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-14 23:37:12,279 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-14 23:37:12,291 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-14 23:37:12,317 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-14 23:39:47,579 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-14 23:39:47,608 [INFO] ✅ File PDDL salvati.
+2025-06-14 23:39:47,623 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-14 23:39:47,625 [INFO] 127.0.0.1 - - [14/Jun/2025 23:39:47] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-14 23:39:47,648 [DEBUG] → REQUEST GET /result args={'session': 'e5f6a871-9783-4e53-8408-bcd00fe21d0a'} form_keys=[]
+2025-06-14 23:39:47,783 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-14 23:39:47,784 [INFO] 127.0.0.1 - - [14/Jun/2025 23:39:47] "GET /result?session=e5f6a871-9783-4e53-8408-bcd00fe21d0a HTTP/1.1" 200 -
+2025-06-14 23:39:47,860 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-14 23:39:47,863 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-14 23:39:47,876 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-14 23:39:47,877 [INFO] 127.0.0.1 - - [14/Jun/2025 23:39:47] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-14 23:39:47,913 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-14 23:39:47,915 [INFO] 127.0.0.1 - - [14/Jun/2025 23:39:47] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-15 00:24:20,432 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 00:24:20,433 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 00:24:22,216 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 00:24:22,232 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 00:24:22,233 [INFO] 127.0.0.1 - - [15/Jun/2025 00:24:22] "GET / HTTP/1.1" 200 -
+2025-06-15 00:24:22,253 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 00:24:22,255 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 00:24:22,270 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 00:24:22,271 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 00:24:22,271 [INFO] 127.0.0.1 - - [15/Jun/2025 00:24:22] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 00:24:22,272 [INFO] 127.0.0.1 - - [15/Jun/2025 00:24:22] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 00:24:25,391 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 00:24:25,405 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 00:24:25,483 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 00:24:25,489 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 400 99
+2025-06-15 00:24:25,490 [ERROR] ❌ Errore durante la richiesta a Ollama: 400 Client Error: Bad Request for url: http://127.0.0.1:11434/api/generate
+2025-06-15 00:24:25,490 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 35, in generate_from_lore
+    raw = ask_ollama(prompt)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/game/utils.py", line 69, in ask_ollama
+    response.raise_for_status()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: http://127.0.0.1:11434/api/generate
+2025-06-15 00:24:25,501 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-15 00:24:25,501 [INFO] 127.0.0.1 - - [15/Jun/2025 00:24:25] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-15 00:25:50,726 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 00:25:50,726 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 00:25:58,586 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 00:25:58,600 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 00:25:58,601 [INFO] 127.0.0.1 - - [15/Jun/2025 00:25:58] "GET / HTTP/1.1" 200 -
+2025-06-15 00:25:58,618 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 00:25:58,619 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 00:25:58,635 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 00:25:58,635 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 00:25:58,636 [INFO] 127.0.0.1 - - [15/Jun/2025 00:25:58] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 00:25:58,636 [INFO] 127.0.0.1 - - [15/Jun/2025 00:25:58] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 00:26:01,682 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 00:26:01,687 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 00:26:01,751 [INFO] 📤 Invio prompt a Ollama con modello: mistral
+2025-06-15 00:26:01,753 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 00:26:01,755 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 400 99
+2025-06-15 00:26:01,757 [ERROR] ❌ HTTP Error da Ollama (400): {"error":"json: cannot unmarshal array into Go struct field GenerateRequest.prompt of type string"}
+2025-06-15 00:26:01,758 [DEBUG] 📄 Prompt (primi 500 caratteri):
+('🎯 You are a professional PDDL generator for classical planners like Fast Downward.\n\n👉 Your task is to generate exactly two valid PDDL files: `domain.pddl` and `problem.pddl`.\nYou MUST use only standard PDDL syntax. Wrap your output between the specified delimiters. Do not include anything else.\n\n🧱 RULES:\n- Do NOT include any explanations or comments outside the PDDL blocks.\n- Do NOT use non-standard LISP syntax, pseudo-code, or conditional logic like `if`, `find-distance`, or perception predicates.\n- Use only these standard PDDL sections: `(:requirements)`, `(:types)`, `(:predicates)`, `(:action ...)`, `(:objects)`, `(:init)`, `(:goal)`.\n\n✅ DOMAIN must contain:\n- (define (domain <name>))\n- (:requirements :strips [:typing])\n- (:types ...)\n- (:predicates ...)\n- At least 2-3 actions with `:parameters`, `:precondition`, and `:effect`\n\n✅ PROBLEM must contain:\n- (define (problem <name>))\n- (domain <name>)\n- (:objects ...)\n- (:init ...)\n- (:goal (and ...))\n\n🚫 Forbidden constructs: `if`, nested effects, DSL-style definitions, perception, `stream` predicates, or comments.\n\n✂️ Return ONLY the following blocks:\n=== DOMAIN START ===\n<domain.pddl here>\n=== DOMAIN END ===\n=== PROBLEM START ===\n<problem.pddl here>\n=== PROBLEM END ===\n\n\n📚 Here are some similar examples:\n\n// ---- example_dragon_fight ----\n// Example: example_dragon_fight\n\n(define (domain dragon-quest)\n  (:requirements :strips)\n  (:types hero location dragon sword)\n  (:predicates\n    (at ?h - hero ?l - location)\n    (has-sword ?h - hero)\n    (alive ?d - dragon)\n    (in ?d - dragon ?l - location)\n  )\n\n  (:action move\n    :parameters (?h - hero ?from - location ?to - location)\n    :precondition (at ?h ?from)\n    :effect (and (not (at ?h ?from)) (at ?h ?to))\n  )\n\n  (:action take-sword\n    :parameters (?h - hero ?l - location)\n    :precondition (and (at ?h ?l))\n    :effect (has-sword ?h)\n  )\n\n  (:action slay-dragon\n    :parameters (?h - hero ?d - dragon ?l - location)\n    :precondition (and (at ?h ?l) (in ?d ?l) (has-sword ?h) (alive ?d))\n    :effect (not (alive ?d))\n  )\n)\n(define (problem dragon-battle)\n  (:domain dragon-quest)\n  (:objects\n    hero1 - hero\n    cave forest - location\n    smaug - dragon\n  )\n  (:init\n    (at hero1 cave)\n    (in smaug forest)\n    (alive smaug)\n  )\n  (:goal (and (not (alive smaug))))\n)\n\n// ---- basic_example_1 ----\n// Example: basic_example_1\n\n(define (domain move-agent)\n  (:requirements :strips)\n  (:predicates\n    (at ?x)\n    (connected ?from ?to)\n  )\n\n  (:action move\n    :parameters (?from ?to)\n    :precondition (and (at ?from) (connected ?from ?to))\n    :effect (and (not (at ?from)) (at ?to))\n  )\n)\n(define (problem move-problem)\n  (:domain move-agent)\n  (:objects location1 location2)\n  (:init\n    (at location1)\n    (connected location1 location2)\n  )\n  (:goal (at location2))\n)\n\n📘 QUEST TITLE: La Spada di Varnak\n🌍 WORLD CONTEXT: Un mondo fantasy medievale con magie, mostri e missioni eroiche\n🔛 INITIAL STATE:\n(at hero village)\n(hidden sword cave)\n(sleeping dragon)\n🎯 GOAL CONDITIONS:\n(has hero sword)\n(defeated dragon)\n🌱 BRANCHING FACTOR: [2, 4]\n📏 DEPTH CONSTRAINTS: [3, 6]\n', ['example_dragon_fight', 'basic_example_1'])
+2025-06-15 00:26:01,759 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 35, in generate_from_lore
+    raw = ask_ollama(prompt)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/game/utils.py", line 74, in ask_ollama
+    response.raise_for_status()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: http://127.0.0.1:11434/api/generate
+2025-06-15 00:26:01,773 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-15 00:26:01,774 [INFO] 127.0.0.1 - - [15/Jun/2025 00:26:01] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-15 00:28:14,301 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 00:28:14,302 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 00:28:17,209 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 00:28:17,222 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 00:28:17,223 [INFO] 127.0.0.1 - - [15/Jun/2025 00:28:17] "GET / HTTP/1.1" 200 -
+2025-06-15 00:28:17,243 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 00:28:17,244 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 00:28:17,257 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 00:28:17,257 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 00:28:17,258 [INFO] 127.0.0.1 - - [15/Jun/2025 00:28:17] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 00:28:17,259 [INFO] 127.0.0.1 - - [15/Jun/2025 00:28:17] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 00:28:20,204 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 00:28:20,209 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 00:28:20,266 [INFO] 📤 Invio prompt a Ollama con modello: mistral
+2025-06-15 00:28:20,268 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 00:28:20,270 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 400 99
+2025-06-15 00:28:20,270 [ERROR] ❌ HTTP Error da Ollama (400): {"error":"json: cannot unmarshal array into Go struct field GenerateRequest.prompt of type string"}
+2025-06-15 00:28:20,270 [DEBUG] 📄 Prompt (primi 500 caratteri):
+('🎯 You are a professional PDDL generator for classical planners like Fast Downward.\n\n👉 Your task is to generate exactly two valid PDDL files: `domain.pddl` and `problem.pddl`.\nYou MUST use only standard PDDL syntax. Wrap your output between the specified delimiters. Do not include anything else.\n\n🧱 RULES:\n- Do NOT include any explanations or comments outside the PDDL blocks.\n- Do NOT use non-standard LISP syntax, pseudo-code, or conditional logic like `if`, `find-distance`, or perception predicates.\n- Use only these standard PDDL sections: `(:requirements)`, `(:types)`, `(:predicates)`, `(:action ...)`, `(:objects)`, `(:init)`, `(:goal)`.\n\n✅ DOMAIN must contain:\n- (define (domain <name>))\n- (:requirements :strips [:typing])\n- (:types ...)\n- (:predicates ...)\n- At least 2-3 actions with `:parameters`, `:precondition`, and `:effect`\n\n✅ PROBLEM must contain:\n- (define (problem <name>))\n- (domain <name>)\n- (:objects ...)\n- (:init ...)\n- (:goal (and ...))\n\n🚫 Forbidden constructs: `if`, nested effects, DSL-style definitions, perception, `stream` predicates, or comments.\n\n✂️ Return ONLY the following blocks:\n=== DOMAIN START ===\n<domain.pddl here>\n=== DOMAIN END ===\n=== PROBLEM START ===\n<problem.pddl here>\n=== PROBLEM END ===\n\n\n📚 Here are some similar examples:\n\n// ---- example_dragon_fight ----\n// Example: example_dragon_fight\n\n(define (domain dragon-quest)\n  (:requirements :strips)\n  (:types hero location dragon sword)\n  (:predicates\n    (at ?h - hero ?l - location)\n    (has-sword ?h - hero)\n    (alive ?d - dragon)\n    (in ?d - dragon ?l - location)\n  )\n\n  (:action move\n    :parameters (?h - hero ?from - location ?to - location)\n    :precondition (at ?h ?from)\n    :effect (and (not (at ?h ?from)) (at ?h ?to))\n  )\n\n  (:action take-sword\n    :parameters (?h - hero ?l - location)\n    :precondition (and (at ?h ?l))\n    :effect (has-sword ?h)\n  )\n\n  (:action slay-dragon\n    :parameters (?h - hero ?d - dragon ?l - location)\n    :precondition (and (at ?h ?l) (in ?d ?l) (has-sword ?h) (alive ?d))\n    :effect (not (alive ?d))\n  )\n)\n(define (problem dragon-battle)\n  (:domain dragon-quest)\n  (:objects\n    hero1 - hero\n    cave forest - location\n    smaug - dragon\n  )\n  (:init\n    (at hero1 cave)\n    (in smaug forest)\n    (alive smaug)\n  )\n  (:goal (and (not (alive smaug))))\n)\n\n// ---- basic_example_1 ----\n// Example: basic_example_1\n\n(define (domain move-agent)\n  (:requirements :strips)\n  (:predicates\n    (at ?x)\n    (connected ?from ?to)\n  )\n\n  (:action move\n    :parameters (?from ?to)\n    :precondition (and (at ?from) (connected ?from ?to))\n    :effect (and (not (at ?from)) (at ?to))\n  )\n)\n(define (problem move-problem)\n  (:domain move-agent)\n  (:objects location1 location2)\n  (:init\n    (at location1)\n    (connected location1 location2)\n  )\n  (:goal (at location2))\n)\n\n📘 QUEST TITLE: La Spada di Varnak\n🌍 WORLD CONTEXT: Un mondo fantasy medievale con magie, mostri e missioni eroiche\n🔛 INITIAL STATE:\n(at hero village)\n(hidden sword cave)\n(sleeping dragon)\n🎯 GOAL CONDITIONS:\n(has hero sword)\n(defeated dragon)\n🌱 BRANCHING FACTOR: [2, 4]\n📏 DEPTH CONSTRAINTS: [3, 6]\n', ['example_dragon_fight', 'basic_example_1'])
+2025-06-15 00:28:20,271 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 35, in generate_from_lore
+    raw = ask_ollama(prompt)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/game/utils.py", line 74, in ask_ollama
+    response.raise_for_status()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: http://127.0.0.1:11434/api/generate
+2025-06-15 00:28:20,280 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-15 00:28:20,281 [INFO] 127.0.0.1 - - [15/Jun/2025 00:28:20] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-15 00:30:11,510 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 00:30:11,510 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 00:30:14,549 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 00:30:14,563 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 00:30:14,564 [INFO] 127.0.0.1 - - [15/Jun/2025 00:30:14] "GET / HTTP/1.1" 200 -
+2025-06-15 00:30:14,583 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 00:30:14,586 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 00:30:14,595 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 00:30:14,596 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 00:30:14,596 [INFO] 127.0.0.1 - - [15/Jun/2025 00:30:14] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 00:30:14,597 [INFO] 127.0.0.1 - - [15/Jun/2025 00:30:14] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 00:30:17,689 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 00:30:17,693 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 00:30:17,743 [INFO] 📤 Invio prompt a Ollama con modello: mistral
+2025-06-15 00:30:17,745 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 00:30:17,753 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 400 99
+2025-06-15 00:30:17,762 [ERROR] ❌ HTTP Error da Ollama (400): {"error":"json: cannot unmarshal array into Go struct field GenerateRequest.prompt of type string"}
+2025-06-15 00:30:17,778 [DEBUG] 📄 Prompt (primi 500 caratteri):
+('🎯 You are a professional PDDL generator for classical planners like Fast Downward.\n\n👉 Your task is to generate exactly two valid PDDL files: `domain.pddl` and `problem.pddl`.\nYou MUST use only standard PDDL syntax. Wrap your output between the specified delimiters. Do not include anything else.\n\n🧱 RULES:\n- Do NOT include any explanations or comments outside the PDDL blocks.\n- Do NOT use non-standard LISP syntax, pseudo-code, or conditional logic like `if`, `find-distance`, or perception predicates.\n- Use only these standard PDDL sections: `(:requirements)`, `(:types)`, `(:predicates)`, `(:action ...)`, `(:objects)`, `(:init)`, `(:goal)`.\n\n✅ DOMAIN must contain:\n- (define (domain <name>))\n- (:requirements :strips [:typing])\n- (:types ...)\n- (:predicates ...)\n- At least 2-3 actions with `:parameters`, `:precondition`, and `:effect`\n\n✅ PROBLEM must contain:\n- (define (problem <name>))\n- (domain <name>)\n- (:objects ...)\n- (:init ...)\n- (:goal (and ...))\n\n🚫 Forbidden constructs: `if`, nested effects, DSL-style definitions, perception, `stream` predicates, or comments.\n\n✂️ Return ONLY the following blocks:\n=== DOMAIN START ===\n<domain.pddl here>\n=== DOMAIN END ===\n=== PROBLEM START ===\n<problem.pddl here>\n=== PROBLEM END ===\n\n\n📚 Here are some similar examples:\n\n// ---- example_dragon_fight ----\n// Example: example_dragon_fight\n\n(define (domain dragon-quest)\n  (:requirements :strips)\n  (:types hero location dragon sword)\n  (:predicates\n    (at ?h - hero ?l - location)\n    (has-sword ?h - hero)\n    (alive ?d - dragon)\n    (in ?d - dragon ?l - location)\n  )\n\n  (:action move\n    :parameters (?h - hero ?from - location ?to - location)\n    :precondition (at ?h ?from)\n    :effect (and (not (at ?h ?from)) (at ?h ?to))\n  )\n\n  (:action take-sword\n    :parameters (?h - hero ?l - location)\n    :precondition (and (at ?h ?l))\n    :effect (has-sword ?h)\n  )\n\n  (:action slay-dragon\n    :parameters (?h - hero ?d - dragon ?l - location)\n    :precondition (and (at ?h ?l) (in ?d ?l) (has-sword ?h) (alive ?d))\n    :effect (not (alive ?d))\n  )\n)\n(define (problem dragon-battle)\n  (:domain dragon-quest)\n  (:objects\n    hero1 - hero\n    cave forest - location\n    smaug - dragon\n  )\n  (:init\n    (at hero1 cave)\n    (in smaug forest)\n    (alive smaug)\n  )\n  (:goal (and (not (alive smaug))))\n)\n\n// ---- basic_example_1 ----\n// Example: basic_example_1\n\n(define (domain move-agent)\n  (:requirements :strips)\n  (:predicates\n    (at ?x)\n    (connected ?from ?to)\n  )\n\n  (:action move\n    :parameters (?from ?to)\n    :precondition (and (at ?from) (connected ?from ?to))\n    :effect (and (not (at ?from)) (at ?to))\n  )\n)\n(define (problem move-problem)\n  (:domain move-agent)\n  (:objects location1 location2)\n  (:init\n    (at location1)\n    (connected location1 location2)\n  )\n  (:goal (at location2))\n)\n\n📘 QUEST TITLE: La Spada di Varnak\n🌍 WORLD CONTEXT: Un mondo fantasy medievale con magie, mostri e missioni eroiche\n🔛 INITIAL STATE:\n(at hero village)\n(hidden sword cave)\n(sleeping dragon)\n🎯 GOAL CONDITIONS:\n(has hero sword)\n(defeated dragon)\n🌱 BRANCHING FACTOR: [2, 4]\n📏 DEPTH CONSTRAINTS: [3, 6]\n', ['example_dragon_fight', 'basic_example_1'])
+2025-06-15 00:30:17,781 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 35, in generate_from_lore
+    raw = ask_ollama(prompt)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/game/utils.py", line 74, in ask_ollama
+    response.raise_for_status()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: http://127.0.0.1:11434/api/generate
+2025-06-15 00:30:17,808 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-15 00:30:17,809 [INFO] 127.0.0.1 - - [15/Jun/2025 00:30:17] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-15 00:31:47,749 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 00:31:47,749 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 00:31:50,281 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 00:31:50,295 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 00:31:50,296 [INFO] 127.0.0.1 - - [15/Jun/2025 00:31:50] "GET / HTTP/1.1" 200 -
+2025-06-15 00:31:50,312 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 00:31:50,313 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 00:31:50,324 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 00:31:50,325 [INFO] 127.0.0.1 - - [15/Jun/2025 00:31:50] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 00:31:50,326 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 00:31:50,327 [INFO] 127.0.0.1 - - [15/Jun/2025 00:31:50] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 00:31:53,336 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 00:31:53,339 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 00:31:53,392 [INFO] 📤 Invio prompt a Ollama con modello: mistral
+2025-06-15 00:31:53,395 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 00:34:35,300 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 00:34:35,345 [INFO] ✅ File PDDL salvati.
+2025-06-15 00:34:35,374 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-15 00:34:35,380 [INFO] 127.0.0.1 - - [15/Jun/2025 00:34:35] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-15 00:34:35,412 [DEBUG] → REQUEST GET /result args={'session': '1dd6f453-2d31-4375-8e52-25ca90d01bc4'} form_keys=[]
+2025-06-15 00:34:35,495 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-15 00:34:35,496 [INFO] 127.0.0.1 - - [15/Jun/2025 00:34:35] "GET /result?session=1dd6f453-2d31-4375-8e52-25ca90d01bc4 HTTP/1.1" 200 -
+2025-06-15 00:34:35,568 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-15 00:34:35,569 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-15 00:34:35,595 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-15 00:34:35,596 [INFO] 127.0.0.1 - - [15/Jun/2025 00:34:35] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-15 00:34:35,596 [DEBUG] ← RESPONSE GET /static/css/result.css status=200
+2025-06-15 00:34:35,602 [INFO] 127.0.0.1 - - [15/Jun/2025 00:34:35] "GET /static/css/result.css HTTP/1.1" 200 -
+2025-06-15 10:34:16,740 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 10:34:16,740 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 10:34:27,127 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 10:34:27,139 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 10:34:27,139 [INFO] 127.0.0.1 - - [15/Jun/2025 10:34:27] "GET / HTTP/1.1" 200 -
+2025-06-15 10:34:27,154 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 10:34:27,155 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 10:34:27,167 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 10:34:27,167 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 10:34:27,168 [INFO] 127.0.0.1 - - [15/Jun/2025 10:34:27] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 10:34:27,168 [INFO] 127.0.0.1 - - [15/Jun/2025 10:34:27] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 10:34:31,742 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 10:34:31,748 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 10:34:31,859 [INFO] 📤 Invio prompt a Ollama con modello: mistral
+2025-06-15 10:34:31,863 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 10:37:06,007 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 10:37:06,041 [INFO] ✅ File PDDL salvati.
+2025-06-15 10:37:06,084 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-15 10:37:06,088 [INFO] 127.0.0.1 - - [15/Jun/2025 10:37:06] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-15 10:37:06,104 [DEBUG] → REQUEST GET /result args={'session': '2f7de0bd-fb55-421f-ab0f-e412900437a2'} form_keys=[]
+2025-06-15 10:37:06,198 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-15 10:37:06,199 [INFO] 127.0.0.1 - - [15/Jun/2025 10:37:06] "GET /result?session=2f7de0bd-fb55-421f-ab0f-e412900437a2 HTTP/1.1" 200 -
+2025-06-15 10:37:06,246 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-15 10:37:06,254 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-15 10:37:06,270 [DEBUG] ← RESPONSE GET /static/css/result.css status=200
+2025-06-15 10:37:06,271 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-15 10:37:06,271 [INFO] 127.0.0.1 - - [15/Jun/2025 10:37:06] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-15 10:37:06,272 [INFO] 127.0.0.1 - - [15/Jun/2025 10:37:06] "GET /static/css/result.css HTTP/1.1" 200 -
+2025-06-15 10:39:46,758 [DEBUG] → REQUEST POST /chat args={} form_keys=[]
+2025-06-15 10:39:46,795 [INFO] 📤 Invio prompt a Ollama con modello: mistral
+2025-06-15 10:39:46,803 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 10:41:39,616 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 10:41:39,625 [DEBUG] ← RESPONSE POST /chat status=200
+2025-06-15 10:41:39,626 [INFO] 127.0.0.1 - - [15/Jun/2025 10:41:39] "POST /chat HTTP/1.1" 200 -

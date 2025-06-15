@@ -1,0 +1,34 @@
+(define (domain varnak-adventure)
+     (:requirements :equality :prehense :qty :on :clear :action-cost :numeric)
+     (:types agent location object magic)
+     (:predicates
+      (at ?a ?l - (and (agent ?a) (location ?l)))
+      (has ?a ?o - (and (agent ?a) (object ?o)))
+      (hidden ?l - (not (clear ?l)))
+      (sleeping ?l - (location ?l (contains (dragon))))
+      (sword-located ?l - (equal ?l (location (sword))) & (and (clear ?l) (not (at hero ?l))))
+     )
+     (:action wake-dragon
+       :parameters (?l)
+       :precondition (sleeping ?l)
+       :effect (not (sleeping ?l))
+     )
+     (:action find-sword
+       :parameters (?l)
+       :precondition (and (clear ?l) (hidden ?l) (not (at hero ?l)))
+       :effect (has hero sword)
+       (:action enter-location
+         :parameters (?a ?l)
+         :precondition (at ?a location)
+         :effect (at ?a ?l)
+       )
+     (:action take-sword
+       :parameters (?a)
+       :precondition (and (has ?a sword) (not (hidden (location ?a))))
+       :effect (clear (location ?a))
+       (:action wake-up
+         :parameters (?a)
+         :precondition (sleeping (location ?a))
+         :effect (not (sleeping (location ?a)))
+       )
+   )

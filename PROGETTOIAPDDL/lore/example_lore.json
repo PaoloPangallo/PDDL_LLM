@@ -1,0 +1,15 @@
+{
+  "quest_title": "La Spada di Varnak",
+  "world_context": "Un mondo fantasy medievale con magie, mostri e missioni eroiche",
+  "initial_state": [
+    "(at hero village)",
+    "(hidden sword cave)",
+    "(sleeping dragon)"
+  ],
+  "goal": [
+    "(has hero sword)",
+    "(defeated dragon)"
+  ],
+  "branching_factor": [2, 4],
+  "depth_constraints": [3, 6]
+}

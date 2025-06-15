@@ -1,0 +1,5 @@
+(define (problem la-spada-di-varnak)
+  :objects (hero cave dragon-cave)
+  :init (and (at hero village) (hidden sword cave) (sleeping dragon dragon-cave))
+  :goal (and (has-sword hero) (defeated dragon))
+)

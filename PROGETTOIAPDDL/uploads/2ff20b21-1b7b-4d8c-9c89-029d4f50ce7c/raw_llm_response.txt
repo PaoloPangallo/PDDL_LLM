@@ -1,0 +1,41 @@
+=== DOMAIN START ===
+   (define (domain swords-and-dragons)
+     :requirements :strips
+     :types agent location action move sleep wake kill
+     :predicates
+       (at ?a ?l) ; agente in una località
+       (in-cave ?l) ; località è una grotta
+       (has ?a ?o) ; agente ha l'oggetto
+       (sleeping ?d) ; mostro dorme
+       (awake ?d) ; mostro è sveglio
+       (dead ?d) ; mostro è morto
+     :action move
+       :parameters (?a ?l1 ?l2)
+       :precondition (and (at ?a ?l1) (not (= ?l1 ?l2)))
+       :effect (and (at ?a ?l2) (not (at ?a ?l1)) (not (in-cave ?l2)))
+     :action sleep
+       :parameters (?d)
+       :precondition (awake ?d)
+       :effect (sleeping ?d)
+     :action wake
+       :parameters (?d)
+       :precondition (and (sleeping ?d))
+       :effect (awake ?d)
+     :action take
+       :parameters (?a ?o)
+       :precondition (and (at ?a ?l) (in-cave ?l))
+       :effect (has ?a ?o)
+     :action fight
+       :parameters (?a ?d)
+       :precondition (and (at ?a cave) (awake ?d))
+       :effect (cond ((not (dead ?d)) (not (has ?a sword)))
+                      ((not (dead ?d)) (dead ?d) (has ?a sword))))
+   === DOMAIN END ===
+
+   === PROBLEM START ===
+   (define (problem swords-victory)
+     (:objects hero cave dragon sword)
+     (:init (and (at hero village) (in-cave cave) (sleeping dragon) (not (has hero sword))))
+     (:goal (and (has hero sword) (dead dragon)))
+     :domain swords-and-dragons)
+   === PROBLEM END

@@ -1,0 +1,28 @@
+(define (domain varnak)
+     :requirements :strips
+     :types agent location action
+     :predicates
+       (health agent health-val)
+       (location agent at-loc)
+       (near agent loc1 loc2)
+       (has agent item-name)
+       (sleeping dragon)
+       (defeated dragon)
+     :action
+       (move
+        :parameters (?a - agent) (?l - location)
+        :precondition (and (health ?a positive) (at ?a ?loc))
+        :effect (and (not (at ?a ?loc)) (at ?a ?l)))
+       (take
+        :parameters (?a - agent) (?i - item-name)
+        :precondition (and (health ?a positive) (near ?a ?i) (not (has ?a ?i)))
+        :effect (and (not (near ?a ?i)) (has ?a ?i)))
+       (wake-dragon
+        :parameters (?a - agent)
+        :precondition (and (health ?a positive) (at ?a dragon-location))
+        :effect (not (sleeping dragon)))
+       (defeat-dragon
+        :parameters (?a - agent)
+        :precondition (and (health ?a positive) (has ?a sword) (near ?a dragon) (not (defeated dragon)))
+        :effect (and (defeated dragon)))
+   )

@@ -1,0 +1,18 @@
+[
+  {
+    "role": "user",
+    "content": "juventus"
+  },
+  {
+    "role": "assistant",
+    "content": "(:action attacco-mago-drago\n       :parameters (?agente - agente ?mago - entita ?drago - entita)\n       :precondition (and (e ?agente mago) (e ?mago drago) (vivo ?mago) (nemico ?mago ?drago))\n       :effect (and (non (vivo ?drago))))"
+  },
+  {
+    "role": "user",
+    "content": "fe"
+  },
+  {
+    "role": "assistant",
+    "content": "(:action attacco\n    :parameters (?a - agente) (?b - oggetto)\n    :precondition (and (e (vivo ?a)) (e (interattabile ?b)))\n    :effect (when (nemico ?b) (not (vivo ?b))))"
+  }
+]
