@@ -1,15 +1,15 @@
 {
-  "quest_title": "La Spada di Varnak",
-  "world_context": "Un mondo fantasy medievale con magie, mostri e missioni eroiche",
-  "initial_state": [
+  "description": "The hero must reach the Tower of Varnak carrying the Sword of Fire and defeat the Ice Dragon.",
+  "objects": [
+    "hero - agent",
+    "tower-of-varnak - location",
+    "sword-of-fire - object",
+    "ice-dragon - monster",
+    "village - location"
+  ],
+  "init": [
     "(at hero village)",
-    "(hidden sword cave)",
-    "(sleeping dragon)"
-  ],
-  "goal": [
-    "(has hero sword)",
-    "(defeated dragon)"
-  ],
-  "branching_factor": [2, 4],
-  "depth_constraints": [3, 6]
+    "(on-ground sword-of-fire tower-of-varnak)",
+    "(sleeping ice-dragon)"
+  ]
 }

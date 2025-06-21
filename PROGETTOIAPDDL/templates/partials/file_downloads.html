@@ -1,0 +1,29 @@
+<section class="result-section info">
+    <h2>📂 File Generati</h2>
+    <ul>
+        <li>
+            <a class="download" href="{{ url_for('core.download_file', session=session, filename='domain.pddl') }}" download>
+                📄 Scarica <strong>domain.pddl</strong>
+            </a>
+        </li>
+        <li>
+            <a class="download" href="{{ url_for('core.download_file', session=session, filename='problem.pddl') }}" download>
+                📄 Scarica <strong>problem.pddl</strong>
+            </a>
+        </li>
+        {% if plan %}
+        <li>
+            <a class="download" href="{{ url_for('core.download_file', session=session, filename='plan.json') }}" download>
+                📈 Scarica <strong>plan.json</strong>
+            </a>
+        </li>
+        {% endif %}
+        {% if suggestion %}
+        <li>
+            <a class="download" href="{{ url_for('core.download_file', session=session, filename='llm_suggestion.pddl') }}" download>
+                🤖 Scarica <strong>suggerimento LLM</strong>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</section>

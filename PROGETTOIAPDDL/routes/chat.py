@@ -1,4 +1,4 @@
-# routes/chat.py
+"""Route Flask per gestire le interazioni chat con Ollama, usando i file PDDL generati."""
 
 import os
 import json
@@ -7,8 +7,9 @@ from game.utils import ask_ollama, read_text_file
 
 chat_bp = Blueprint("chat", __name__)
 
-@chat_bp.route("/chat", methods=["POST"])
+
 def chat_with_ollama():
+    """Gestisce la conversazione utente con Ollama basandosi su PDDL + validazione."""
     data = request.get_json()
     session_id = data.get("session")
     user_message = data.get("message")
@@ -29,7 +30,8 @@ def chat_with_ollama():
     validation_summary = ""
     if os.path.exists(validation_path):
         try:
-            validation = json.load(open(validation_path))
+            with open(validation_path, encoding="utf-8") as f:
+                validation = json.load(f)
             if not validation.get("valid_syntax", True):
                 missing = validation.get("missing_sections", [])
                 undefined_objs = validation.get("undefined_objects_in_goal", [])
@@ -37,11 +39,13 @@ def chat_with_ollama():
                 validation_summary = (
                     "⚠️ Il file PDDL non è valido.\n"
                     f"- Sezioni mancanti: {', '.join(missing) if missing else 'nessuna'}\n"
-                    f"- Oggetti non definiti nel goal: {', '.join(undefined_objs) if undefined_objs else 'nessuno'}\n"
-                    f"- Azioni non definite: {', '.join(undefined_acts) if undefined_acts else 'nessuna'}"
+                    f"- Oggetti non definiti nel goal: "
+                    f"{', '.join(undefined_objs) if undefined_objs else 'nessuno'}\n"
+                    f"- Azioni non definite: "
+                    f"{', '.join(undefined_acts) if undefined_acts else 'nessuna'}"
                 )
-        except Exception as ve:
-            current_app.logger.warning(f"⚠️ Errore nel parsing di validation.json: {ve}")
+        except (json.JSONDecodeError, OSError) as e:
+            current_app.logger.warning("⚠️ Errore nel parsing di validation.json: %s", e)
 
     # Costruzione messaggio di contesto
     system_message = (
@@ -57,8 +61,8 @@ def chat_with_ollama():
         try:
             with open(chat_history_path, encoding="utf-8") as f:
                 chat_history = json.load(f)
-        except Exception as e:
-            current_app.logger.warning(f"⚠️ Errore nel parsing di chat_history.json: {e}")
+        except (json.JSONDecodeError, OSError) as e:
+            current_app.logger.warning("⚠️ Errore nel parsing di chat_history.json: %s", e)
     if not chat_history:
         chat_history = [{"role": "system", "content": system_message}]
 
@@ -79,11 +83,10 @@ def chat_with_ollama():
         reply = ask_ollama(prompt)
         chat_history.append({"role": "assistant", "content": reply})
 
-        # Salvataggio chat aggiornata
         with open(chat_history_path, "w", encoding="utf-8") as f:
             json.dump(chat_history, f, indent=2, ensure_ascii=False)
 
         return jsonify({"reply": reply})
     except Exception as e:
-        current_app.logger.error(f"❌ Errore Ollama: {e}")
+        current_app.logger.error("❌ Errore Ollama: %s", e)
         return jsonify({"error": str(e)}), 500

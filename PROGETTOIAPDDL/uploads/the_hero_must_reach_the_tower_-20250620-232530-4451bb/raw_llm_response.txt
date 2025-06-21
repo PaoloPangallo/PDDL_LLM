@@ -1,0 +1,45 @@
+=== DOMAIN START ===
+  (define (domain chess)
+    (:requirements :strips)
+    (:types piece king empty)
+    (:predicates
+      (on ?p - piece ?k - king)
+      (occupied ?c - cell)
+      (attacking ?p1 - piece ?p2 - piece)
+    )
+
+    (:action move
+      :parameters (?p - piece ?from - cell ?to - cell)
+      :precondition (and (on ?p ?k) (occupied ?from) (not (occupied ?to)) (not (attacking ?p1 ?p2)))
+      :effect (and (not (on ?p ?k)) (on ?p ?to) (not occupied ?from) (occupied ?to))
+    )
+
+    (:action capture
+      :parameters (?p1 - piece ?p2 - piece)
+      :precondition (and (on ?p1 ?p2) (king ?p2))
+      :effect (and (not (on ?p1 ?p2)) (occupied (location ?p2)))
+    )
+  )
+
+  (define (problem chess-game)
+    (:domain chess)
+    (:objects
+      king1 - king
+      p1 - piece
+      p2 - piece
+      empty1 - empty
+      cell1 cell2 - cell
+    )
+    (:init
+      (and (on king1 p1) (occupied cell1))
+      (or (and (occupied cell2) (not (king cell2))) (equal (location p2) empty1))
+      (not (attacking p1 p2))
+    )
+    (:goal (not (or (on king1 p2) (king p2))))
+  )
+  === PROBLEM END ===
+
+QUEST TITLE: Chess Game
+WORLD CONTEXT: A game of chess with two pieces, a king and another piece, on a board divided into cells.
+INITIAL STATE: Initially, the king is placed on a cell (p1) and the other piece is either not present or placed on an empty cell. The king is not being attacked by any piece in the initial state.
+GOAL CONDITIONS: To win, the player must ensure that their king is never captured (i.e., moved onto) by the opponent's piece.

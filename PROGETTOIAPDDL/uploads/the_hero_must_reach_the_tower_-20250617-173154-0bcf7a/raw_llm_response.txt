@@ -1,0 +1,55 @@
+=== DOMAIN START ===
+  (define (domain dragon-quest)
+    (:requirements :strips)
+    (:types hero location dragon sword)
+    (:predicates
+      (at ?h - hero ?l - location)
+      (has-sword ?h - hero)
+      (alive ?d - dragon)
+      (in ?d - dragon ?l - location)
+    )
+
+    (:action move
+      :parameters (?h - hero ?from - location ?to - location)
+      :precondition (at ?h ?from)
+      :effect (and (not (at ?h ?from)) (at ?h ?to))
+    )
+
+    (:action take-sword
+      :parameters (?h - hero ?l - location)
+      :precondition (and (at ?h ?l))
+      :effect (has-sword ?h)
+    )
+
+    (:action slay-dragon
+      :parameters (?h - hero ?d - dragon ?l - location)
+      :precondition (and (at ?h ?l) (in ?d ?l) (has-sword ?h) (alive ?d))
+      :effect (not (alive ?d))
+    )
+  )
+  === DOMAIN END ===
+
+  === PROBLEM START ===
+  (define (problem dragon-battle)
+    (:domain dragon-quest)
+    (:objects
+      hero1 - hero
+      cave forest - location
+      smaug - dragon
+    )
+    (:init
+      (at hero1 cave)
+      (in smaug forest)
+      (alive smaug)
+    )
+    (:goal (and (not (alive smaug))))
+  )
+  === PROBLEM END ===
+
+QUEST TITLE: Dragon Battle
+
+WORLD CONTEXT: A hero, a dragon, and two locations (cave and forest). The hero can move between the locations. The dragon is initially in the forest and the hero is in the cave. The hero has no sword initially.
+
+INITIAL STATE: Hero1 is at cave; Smaug the dragon is alive and located at forest.
+
+GOAL CONDITIONS: Slay the dragon (make it inactive). This can be achieved by moving to the location of the dragon, taking a sword from somewhere, and then slaying the dragon with the sword.

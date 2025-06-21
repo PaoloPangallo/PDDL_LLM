@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}QuestMaster{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/index.js') }}" defer></script>
+</head>
+<body>
+    {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,9 @@
+Checking plan: /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250617-173154-0bcf7a/plan.soln
+Plan executed successfully - checking goal
+Plan valid
+Final value: 3 
+
+Successful plans:
+Value: 3
+ /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250617-173154-0bcf7a/plan.soln 3 
+

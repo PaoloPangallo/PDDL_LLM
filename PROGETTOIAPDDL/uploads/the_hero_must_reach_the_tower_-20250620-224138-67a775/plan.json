@@ -1,0 +1,23 @@
+{
+  "steps": [
+    {
+      "step": 1,
+      "action": "move hero1 cave forest",
+      "step_cost": 0.0,
+      "cumulative_cost": 0.0
+    },
+    {
+      "step": 2,
+      "action": "take-sword hero1 forest",
+      "step_cost": 0.0,
+      "cumulative_cost": 0.0
+    },
+    {
+      "step": 3,
+      "action": "slay-dragon hero1 smaug forest",
+      "step_cost": 0.0,
+      "cumulative_cost": 0.0
+    }
+  ],
+  "total_cost": 3.0
+}

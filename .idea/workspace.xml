@@ -5,14 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d4c36a7-5846-4b00-9ac7-aa497256d2b1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/ProgettoIAPDDL.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/flask-planner/apri-progetto-wsl.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/agent/reflection_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/agent/reflection_agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/game/generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/game/generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/game/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/game/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/lore/example_lore.json" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/lore/example_lore.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/questmaster.log" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/questmaster.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/routes/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/routes/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/routes/generate.py" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/routes/generate.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/static/css/result.css" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/static/css/result.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/templates/result.html" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/templates/result.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROGETTOIAPDDL/uploads/fc90bcbd-7108-4ff0-9499-d4d9903c2da4/problem.pddl" beforeDir="false" afterPath="$PROJECT_DIR$/PROGETTOIAPDDL/uploads/fc90bcbd-7108-4ff0-9499-d4d9903c2da4/problem.pddl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flask-planner/apri-progetto-wsl.bat" beforeDir="false" afterPath="$PROJECT_DIR$/flask-planner/apri-progetto-wsl.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/bin/python" beforeDir="false" afterPath="$PROJECT_DIR$/venv/bin/python" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/bin/python3" beforeDir="false" afterPath="$PROJECT_DIR$/venv/bin/python3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/bin/python3.10" beforeDir="false" afterPath="$PROJECT_DIR$/venv/bin/python3.10" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/lib64" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,29 +41,29 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 3
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="2yP6MQRSd5tnZcVjTNoUy15Ttnu" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Batch.apri-progetto-wsl.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/paolo/ProgettoIAPDDL/flask-planner",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Batch.apri-progetto-wsl.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/paolo/ProgettoIAPDDL/flask-planner&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\paolo\ProgettoIAPDDL\flask-planner" />
@@ -62,7 +74,7 @@
     <configuration name="apri-progetto-wsl" type="BatchConfigurationType" factoryName="Batch" temporary="true">
       <module name="ProgettoIAPDDL" />
       <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="C:\Users\paolo\ProgettoIAPDDL\flask-planner" />
+      <option name="WORKING_DIRECTORY" value="./flask-planner" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SCRIPT_NAME" value="apri-progetto-wsl.bat" />
       <option name="PARAMETERS" value="" />
@@ -91,6 +103,8 @@
       <option name="presentableId" value="Default" />
       <updated>1749723812981</updated>
       <workItem from="1749723817064" duration="1553000" />
+      <workItem from="1750169738959" duration="1198000" />
+      <workItem from="1750348803225" duration="22000" />
     </task>
     <servers />
   </component>

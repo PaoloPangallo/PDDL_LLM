@@ -1,98 +1,137 @@
-# pylint: disable=missing-docstring,line-too-long,broad-except,unspecified-encoding
-
+"""Modulo per la generazione automatica di file PDDL da un documento di lore."""
 
 import os
 import json
 import logging
 from game.utils import ask_ollama, extract_between, save_text_file
-from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
-
+from sklearn.metrics.pairwise import cosine_similarity
+from typing import Optional
 
 
 logger = logging.getLogger(__name__)
 
-
 def load_lore(lore_path: str) -> dict:
+    """Carica il file di lore JSON dal percorso fornito."""
     with open(lore_path, encoding="utf-8") as f:
         return json.load(f)
 
+def load_pddl_examples(max_examples=5) -> list[tuple[str, str]]:
+    """
+    Carica esempi PDDL da sottocartelle di 'pddl_examples'.
 
-import json
+    Ritorna una lista di tuple (nome_cartella, contenuto_pddl_combinato).
+    """
+    examples_dir = os.path.join(os.path.dirname(__file__), "..", "pddl_examples")
+    results = []
+
+    for i, folder in enumerate(os.listdir(examples_dir)):
+        if i >= max_examples:
+            break
+
+        folder_path = os.path.join(examples_dir, folder)
+        if not os.path.isdir(folder_path):
+            continue
+
+        try:
+            with open(os.path.join(folder_path, "domain.pddl"), encoding="utf-8") as f_dom, \
+                 open(os.path.join(folder_path, "problem.pddl"), encoding="utf-8") as f_prob:
+                content = f_dom.read().strip() + "\n\n" + f_prob.read().strip()
+                results.append((folder, content))
+        except (FileNotFoundError, OSError) as e:
+            logger.warning("Errore nel caricamento dell'esempio '%s': %s", folder, e)
+            continue
+
+    return results
+
+def retrieve_best_example(lore_text: str) -> list[tuple[str, str]]:
+    """
+    Recupera l'esempio PDDL più simile al testo del lore.
+
+    Utilizza TF-IDF + similarità coseno tra lore e esempi PDDL.
+    """
+    examples = load_pddl_examples(max_examples=3)
+    if not examples:
+        return []
+
+    texts = [ex[1] for ex in examples]
+    names = [ex[0] for ex in examples]
+
+    try:
+        vec = TfidfVectorizer().fit_transform(texts + [lore_text])
+        sims = cosine_similarity(vec[-1], vec[:-1]).flatten()
+        best_index = sims.argmax()
+        return [(names[best_index], texts[best_index])]
+    except (ValueError, IndexError) as e:
+        logger.warning("Errore durante la similarità: %s", e)
+        return []
 
 def build_prompt_from_lore(lore: dict) -> tuple[str, list[str]]:
+    """
+    Costruisce il prompt da inviare al modello LLM a partire dal lore e da esempi simili.
+
+    Restituisce il prompt completo e i nomi degli esempi utilizzati.
+    """
     lore_text = json.dumps(lore, indent=2)
-    examples = retrieve_best_examples(lore_text)
+    examples = retrieve_best_example(lore_text)
 
-    # Costruzione sezione esempi
-    examples_text = "\n📚 Here are some similar examples:\n"
+    examples_text = ""
     for name, content in examples:
-        examples_text += f"\n// ---- {name} ----\n{content}\n"
+        if "(define" in content and "(:action" in content:
+            examples_text += f"\n// ---- {name} ----\n{content.strip()}\n"
 
-    # Prompt completo
+    initial_state = "\n".join(lore.get("initial_state", []))
+    goal_conditions = "\n".join(lore.get("goal", []))
+
     prompt = (
-        "🎯 You are a professional PDDL generator for classical planners like Fast Downward.\n\n"
-        "👉 Your task is to generate exactly two valid PDDL files: `domain.pddl` and `problem.pddl`.\n"
-        "You MUST use only standard PDDL syntax. Wrap your output between the specified delimiters. Do not include anything else.\n\n"
-        "🧱 RULES:\n"
-        "- Do NOT include any explanations or comments outside the PDDL blocks.\n"
-        "- Do NOT use non-standard LISP syntax, pseudo-code, or conditional logic like `if`, `find-distance`, or perception predicates.\n"
-        "- Use only these standard PDDL sections: `(:requirements)`, `(:types)`, `(:predicates)`, `(:action ...)`, `(:objects)`, `(:init)`, `(:goal)`.\n\n"
-        "✅ DOMAIN must contain:\n"
-        "- (define (domain <name>))\n"
-        "- (:requirements :strips [:typing])\n"
-        "- (:types ...)\n"
-        "- (:predicates ...)\n"
-        "- At least 2-3 actions with `:parameters`, `:precondition`, and `:effect`\n\n"
-        "✅ PROBLEM must contain:\n"
-        "- (define (problem <name>))\n"
-        "- (domain <name>)\n"
-        "- (:objects ...)\n"
-        "- (:init ...)\n"
-        "- (:goal (and ...))\n\n"
-        "🚫 Forbidden constructs: `if`, nested effects, DSL-style definitions, perception, `stream` predicates, or comments.\n\n"
-        "✂️ Return ONLY the following blocks:\n"
-        "=== DOMAIN START ===\n<domain.pddl here>\n=== DOMAIN END ===\n"
-        "=== PROBLEM START ===\n<problem.pddl here>\n=== PROBLEM END ===\n\n"
-        + examples_text +
-        "\n📘 QUEST TITLE: {title}\n"
-        "🌍 WORLD CONTEXT: {context}\n"
-        "🔛 INITIAL STATE:\n{initial}\n"
-        "🎯 GOAL CONDITIONS:\n{goal}\n"
-        "🌱 BRANCHING FACTOR: {branching}\n"
-        "📏 DEPTH CONSTRAINTS: {depth}\n"
-    ).format(
-        title=lore.get("quest_title", ""),
-        context=lore.get("world_context", ""),
-        initial="\n".join(lore.get("initial_state", [])),
-        goal="\n".join(lore.get("goal", [])),
-        branching=lore.get("branching_factor", ""),
-        depth=lore.get("depth_constraints", "")
+        "You are a professional PDDL generator for classical planners like Fast Downward.\n\n"
+        "Your task is to generate exactly two valid PDDL files: `domain.pddl` and `problem.pddl`.\n"
+        "\u26a0\ufe0f Use ONLY **standard PDDL syntax** — do NOT include any pseudocode or comments.\n\n"
+        "Your DOMAIN file must:\n"
+        "- Start with (define (domain ...))\n"
+        "- Include (:requirements), (:types), (:predicates), and at least one (:action).\n"
+        "- Each (:action) must include ONLY :parameters, :precondition, and :effect.\n"
+        "- DO NOT use :condition, if, every, len, or other Python/LISP-like constructs.\n\n"
+        "Your PROBLEM file must:\n"
+        "- Start with (define (problem ...))\n"
+        "- Include (:domain ...), (:objects ...), (:init ...), (:goal ...)\n"
+        "- (:init ...) must list predicates directly (no (and ...))\n"
+        "- Make sure all objects used in (:init ...) and (:goal ...) are defined in (:objects ...)\n\n"
+        "Wrap your output exactly between these markers:\n"
+        "=== DOMAIN START ===\n"
+        "<domain.pddl here>\n"
+        "=== DOMAIN END ===\n"
+        "=== PROBLEM START ===\n"
+        "<problem.pddl here>\n"
+        "=== PROBLEM END ===\n"
+        f"\n// === Relevant Examples (for inspiration) ===\n{examples_text}"
+        f"\nQUEST TITLE: {lore.get('quest_title', '')}\n"
+        f"WORLD CONTEXT: {lore.get('world_context', '')}\n"
+        f"INITIAL STATE:\n{initial_state}\n"
+        f"GOAL CONDITIONS:\n{goal_conditions}\n"
     )
 
     used_example_names = [name for name, _ in examples]
     return prompt, used_example_names
 
-
-
-
-
-
-
-
-
-
-
-
 def generate_pddl_from_lore(lore_path: str) -> tuple[str, str, list[str]]:
+    """
+    Genera i file PDDL a partire da un file JSON di lore.
+
+    Restituisce: (domain.pddl, problem.pddl, nomi_esempi_usati)
+    """
     lore = load_lore(lore_path)
     return generate_pddl_from_dict(lore, lore_path)
 
+def generate_pddl_from_dict(lore: dict, lore_path: str = None) -> tuple[Optional[str], Optional[str], list[str]]:
+    """
+    Genera i file PDDL a partire da un dizionario di lore.
 
+    Se fornito, salva anche l'output raw dell'LLM.
 
-def generate_pddl_from_dict(lore: dict, lore_path: str = None) -> tuple[str, str, list[str]]:
-    prompt, used_example_names = build_prompt_from_lore(lore)
-
+    Ritorna (domain, problem, esempi) oppure (None, None, esempi) se fallisce.
+    """
+    prompt, used_examples = build_prompt_from_lore(lore)
     raw = ask_ollama(prompt)
 
     if lore_path:
@@ -103,42 +142,9 @@ def generate_pddl_from_dict(lore: dict, lore_path: str = None) -> tuple[str, str
     domain = extract_between(raw, "=== DOMAIN START ===", "=== DOMAIN END ===")
     problem = extract_between(raw, "=== PROBLEM START ===", "=== PROBLEM END ===")
 
-    if not domain or not problem:
-        logger.error("❌ DOMINIO o PROBLEMA non trovati nella risposta.")
-        raise ValueError("Blocco DOMAIN o PROBLEM mancante.")
+    # ✅ NON lanciare errore, ma restituisci None
+    if not domain or not problem or not domain.strip().lower().startswith("(define"):
+        logger.warning("⚠️ Generazione fallita: PDDL non valido.")
+        return None, None, used_examples
 
-    if not domain.lower().startswith("(define") or not problem.lower().startswith("(define"):
-        logger.error("❌ I file PDDL non iniziano con (define)")
-        raise ValueError("I file PDDL non iniziano correttamente con (define).")
-
-    return domain, problem, used_example_names
-
-
-
-def load_pddl_examples(base_path="pddl_examples") -> list[tuple[str, str]]:
-    examples = []
-    for subfolder in os.listdir(base_path):
-        folder_path = os.path.join(base_path, subfolder)
-        domain_path = os.path.join(folder_path, "domain.pddl")
-        problem_path = os.path.join(folder_path, "problem.pddl")
-
-        if os.path.isfile(domain_path) and os.path.isfile(problem_path):
-            with open(domain_path, encoding="utf-8") as f1, open(problem_path, encoding="utf-8") as f2:
-                content = f"// Example: {subfolder}\n\n" + f1.read() + "\n" + f2.read()
-                examples.append((subfolder, content))
-    return examples
-
-
-
-
-def retrieve_best_examples(lore_text: str, top_k=2):
-    examples = load_pddl_examples()
-    texts = [ex[1] for ex in examples]
-    names = [ex[0] for ex in examples]
-
-    vectorizer = TfidfVectorizer().fit_transform(texts + [lore_text])
-    similarities = cosine_similarity(vectorizer[-1], vectorizer[:-1]).flatten()
-    top_indices = similarities.argsort()[-top_k:][::-1]
-
-    return [(names[i], texts[i]) for i in top_indices]
-
+    return domain, problem, used_examples

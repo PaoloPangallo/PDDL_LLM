@@ -1,67 +1,98 @@
+"""Modulo di utilità per la generazione, esecuzione e interazione con planner e LLM."""
+
 # pylint: disable=missing-docstring,line-too-long,broad-except,unspecified-encoding
 
-
 import os
+import re
+import uuid
+import time
 import subprocess
 import logging
-import time
+from datetime import datetime
+from pathlib import Path
+from typing import Tuple
+
 import requests
 
 logger = logging.getLogger(__name__)
 
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
-MODEL = "mistral"  # puoi cambiarlo se necessario
+MODEL = "mistral"
 
 
-def create_session_dir(upload_folder: str) -> tuple[str, str]:
-    import uuid
-    session_id = str(uuid.uuid4())
-    session_dir = os.path.join(upload_folder, session_id)
-    os.makedirs(session_dir, exist_ok=True)
-    return session_id, session_dir
+def create_session_dir(upload_folder: str, name_hint: str = None) -> tuple[str, str]:
+    """Crea una directory di sessione con nome univoco basato su timestamp e hint."""
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    base = name_hint.strip().lower().replace(" ", "_") if name_hint else "session"
+    base = re.sub(r"[^\w\-]", "", base)[:30]
+    session_id = f"{base}-{timestamp}-{uuid.uuid4().hex[:6]}"
+    path = os.path.join(upload_folder, session_id)
+    os.makedirs(path, exist_ok=True)
+    return session_id, path
 
 
-def run_planner(session_dir: str, timeout: int = 60) -> tuple[bool, str]:
+def run_planner(session_dir: str, timeout: int = 60) -> Tuple[bool, str]:
+    """
+    Esegue lo script del planner Fast Downward su una directory di sessione.
+
+    Args:
+        session_dir (str): Directory contenente i file PDDL.
+        timeout (int): Timeout massimo in secondi per il planner.
+
+    Returns:
+        Tuple[bool, str]: True se il planner ha avuto successo, False altrimenti, con messaggio di errore o stderr.
+    """
+    planner_script = Path("planner/run-planner.sh")
+    session_path = Path(session_dir)
+    log_path = session_path / "planner.log"
+    error_path = session_path / "planner_error.txt"
+
+    if not planner_script.exists():
+        logger.error("❌ Planner script non trovato: %s", planner_script)
+        error_msg = f"❌ Script non trovato: {planner_script}"
+        error_path.write_text(error_msg, encoding="utf-8")
+        return False, error_msg
+
     try:
-        start = time.time()
+        start = time.time()  # ⬅️ AGGIUNTO
         result = subprocess.run(
-            ["bash", "./planner/run-planner.sh", session_dir],
-            check=False,
+            ["bash", str(planner_script), str(session_path)],
             capture_output=True,
             text=True,
-            timeout=timeout
-        )
+            timeout=timeout,
+            check=False
+    )
+
+
         elapsed = time.time() - start
-        logger.info(f"⏱️ Fast Downward completato in {elapsed:.2f}s")
-        logger.debug(f"STDOUT:\n{result.stdout}")
-        logger.debug(f"STDERR:\n{result.stderr}")
+        logger.info("⏱️ Planner terminato in %.2fs (exit code: %d)", elapsed, result.returncode)
+        logger.debug("STDOUT:\n%s", result.stdout)
+        logger.debug("STDERR:\n%s", result.stderr)
 
-        # Salva log completo del planner (stdout + stderr)
-        log_path = os.path.join(session_dir, "planner.log")
-        with open(log_path, "w", encoding="utf-8") as log_file:
-            log_file.write(result.stdout)
-            log_file.write("\n--- STDERR ---\n")
-            log_file.write(result.stderr)
+        # Salva log completo
+        log_content = result.stdout + "\n--- STDERR ---\n" + result.stderr
+        log_path.write_text(log_content, encoding="utf-8")
 
-        # Salva solo l'errore in planner_error.txt
-        error_path = os.path.join(session_dir, "planner_error.txt")
-        with open(error_path, "w", encoding="utf-8") as err_file:
-            err_file.write(result.stderr.strip())
+        # Salva errore se presente
+        error_path.write_text(result.stderr.strip(), encoding="utf-8")
 
-        success = result.returncode == 0
-        return success, result.stderr.strip()
+        success = result.returncode == 0 and "found legal plan" in result.stdout.lower()
+        return success, result.stderr.strip() if not success else ""
 
     except subprocess.TimeoutExpired:
-        logger.error("❌ Fast Downward ha superato il timeout.")
-        error_path = os.path.join(session_dir, "planner_error.txt")
-        with open(error_path, "w", encoding="utf-8") as err_file:
-            err_file.write("❌ Timeout del planner")
+        logger.error("❌ Timeout del planner (%ds)", timeout)
+        error_path.write_text("❌ Timeout del planner", encoding="utf-8")
         return False, "❌ Timeout del planner"
 
+    except Exception as e:
+        logger.exception("❌ Errore durante l'esecuzione del planner")
+        error_path.write_text(f"❌ Errore interno: {e}", encoding="utf-8")
+        return False, f"❌ Errore interno: {e}"
 
-def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 4096) -> str:
+def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 2048) -> str:
+    """Invia un prompt a Ollama e restituisce la risposta del modello."""
     try:
-        logger.info(f"📤 Invio prompt a Ollama con modello: {model} e num_ctx: {num_ctx}")
+        logger.info("📤 Invio prompt a Ollama con modello: %s e num_ctx: %d", model, num_ctx)
         response = requests.post(
             OLLAMA_URL,
             json={
@@ -72,43 +103,48 @@ def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 4096) -> str:
                     "num_ctx": num_ctx
                 }
             },
-            timeout=(10, 360)  # 10s connessione, 6min max risposta
+            timeout=(10, 360)
         )
         response.raise_for_status()
         result = response.json()
         return result.get("response", "").strip()
 
     except requests.exceptions.HTTPError as e:
-        logger.error(f"❌ HTTP Error da Ollama ({e.response.status_code}): {e.response.text.strip()}")
-        logger.debug(f"📄 Prompt (primi 500 caratteri):\n{prompt[:500]}")
+        logger.error("❌ HTTP Error da Ollama (%s): %s", e.response.status_code, e.response.text.strip())
+        logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
         raise
 
     except requests.exceptions.RequestException as e:
-        logger.error(f"❌ Errore di rete con Ollama: {e}")
-        logger.debug(f"📄 Prompt (primi 500 caratteri):\n{prompt[:500]}")
+        logger.error("❌ Errore di rete con Ollama: %s", e)
+        logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
         raise
 
     except Exception as e:
-        logger.error(f"❌ Errore generico durante la richiesta a Ollama: {e}")
-        logger.debug(f"📄 Prompt (primi 500 caratteri):\n{prompt[:500]}")
+        logger.error("❌ Errore generico durante la richiesta a Ollama: %s", e)
+        logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
         raise
 
 
-
 def extract_between(text: str, start_marker: str, end_marker: str) -> str | None:
+    """Estrae la porzione di testo tra due marcatori se presenti."""
     try:
         start_idx = text.index(start_marker) + len(start_marker)
         end_idx = text.index(end_marker, start_idx)
         return text[start_idx:end_idx].strip()
     except ValueError:
-        logger.warning(f"⚠️ Delimitatori non trovati: {start_marker} / {end_marker}")
+        logger.warning("⚠️ Delimitatori non trovati: %s / %s", start_marker, end_marker)
         return None
 
 
 def read_text_file(path: str) -> str | None:
-    return open(path, encoding="utf-8").read() if os.path.exists(path) else None
+    """Legge un file di testo se esiste e ne restituisce il contenuto."""
+    return open(path, encoding="utf-8").read() if os.path.isfile(path) else None
 
 
 def save_text_file(path: str, content: str) -> None:
+    """Salva una stringa in un file, sollevando eccezione se il path è una directory."""
+    if os.path.isdir(path):
+        raise IsADirectoryError(f"❌ Il path {path} è una directory, impossibile salvarci un file.")
+
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)

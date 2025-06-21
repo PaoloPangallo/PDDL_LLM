@@ -1,0 +1,42 @@
+=== DOMAIN START ===
+  (define (domain robo_cleaning)
+    (:requirements :strips)
+    (:types robot room dirty clean)
+    (:predicates
+      (at ?r - robot ?l - location)
+      (dirty ?l - location)
+      (clean ?l - location)
+    )
+
+    (:action move
+      :parameters (?r - robot ?from - location ?to - location)
+      :precondition (and (at ?r ?from) (not (= ?from ?to)))
+      :effect (and (not (at ?r ?from)) (at ?r ?to))
+    )
+
+    (:action clean
+      :parameters (?r - robot ?l - location)
+      :precondition (and (at ?r ?l) (dirty ?l))
+      :effect (not (dirty ?l)))
+  )
+
+  === PROBLEM START ===
+  (define (problem robo_cleanup)
+    (:domain robo_cleaning)
+    (:objects
+      cleaner - robot
+      kitchen bathroom livingroom - room
+    )
+    (:init
+      (at cleaner kitchen)
+      (dirty kitchen)
+      (dirty bathroom)
+      (dirty livingroom)
+    )
+    (:goal (and (not (dirty kitchen)) (not (dirty bathroom)) (not (dirty livingroom))))
+  )
+
+QUEST TITLE: Robot Cleaning Task
+WORLD CONTEXT: A room has the state of either dirty or clean. There is a robot that can move between rooms and clean them.
+INITIAL STATE: The cleaner robot is in the kitchen, all rooms are dirty initially.
+GOAL CONDITIONS: All rooms should be cleaned (i.e., they are not dirty).

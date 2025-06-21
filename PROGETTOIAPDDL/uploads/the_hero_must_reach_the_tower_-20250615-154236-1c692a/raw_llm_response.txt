@@ -1,0 +1,47 @@
+=== DOMAIN START ===
+  (define (domain traveling-world)
+    (:requirements :strips)
+    (:types location person)
+    (:predicates
+      (at ?p - person ?l - location)
+      (city ?c - location)
+      (capital ?c - location)
+      (traveling-to ?p - person ?t - location)
+    )
+
+    (:action move
+      :parameters (?p - person ?from - location ?to - location)
+      :precondition (and (at ?p ?from) (not (traveling-to ?p ?to)))
+      :effect (and (not (at ?p ?from)) (at ?p ?to) (traveling-to ?p ?to))
+    )
+
+    (:action rest
+      :parameters (?p - person)
+      :precondition (and (at ?p ?location1) (city ?location1))
+      :effect (not (traveling-to ?p ?location2))
+    )
+  )
+  === DOMAIN END ===
+
+  === PROBLEM START ===
+  (define (problem world-tour)
+    (:domain traveling-world)
+    (:objects
+      John - person
+      NY - city
+      DC - capital
+      LA - city
+    )
+    (:init
+      (at John NY)
+      (city NY)
+      (capital DC)
+      (not (traveling-to John LA))
+    )
+    (:goal (and (at John LA)))
+  )
+  === PROBLEM END ===
+
+In this example, the domain `traveling-world` represents a world where there are people and locations (cities). The predicates include `at`, which indicates that a person is at a certain location, `city`, indicating that a location is a city, and `capital`, indicating that a location is the capital. There are two actions: `move`, allowing a person to travel from one location to another, and `rest`, allowing a person to rest in a city, stopping their travel.
+
+The problem `world-tour` involves a specific individual, John, who starts in New York (NY), and the goal is for him to end up in Los Angeles (LA). The initial state indicates that John is in NY, LA is a city but not the capital, and DC is the capital. The goal requires John to be in LA.

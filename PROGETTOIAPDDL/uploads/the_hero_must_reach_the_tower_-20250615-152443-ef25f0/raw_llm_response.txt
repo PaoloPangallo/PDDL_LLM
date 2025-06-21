@@ -1,0 +1,37 @@
+=== DOMAIN START ===
+  (define (domain world-exploration)
+    (:requirements :strips)
+    (:types location object)
+    (:predicates
+      (at ?x - location)
+      (on ?o - object ?l - location)
+    )
+
+    (:action move
+      :parameters (?x - location ?l - location)
+      :precondition (at ?x)
+      :effect (and (not (at ?x)) (at ?l)))
+
+    (:action pickup
+      :parameters (?o - object ?l - location)
+      :precondition (and (on ?o ?l) (at ?l))
+      :effect (and (not (on ?o ?l)) (holding ?o ?x)))
+
+    (:action putdown
+      :parameters (?o - object ?l - location)
+      :precondition (and (holding ?o ?x) (at ?x))
+      :effect (and (not (holding ?o ?x)) (on ?o ?l)))
+  )
+  === DOMAIN END ===
+
+  === PROBLEM START ===
+  (define (problem explore-cave)
+    (:domain world-exploration)
+    (:objects cave treasure1 treasure2)
+    (:init
+      (at cave)
+      (on treasure1 cave)
+      (on treasure2 cave))
+    (:goal (and (at cave) (not (on treasure1 cave)) (not (on treasure2 cave))))
+  )
+  === PROBLEM END ===

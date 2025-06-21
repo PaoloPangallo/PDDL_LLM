@@ -1,0 +1,37 @@
+{% if planner_error %}
+<section class="result-section error">
+    <h2>🛠️ Errore dal Planner</h2>
+    <pre>{{ planner_error }}</pre>
+    <p>💡 Puoi inviare questo errore all’LLM tramite la chat sottostante.</p>
+    <button id="askPlannerError">🧠 Chiedi spiegazione all’LLM</button>
+</section>
+{% endif %}
+
+{% if plan %}
+<section class="result-section success">
+    <h2>📈 Piano Generato</h2>
+    <table class="plan-table">
+        <thead>
+            <tr><th>#</th><th>Timestamp</th><th>Azione</th></tr>
+        </thead>
+        <tbody>
+            {% for step in plan %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ "%.3f"|format(step.time) }}s</td>
+                <td><code>{{ step.action }}</code></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% else %}
+<section class="result-section warning">
+    <h2>⚠️ Nessun Piano Disponibile</h2>
+    {% if suggestion %}
+    <p>Il planner non ha trovato una soluzione. È stato generato un suggerimento dall'LLM per correggere i file.</p>
+    {% else %}
+    <p>Il planner non ha trovato una soluzione e non è disponibile alcun suggerimento.</p>
+    {% endif %}
+</section>
+{% endif %}

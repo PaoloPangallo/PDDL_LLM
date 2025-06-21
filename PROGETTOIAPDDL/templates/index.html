@@ -1,18 +1,32 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title>QuestMaster - Upload</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    <script src="{{ url_for('static', filename='js/index.js') }}" defer></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}QuestMaster - Upload{% endblock %}
+
+{% block content %}
+<main>
     <h1>🧙 Benvenuto in <strong>QuestMaster</strong></h1>
 
-    <div class="section">
-        <h2>📤 Carica i tuoi file PDDL</h2>
-        <form action="{{ url_for('core.index') }}" method="post" enctype="multipart/form-data">
+    <section class="section">
+        <h2>⚡ Genera i file PDDL + Avvia Pianificazione</h2>
+            <form action="{{ url_for('generate.generate_from_lore') }}" method="post">
+
+            <input type="hidden" name="run" value="true">
+            {% include "partials/lore_input.html" %}
+            <button type="submit" class="primary-btn">🧠 Genera + 🏁 Pianifica</button>
+        </form>
+    </section>
+
+    <section class="section">
+        <h2>🛠️ Genera solo i file PDDL da lore.json</h2>
+        <form action="{{ url_for('generate.generate_from_lore') }}" method="post">
+            <input type="hidden" name="run" value="false">
+            {% include "partials/lore_input.html" %}
+            <button type="submit" class="primary-btn">⚙️ Solo Genera</button>
+        </form>
+    </section>
+
+    <section class="section">
+        <h2>📤 Carica manualmente i file PDDL</h2>
+        <form action="{{ url_for('generate.manual_upload') }}" method="post" enctype="multipart/form-data">
             <label for="domain">📄 Domain PDDL:</label><br>
             <input type="file" id="domain" name="domain" accept=".pddl" required><br><br>
 
@@ -21,27 +35,12 @@
 
             <button type="submit" class="primary-btn">🚀 Avvia Pianificazione</button>
         </form>
-    </div>
+    </section>
 
-    <div class="section">
-        <h2>⚡ Genera, Risolvi e Visualizza il piano</h2>
-        <form action="{{ url_for('generate.generate_from_lore') }}" method="post">
-            <input type="hidden" name="run" value="true">
-            <label for="lore_path_1">📘 Percorso del file <code>lore.json</code>:</label><br>
-            <input type="text" id="lore_path_1" name="lore_path" placeholder="es. lore/example_lore.json" required><br><br>
-            <button type="submit" class="primary-btn">🧠 Genera + 🏁 Avvia Planner</button>
-        </form>
-    </div>
-
-    <div class="section">
-        <h2>✨ Genera i file PDDL da un Lore JSON</h2>
-        <form action="{{ url_for('generate.generate_from_lore') }}" method="post">
-            <input type="hidden" name="run" value="false">
-            <label for="lore_path_2">📘 Percorso del file <code>lore.json</code>:</label><br>
-            <input type="text" id="lore_path_2" name="lore_path" placeholder="es. lore/example_lore.json" required><br><br>
-            <button type="submit" class="primary-btn">🛠️ Genera da Lore</button>
-        </form>
-    </div>
+    <section class="section">
+        <h2>🪄 Estrai un'Azione PDDL da Frase Naturale</h2>
+        <a href="{{ url_for('extract.extract_page') }}" class="primary-btn">Apri Modulo Estrazione</a>
+    </section>
 
     <div id="loadingModal" class="modal hidden" role="alert" aria-live="assertive">
         <div class="modal-content">
@@ -49,5 +48,5 @@
             <p>🧠 Sto generando il piano, attendi...</p>
         </div>
     </div>
-</body>
-</html>
+</main>
+{% endblock %}

@@ -1,0 +1,40 @@
+<section class="result-section warning">
+    <h2>❌ Esito Validazione</h2>
+    <pre>{{ validation }}</pre>
+
+    {% if validation_json and not validation_json.valid_syntax %}
+    <div class="explanation">
+        <p>⚠️ I file PDDL non sono validi per i seguenti motivi:</p>
+
+        {% if validation_json.missing_sections %}
+        <p>🚫 Sezioni mancanti:</p>
+        <ul>
+            {% for section in validation_json.missing_sections %}
+            <li><code>{{ section }}</code></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if validation_json.undefined_objects_in_goal %}
+        <p>❓ Oggetti non definiti nel goal:</p>
+        <ul>
+            {% for obj in validation_json.undefined_objects_in_goal %}
+            <li><code>{{ obj }}</code></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if validation_json.undefined_actions %}
+        <p>❓ Azioni non definite ma usate:</p>
+        <ul>
+            {% for act in validation_json.undefined_actions %}
+            <li><code>{{ act }}</code></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <p>🧠 Il file potrebbe usare sintassi LISP o DSL non standard.</p>
+        <p>✏️ Suggerimento: chiedi all’LLM di rigenerare i file con sintassi PDDL standard.</p>
+    </div>
+    {% endif %}
+</section>

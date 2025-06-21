@@ -841,3 +841,1448 @@ requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: http://127
 2025-06-15 10:41:39,616 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
 2025-06-15 10:41:39,625 [DEBUG] ← RESPONSE POST /chat status=200
 2025-06-15 10:41:39,626 [INFO] 127.0.0.1 - - [15/Jun/2025 10:41:39] "POST /chat HTTP/1.1" 200 -
+2025-06-15 11:19:40,624 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 11:19:40,625 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 11:19:54,400 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 11:19:54,414 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 11:19:54,535 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 4096
+2025-06-15 11:19:54,538 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 11:19:54,620 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 500 83
+2025-06-15 11:19:54,622 [ERROR] ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (5.5 GiB) than is available (4.5 GiB)"}
+2025-06-15 11:19:54,624 [DEBUG] 📄 Prompt (primi 500 caratteri):
+🎯 You are a professional PDDL generator for classical planners like Fast Downward.
+
+👉 Your task is to generate exactly two valid PDDL files: `domain.pddl` and `problem.pddl`.
+You MUST use only standard PDDL syntax. Wrap your output between the specified delimiters. Do not include anything else.
+
+🧱 RULES:
+- Do NOT include any explanations or comments outside the PDDL blocks.
+- Do NOT use non-standard LISP syntax, pseudo-code, or conditional logic like `if`, `find-distance`, or perception predicat
+2025-06-15 11:19:54,626 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 35, in generate_from_lore
+    raw = ask_ollama(prompt)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/game/utils.py", line 77, in ask_ollama
+    response.raise_for_status()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: http://127.0.0.1:11434/api/generate
+2025-06-15 11:19:54,697 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-15 11:19:54,698 [INFO] 127.0.0.1 - - [15/Jun/2025 11:19:54] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-15 11:21:55,201 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 11:21:55,202 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 11:22:12,336 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 11:22:12,361 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 11:22:12,363 [INFO] 127.0.0.1 - - [15/Jun/2025 11:22:12] "GET / HTTP/1.1" 200 -
+2025-06-15 11:22:12,399 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 11:22:12,400 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 11:22:12,414 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 11:22:12,415 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 11:22:12,415 [INFO] 127.0.0.1 - - [15/Jun/2025 11:22:12] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 11:22:12,416 [INFO] 127.0.0.1 - - [15/Jun/2025 11:22:12] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 11:22:15,637 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 11:22:15,643 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 11:22:15,745 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-15 11:22:15,750 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 11:24:58,841 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 11:24:58,854 [INFO] ✅ File PDDL salvati.
+2025-06-15 11:24:58,858 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-15 11:24:58,859 [INFO] 127.0.0.1 - - [15/Jun/2025 11:24:58] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-15 11:24:58,879 [DEBUG] → REQUEST GET /result args={'session': 'b56c456f-e068-4d3a-a1b1-616cfcd397c8'} form_keys=[]
+2025-06-15 11:24:58,947 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-15 11:24:58,948 [INFO] 127.0.0.1 - - [15/Jun/2025 11:24:58] "GET /result?session=b56c456f-e068-4d3a-a1b1-616cfcd397c8 HTTP/1.1" 200 -
+2025-06-15 11:24:59,001 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-15 11:24:59,002 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-15 11:24:59,007 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-15 11:24:59,008 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-15 11:24:59,008 [INFO] 127.0.0.1 - - [15/Jun/2025 11:24:59] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-15 11:24:59,009 [INFO] 127.0.0.1 - - [15/Jun/2025 11:24:59] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-15 12:17:33,204 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 12:17:33,205 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 12:17:37,140 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 12:17:37,153 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 12:17:37,154 [INFO] 127.0.0.1 - - [15/Jun/2025 12:17:37] "GET / HTTP/1.1" 200 -
+2025-06-15 12:17:37,175 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 12:17:37,175 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 12:17:37,191 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 12:17:37,191 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 12:17:37,192 [INFO] 127.0.0.1 - - [15/Jun/2025 12:17:37] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 12:17:37,193 [INFO] 127.0.0.1 - - [15/Jun/2025 12:17:37] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 12:17:41,756 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 12:17:41,760 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 12:17:41,906 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-15 12:17:41,909 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 12:20:08,519 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 12:20:08,562 [INFO] ✅ File PDDL salvati.
+2025-06-15 12:20:08,593 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-15 12:20:08,600 [INFO] 127.0.0.1 - - [15/Jun/2025 12:20:08] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-15 12:20:08,622 [DEBUG] → REQUEST GET /result args={'session': 'e044f4be-c40c-44ec-8690-2bb2111e0194'} form_keys=[]
+2025-06-15 12:20:08,714 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-15 12:20:08,715 [INFO] 127.0.0.1 - - [15/Jun/2025 12:20:08] "GET /result?session=e044f4be-c40c-44ec-8690-2bb2111e0194 HTTP/1.1" 200 -
+2025-06-15 12:20:08,750 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-15 12:20:08,752 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-15 12:20:08,762 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-15 12:20:08,763 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-15 12:20:08,763 [INFO] 127.0.0.1 - - [15/Jun/2025 12:20:08] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-15 12:20:08,764 [INFO] 127.0.0.1 - - [15/Jun/2025 12:20:08] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-15 12:37:53,846 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 12:37:53,846 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 12:37:56,058 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 12:37:56,071 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 12:37:56,072 [INFO] 127.0.0.1 - - [15/Jun/2025 12:37:56] "GET / HTTP/1.1" 200 -
+2025-06-15 12:37:56,097 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 12:37:56,099 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 12:37:56,114 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 12:37:56,114 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 12:37:56,115 [INFO] 127.0.0.1 - - [15/Jun/2025 12:37:56] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 12:37:56,115 [INFO] 127.0.0.1 - - [15/Jun/2025 12:37:56] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 12:38:01,166 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 12:38:01,175 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 12:38:01,331 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-15 12:38:01,336 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 12:40:12,360 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 12:40:12,380 [INFO] ✅ File PDDL salvati.
+2025-06-15 12:40:12,403 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-15 12:40:12,406 [INFO] 127.0.0.1 - - [15/Jun/2025 12:40:12] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-15 12:40:12,425 [DEBUG] → REQUEST GET /result args={'session': '3b77e8f2-6081-437a-8cc4-85e0cbd766da'} form_keys=[]
+2025-06-15 12:40:12,516 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-15 12:40:12,517 [INFO] 127.0.0.1 - - [15/Jun/2025 12:40:12] "GET /result?session=3b77e8f2-6081-437a-8cc4-85e0cbd766da HTTP/1.1" 200 -
+2025-06-15 12:40:12,557 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-15 12:40:12,558 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-15 12:40:12,567 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-15 12:40:12,567 [INFO] 127.0.0.1 - - [15/Jun/2025 12:40:12] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-15 12:40:12,568 [DEBUG] ← RESPONSE GET /static/css/result.css status=304
+2025-06-15 12:40:12,568 [INFO] 127.0.0.1 - - [15/Jun/2025 12:40:12] "[36mGET /static/css/result.css HTTP/1.1[0m" 304 -
+2025-06-15 12:45:09,881 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 12:45:09,903 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 12:45:10,110 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-15 12:45:10,119 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 12:47:35,231 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 12:47:35,258 [INFO] ✅ File PDDL salvati.
+2025-06-15 12:47:35,262 [INFO] ⚙️ Avvio run_planner()
+2025-06-15 12:47:35,663 [INFO] ⏱️ Fast Downward completato in 0.40s
+2025-06-15 12:47:35,664 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/8a29de5c-63f7-4f1e-803a-9dda34927c81/domain.pddl /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/8a29de5c-63f7-4f1e-803a-9dda34927c81/problem.pddl con lazy_greedy([ff()]) (dominio: travel-world)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/8a29de5c-63f7-4f1e-803a-9dda34927c81/domain.pddl /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/8a29de5c-63f7-4f1e-803a-9dda34927c81/problem.pddl --sas-file output.sas
+Parsing...
+Error: Could not parse domain file: /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/8a29de5c-63f7-4f1e-803a-9dda34927c81/domain.pddl
+Reason: Tokens remaining after parsing: ( :requirements :strips ) ( :types location agent ) ( :predicates ( at ?a - agent ?l - location ) ( on-water ?l - location ) ) ( :action move :parameters ( ?a - agent ?from - location ?to - location ) :precondition ( and ( at ?a ?from ) ( on-path ?from ?to ) ) :effect ( and ( not ( at ?a ?from ) ) ( at ?a ?to ) ) ) ( :action swim :parameters ( ?a - agent ?l - location ) :precondition ( and ( at ?a ?l ) ( on-water ?l ) ) :effect ( at ?a ( find-neighboring-land ?l ) ) ) ) ( :action find-neighboring-land :parameters ( ?l - location ) :precondition ( on-water ?l ) :effect ( exists ( ?neighbor ) ( and ( on-path ?neighbor ?l ) ( at ?neighbor ( find-neighboring-land ?neighbor ) ) ) ) ) )
+translate exit code: 31
+
+Driver aborting after translate
+INFO     Planner time: 0.11s
+
+2025-06-15 12:47:35,664 [DEBUG] STDERR:
+
+2025-06-15 12:47:35,686 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-15 12:47:35,691 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-15 12:50:29,847 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 12:50:29,902 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/8a29de5c-63f7-4f1e-803a-9dda34927c81/llm_suggestion.pddl
+2025-06-15 12:50:29,918 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-15 12:50:29,923 [INFO] 127.0.0.1 - - [15/Jun/2025 12:50:29] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-15 12:50:29,956 [DEBUG] → REQUEST GET /result args={'session': '8a29de5c-63f7-4f1e-803a-9dda34927c81'} form_keys=[]
+2025-06-15 12:50:29,989 [ERROR] Exception on /result [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/result.py", line 67, in result
+    suggestion = safe_content(paths["suggestion"])
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/result.py", line 33, in safe_content
+    content = read_text_file(path)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/game/utils.py", line 109, in read_text_file
+    return open(path, encoding="utf-8").read() if os.path.exists(path) else None
+IsADirectoryError: [Errno 21] Is a directory: '/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/8a29de5c-63f7-4f1e-803a-9dda34927c81/llm_suggestion.pddl'
+2025-06-15 12:50:30,021 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-15 12:50:30,021 [DEBUG] ← RESPONSE GET /result status=500
+2025-06-15 12:50:30,022 [INFO] 127.0.0.1 - - [15/Jun/2025 12:50:30] "[35m[1mGET /result?session=8a29de5c-63f7-4f1e-803a-9dda34927c81 HTTP/1.1[0m" 500 -
+2025-06-15 13:18:22,564 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 13:18:22,567 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 13:18:25,185 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 13:18:25,198 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 13:18:25,199 [INFO] 127.0.0.1 - - [15/Jun/2025 13:18:25] "GET / HTTP/1.1" 200 -
+2025-06-15 13:18:25,216 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 13:18:25,217 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 13:18:25,227 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 13:18:25,227 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 13:18:25,228 [INFO] 127.0.0.1 - - [15/Jun/2025 13:18:25] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 13:18:25,228 [INFO] 127.0.0.1 - - [15/Jun/2025 13:18:25] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 13:18:33,654 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 13:18:33,676 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 13:18:34,343 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-15 13:18:34,352 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 13:21:05,986 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 13:21:06,034 [INFO] ✅ File PDDL salvati.
+2025-06-15 13:21:06,060 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-15 13:21:06,065 [INFO] 127.0.0.1 - - [15/Jun/2025 13:21:06] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-15 13:21:06,121 [DEBUG] → REQUEST GET /result args={'session': '7429fdf1-3bbb-4429-9dbb-28650e8c1f9c'} form_keys=[]
+2025-06-15 13:21:06,217 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-15 13:21:06,218 [INFO] 127.0.0.1 - - [15/Jun/2025 13:21:06] "GET /result?session=7429fdf1-3bbb-4429-9dbb-28650e8c1f9c HTTP/1.1" 200 -
+2025-06-15 13:21:06,334 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-15 13:21:06,335 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-15 13:21:06,353 [DEBUG] ← RESPONSE GET /static/css/result.css status=200
+2025-06-15 13:21:06,353 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-15 13:21:06,355 [INFO] 127.0.0.1 - - [15/Jun/2025 13:21:06] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-15 13:21:06,356 [INFO] 127.0.0.1 - - [15/Jun/2025 13:21:06] "GET /static/css/result.css HTTP/1.1" 200 -
+2025-06-15 15:24:33,130 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 15:24:33,131 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 15:24:36,818 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 15:24:36,838 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 15:24:36,839 [INFO] 127.0.0.1 - - [15/Jun/2025 15:24:36] "GET / HTTP/1.1" 200 -
+2025-06-15 15:24:36,865 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 15:24:36,867 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 15:24:36,892 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 15:24:36,892 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 15:24:36,893 [INFO] 127.0.0.1 - - [15/Jun/2025 15:24:36] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 15:24:36,894 [INFO] 127.0.0.1 - - [15/Jun/2025 15:24:36] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 15:24:43,688 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 15:24:43,693 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 15:24:44,251 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-15 15:24:44,254 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 15:28:29,062 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 15:28:29,123 [INFO] ✅ File PDDL salvati.
+2025-06-15 15:28:29,160 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-15 15:28:29,165 [INFO] 127.0.0.1 - - [15/Jun/2025 15:28:29] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-15 15:28:29,199 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250615-152443-ef25f0'} form_keys=[]
+2025-06-15 15:28:29,383 [ERROR] Exception on /result [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/result.py", line 104, in result
+    return render_template(
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/result.html", line 24, in top-level template code
+    <li><a class="download" href="{{ url_for('core.download_file', session=session, filename='domain.pddl') }}" download>📄 Scarica <strong>domain.pddl</strong></a></li>
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'core.download_file' with values ['filename', 'session']. Did you mean 'core.index' instead?
+2025-06-15 15:28:29,495 [DEBUG] ← RESPONSE GET /result status=500
+2025-06-15 15:28:29,496 [INFO] 127.0.0.1 - - [15/Jun/2025 15:28:29] "[35m[1mGET /result?session=the_hero_must_reach_the_tower_-20250615-152443-ef25f0 HTTP/1.1[0m" 500 -
+2025-06-15 15:35:18,805 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 15:35:18,807 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 15:35:23,964 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 15:35:23,998 [ERROR] Exception on / [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/app.py", line 48, in index
+    return render_template("index.html")
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/index.html", line 48, in top-level template code
+    <a href="{{ url_for('extract.extract_page') }}">🪄 Estrai un'Azione da Frase</a>
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'extract.extract_page'. Did you mean 'generate_action_api.generate_action' instead?
+2025-06-15 15:35:24,058 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-15 15:35:24,059 [DEBUG] ← RESPONSE GET / status=500
+2025-06-15 15:35:24,060 [INFO] 127.0.0.1 - - [15/Jun/2025 15:35:24] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-06-15 15:35:26,210 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 15:35:26,212 [ERROR] Exception on / [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/app.py", line 48, in index
+    return render_template("index.html")
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/index.html", line 48, in top-level template code
+    <a href="{{ url_for('extract.extract_page') }}">🪄 Estrai un'Azione da Frase</a>
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'extract.extract_page'. Did you mean 'generate_action_api.generate_action' instead?
+2025-06-15 15:35:26,242 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-15 15:35:26,244 [DEBUG] ← RESPONSE GET / status=500
+2025-06-15 15:35:26,245 [INFO] 127.0.0.1 - - [15/Jun/2025 15:35:26] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-06-15 15:36:52,579 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 15:36:52,580 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 15:36:59,864 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 15:36:59,894 [ERROR] Exception on / [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/app.py", line 48, in index
+    return render_template("index.html")
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/index.html", line 48, in top-level template code
+    <a href="{{ url_for('extract_page') }}">
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'extract_page'. Did you mean 'generate_action_api.generate_action' instead?
+2025-06-15 15:36:59,961 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-15 15:36:59,962 [DEBUG] ← RESPONSE GET / status=500
+2025-06-15 15:36:59,963 [INFO] 127.0.0.1 - - [15/Jun/2025 15:36:59] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-06-15 15:38:50,474 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 15:38:50,474 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 15:39:36,135 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 15:39:36,165 [ERROR] Exception on / [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/app.py", line 48, in index
+    return render_template("index.html")
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/templates/index.html", line 48, in top-level template code
+    <a href="{{ url_for('extract_page') }}">
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'extract_page'. Did you mean 'extract.extract_page' instead?
+2025-06-15 15:39:36,226 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-15 15:39:36,227 [DEBUG] ← RESPONSE GET / status=500
+2025-06-15 15:39:36,228 [INFO] 127.0.0.1 - - [15/Jun/2025 15:39:36] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-06-15 15:42:21,954 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 15:42:21,955 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 15:42:24,833 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 15:42:24,850 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 15:42:24,851 [INFO] 127.0.0.1 - - [15/Jun/2025 15:42:24] "GET / HTTP/1.1" 200 -
+2025-06-15 15:42:24,895 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 15:42:24,897 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 15:42:24,919 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 15:42:24,920 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 15:42:24,920 [INFO] 127.0.0.1 - - [15/Jun/2025 15:42:24] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 15:42:24,921 [INFO] 127.0.0.1 - - [15/Jun/2025 15:42:24] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 15:42:36,794 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 15:42:36,798 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 15:42:37,085 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-15 15:42:37,087 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 15:47:01,196 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 15:47:01,265 [INFO] ✅ File PDDL salvati.
+2025-06-15 15:47:01,288 [INFO] ⚙️ Avvio run_planner()
+2025-06-15 15:47:02,185 [INFO] ⏱️ Fast Downward completato in 0.90s
+2025-06-15 15:47:02,186 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-154236-1c692a/domain.pddl /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-154236-1c692a/problem.pddl con lazy_greedy([ff()]) (dominio: traveling-world)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-154236-1c692a/domain.pddl /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-154236-1c692a/problem.pddl --sas-file output.sas
+Parsing...
+Parsing: [0.010s CPU, 0.024s wall-clock]
+Normalizing task... [0.000s CPU, 0.000s wall-clock]
+Instantiating...
+Generating Datalog program... translate exit code: 30
+
+Driver aborting after translate
+INFO     Planner time: 0.25s
+
+2025-06-15 15:47:02,187 [DEBUG] STDERR:
+b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 747, in <module>\n    main()\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 718, in main\n    sas_task = pddl_to_sas(task)\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 547, in pddl_to_sas\n    reachable_action_params) = instantiate.explore(task)\n  File "/home/paolop/downward/builds/release/bin/translate/instantiate.py", line 116, in explore\n    prog = pddl_to_prolog.translate(task)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_to_prolog.py", line 167, in translate\n    translate_facts(prog, task)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_to_prolog.py", line 153, in translate_facts\n    translate_typed_object(prog, obj, type_dict)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_to_prolog.py", line 146, in translate_typed_object\n    supertypes = type_dict[obj.type_name].supertype_names\nKeyError: \'city\'\n'
+
+2025-06-15 15:47:02,257 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-15 15:47:02,272 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-15 15:50:58,794 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 15:50:58,847 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-154236-1c692a/llm_suggestion.pddl
+2025-06-15 15:50:58,909 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-15 15:50:58,918 [INFO] 127.0.0.1 - - [15/Jun/2025 15:50:58] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-15 15:50:59,046 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250615-154236-1c692a'} form_keys=[]
+2025-06-15 15:50:59,138 [ERROR] Exception on /result [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/result.py", line 67, in result
+    suggestion = safe_content(paths["suggestion"])
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/result.py", line 33, in safe_content
+    content = read_text_file(path)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/game/utils.py", line 116, in read_text_file
+    return open(path, encoding="utf-8").read() if os.path.exists(path) else None
+IsADirectoryError: [Errno 21] Is a directory: '/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-154236-1c692a/llm_suggestion.pddl'
+2025-06-15 15:50:59,229 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-15 15:50:59,232 [DEBUG] ← RESPONSE GET /result status=500
+2025-06-15 15:50:59,240 [INFO] 127.0.0.1 - - [15/Jun/2025 15:50:59] "[35m[1mGET /result?session=the_hero_must_reach_the_tower_-20250615-154236-1c692a HTTP/1.1[0m" 500 -
+2025-06-15 17:28:01,087 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 17:28:01,087 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 17:28:40,299 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 17:28:40,314 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 17:28:40,315 [INFO] 127.0.0.1 - - [15/Jun/2025 17:28:40] "GET / HTTP/1.1" 200 -
+2025-06-15 17:28:40,337 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 17:28:40,338 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 17:28:40,351 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 17:28:40,351 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 17:28:40,352 [INFO] 127.0.0.1 - - [15/Jun/2025 17:28:40] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 17:28:40,352 [INFO] 127.0.0.1 - - [15/Jun/2025 17:28:40] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 17:28:44,728 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 17:28:44,738 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 17:28:45,280 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-15 17:28:45,281 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 17:31:45,558 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 17:31:45,597 [INFO] ✅ File PDDL salvati.
+2025-06-15 17:31:45,607 [INFO] ⚙️ Avvio run_planner()
+2025-06-15 17:31:45,989 [INFO] ⏱️ Fast Downward completato in 0.38s
+2025-06-15 17:31:45,990 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-172844-0dbf3c/domain.pddl /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-172844-0dbf3c/problem.pddl con lazy_greedy([ff()]) (dominio: world-travel)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-172844-0dbf3c/domain.pddl /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-172844-0dbf3c/problem.pddl --sas-file output.sas
+Parsing...
+Error: Could not parse domain file: /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-172844-0dbf3c/domain.pddl
+Reason: Tokens remaining after parsing: ( :action move-within-city :parameters ( ?x - city ?from - location ?to - location ) :precondition ( and ( in-city ?x ) ( at ?from ) ) :effect ( and ( not ( at ?from ) ) ( at ?to ) ) ) ( :action cross-border :parameters ( ?from - location ?to - location ) :precondition ( and ( at ?from ) ( in-country ?from ) ) :effect ( and ( not ( at ?from ) ) ( in-country ?to ) ) ) ( :action explore-neighboring-cities :parameters ( ?city - city ) :precondition ( in-city ?city ) :effect ( forall ( ?x - location ) ( neighboring-cities ?city ?x iff ( or ( and ( not ( explored ?x ) ) ( in-city ?x ) ) ) ) ) ) ( :action explore-neighboring-countries :parameters ( ?country - country ) :precondition ( in-country ?country ) :effect ( forall ( ?x - location ) ( neighboring-countries ?country ?x iff ( or ( and ( not ( explored ?x ) ) ( in-country ?x ) ) ) ) ) ) ( :action mark-as-explored :parameters ( ?location - location ) :precondition ( at ?location ) :effect ( not ( or ( neighboring-cities ?location _ ) ( neighboring-countries ?location _ ) ) ) ( explored ?location ) )
+translate exit code: 31
+
+Driver aborting after translate
+INFO     Planner time: 0.10s
+
+2025-06-15 17:31:45,991 [DEBUG] STDERR:
+
+2025-06-15 17:31:46,012 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-15 17:31:46,016 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-15 17:34:48,301 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-15 17:34:48,324 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250615-172844-0dbf3c/llm_suggestion.pddl
+2025-06-15 17:34:48,348 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-15 17:34:48,352 [INFO] 127.0.0.1 - - [15/Jun/2025 17:34:48] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-15 17:34:48,382 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250615-172844-0dbf3c'} form_keys=[]
+2025-06-15 17:34:48,459 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-15 17:34:48,460 [INFO] 127.0.0.1 - - [15/Jun/2025 17:34:48] "GET /result?session=the_hero_must_reach_the_tower_-20250615-172844-0dbf3c HTTP/1.1" 200 -
+2025-06-15 17:34:48,515 [DEBUG] → REQUEST GET /static/css/result.css args={} form_keys=[]
+2025-06-15 17:34:48,518 [DEBUG] → REQUEST GET /static/js/result.js args={} form_keys=[]
+2025-06-15 17:34:48,527 [DEBUG] ← RESPONSE GET /static/css/result.css status=200
+2025-06-15 17:34:48,527 [DEBUG] ← RESPONSE GET /static/js/result.js status=304
+2025-06-15 17:34:48,528 [INFO] 127.0.0.1 - - [15/Jun/2025 17:34:48] "[36mGET /static/js/result.js HTTP/1.1[0m" 304 -
+2025-06-15 17:34:48,529 [INFO] 127.0.0.1 - - [15/Jun/2025 17:34:48] "GET /static/css/result.css HTTP/1.1" 200 -
+2025-06-15 18:24:54,733 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 18:24:54,742 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-15 18:25:00,575 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-15 18:25:00,590 [DEBUG] ← RESPONSE GET / status=200
+2025-06-15 18:25:00,591 [INFO] 127.0.0.1 - - [15/Jun/2025 18:25:00] "GET / HTTP/1.1" 200 -
+2025-06-15 18:25:00,666 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-15 18:25:00,668 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-15 18:25:00,683 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-15 18:25:00,683 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-15 18:25:00,684 [INFO] 127.0.0.1 - - [15/Jun/2025 18:25:00] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-15 18:25:00,685 [INFO] 127.0.0.1 - - [15/Jun/2025 18:25:00] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-15 18:25:08,507 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-15 18:25:08,510 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-15 18:25:09,595 [INFO]  Esempi selezionati: ['example_dragon_fight', 'collect_magical_artifacts']
+2025-06-15 18:25:09,596 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-15 18:25:09,597 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-15 18:25:09,725 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 500 83
+2025-06-15 18:25:09,726 [ERROR] ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (4.7 GiB) than is available (3.9 GiB)"}
+2025-06-15 18:25:09,727 [DEBUG] 📄 Prompt (primi 500 caratteri):
+ You are a professional PDDL generator for classical planners like Fast Downward.
+
+ Your task is to generate exactly two valid PDDL files: `domain.pddl` and `problem.pddl`.
+You MUST use only standard PDDL syntax. Wrap your output between the specified delimiters. Do not include anything else.
+
+ RULES:
+- Do NOT include any explanations or comments outside the PDDL blocks.
+- Do NOT use non-standard LISP syntax, pseudo-code, or conditional logic like `if`, `find-distance`, or perception predicates.
+2025-06-15 18:25:09,727 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 37, in generate_from_lore
+    raw = ask_ollama(prompt)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/PROGETTOIAPDDL/game/utils.py", line 84, in ask_ollama
+    response.raise_for_status()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: http://127.0.0.1:11434/api/generate
+2025-06-15 18:25:09,771 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-15 18:25:09,773 [INFO] 127.0.0.1 - - [15/Jun/2025 18:25:09] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-17 16:43:23,008 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-17 16:43:23,013 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-17 16:43:46,589 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-17 16:43:46,606 [DEBUG] ← RESPONSE GET / status=200
+2025-06-17 16:43:46,608 [INFO] 127.0.0.1 - - [17/Jun/2025 16:43:46] "GET / HTTP/1.1" 200 -
+2025-06-17 16:43:46,641 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-17 16:43:46,643 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-17 16:43:46,665 [DEBUG] ← RESPONSE GET /static/css/index.css status=200
+2025-06-17 16:43:46,665 [DEBUG] ← RESPONSE GET /static/js/index.js status=200
+2025-06-17 16:43:46,668 [INFO] 127.0.0.1 - - [17/Jun/2025 16:43:46] "GET /static/css/index.css HTTP/1.1" 200 -
+2025-06-17 16:43:46,669 [INFO] 127.0.0.1 - - [17/Jun/2025 16:43:46] "GET /static/js/index.js HTTP/1.1" 200 -
+2025-06-17 16:43:46,958 [DEBUG] → REQUEST GET /favicon.ico args={} form_keys=[]
+2025-06-17 16:43:46,960 [DEBUG] ← RESPONSE GET /favicon.ico status=404
+2025-06-17 16:43:46,961 [INFO] 127.0.0.1 - - [17/Jun/2025 16:43:46] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-17 16:43:52,600 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-17 16:43:52,604 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-17 16:43:53,138 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-17 16:43:53,141 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-17 16:47:01,737 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-17 16:47:01,768 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-17 16:47:01,770 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-17 16:47:01,772 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 51, in generate_from_lore
+    raise ValueError("❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.")
+ValueError: ❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.
+2025-06-17 16:47:01,794 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-17 16:47:01,797 [INFO] 127.0.0.1 - - [17/Jun/2025 16:47:01] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-17 17:31:54,804 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-17 17:31:54,807 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-17 17:31:54,868 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-17 17:31:54,873 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-17 17:33:42,976 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-17 17:33:43,008 [INFO] ✅ File PDDL salvati.
+2025-06-17 17:33:43,019 [INFO] ⚙️ Avvio run_planner()
+2025-06-17 17:33:43,517 [INFO] ⏱️ Fast Downward completato in 0.50s
+2025-06-17 17:33:43,518 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250617-173154-0bcf7a/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250617-173154-0bcf7a/problem.pddl con lazy_greedy([ff()]) (dominio: dragon-quest)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250617-173154-0bcf7a/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250617-173154-0bcf7a/problem.pddl --sas-file output.sas
+Parsing...
+Parsing: [0.000s CPU, 0.009s wall-clock]
+Normalizing task... [0.000s CPU, 0.000s wall-clock]
+Instantiating...
+Generating Datalog program... [0.000s CPU, 0.000s wall-clock]
+Normalizing Datalog program...
+Trivial rules: Converted to facts.
+Normalizing Datalog program: [0.000s CPU, 0.002s wall-clock]
+Preparing model... [0.000s CPU, 0.000s wall-clock]
+Generated 14 rules.
+Computing model... [0.000s CPU, 0.000s wall-clock]
+25 relevant atoms
+15 auxiliary atoms
+40 final queue length
+44 total queue pushes
+Completing instantiation... [0.000s CPU, 0.000s wall-clock]
+Instantiating: [0.000s CPU, 0.002s wall-clock]
+Computing fact groups...
+Finding invariants...
+7 initial candidates
+Finding invariants: [0.000s CPU, 0.001s wall-clock]
+Checking invariant weight... [0.000s CPU, 0.000s wall-clock]
+Instantiating groups... [0.000s CPU, 0.000s wall-clock]
+Collecting mutex groups... [0.000s CPU, 0.000s wall-clock]
+Choosing groups...
+2 uncovered facts
+Choosing groups: [0.000s CPU, 0.000s wall-clock]
+Building translation key... [0.000s CPU, 0.000s wall-clock]
+Computing fact groups: [0.000s CPU, 0.001s wall-clock]
+Building STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]
+Building dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]
+Building mutex information...
+Building mutex information: [0.000s CPU, 0.000s wall-clock]
+Translating task...
+Processing axioms...
+Simplifying axioms... [0.000s CPU, 0.000s wall-clock]
+Translator axioms removed by simplifying: 0
+Processing axioms: [0.000s CPU, 0.000s wall-clock]
+Translating task: [0.000s CPU, 0.000s wall-clock]
+1 effect conditions simplified
+0 implied preconditions added
+Detecting unreachable propositions...
+0 operators removed
+0 axioms removed
+1 propositions removed
+Detecting unreachable propositions: [0.000s CPU, 0.000s wall-clock]
+Reordering and filtering variables...
+3 of 3 variables necessary.
+0 of 1 mutex groups necessary.
+5 of 5 operators necessary.
+0 of 0 axiom rules necessary.
+Reordering and filtering variables: [0.000s CPU, 0.000s wall-clock]
+Translator variables: 3
+Translator derived variables: 0
+Translator facts: 6
+Translator goal facts: 1
+Translator mutex groups: 0
+Translator total mutex groups size: 0
+Translator operators: 5
+Translator axioms: 0
+Translator task size: 27
+Translator peak memory: 28916 KB
+Writing output... [0.000s CPU, 0.002s wall-clock]
+Done! [0.000s CPU, 0.015s wall-clock]
+translate exit code: 0
+
+INFO     Running search (release).
+INFO     search stdin: output.sas
+INFO     search time limit: None
+INFO     search memory limit: None
+INFO     search command line string: /home/paolop/downward/builds/release/bin/downward --search 'lazy_greedy([ff()])' --internal-plan-file sas_plan < output.sas
+[t=0.000390s, 9976 KB] reading input...
+[t=0.000831s, 9976 KB] done reading input!
+[t=0.002117s, 10240 KB] Simplifying 5 unary operators... done! [5 unary operators]
+[t=0.002209s, 10240 KB] time to simplify: 0.000110s
+[t=0.002228s, 10240 KB] Initializing additive heuristic...
+[t=0.002234s, 10240 KB] Initializing FF heuristic...
+[t=0.002255s, 10240 KB] Building successor generator...done!
+[t=0.002304s, 10240 KB] peak memory difference for successor generator creation: 0 KB
+[t=0.002321s, 10240 KB] time for successor generation creation: 0.000007s
+[t=0.002331s, 10240 KB] Variables: 3
+[t=0.002348s, 10240 KB] FactPairs: 6
+[t=0.002356s, 10240 KB] Bytes per state: 4
+[t=0.002384s, 10240 KB] Conducting lazy best first search, (real) bound = 2147483647
+[t=0.002415s, 10240 KB] New best heuristic value for ff: 3
+[t=0.002436s, 10240 KB] g=0, 1 evaluated, 0 expanded
+[t=0.002447s, 10240 KB] Initial heuristic value for ff: 3
+[t=0.002466s, 10240 KB] New best heuristic value for ff: 2
+[t=0.002475s, 10240 KB] g=1, 2 evaluated, 1 expanded
+[t=0.002484s, 10240 KB] New best heuristic value for ff: 1
+[t=0.002490s, 10240 KB] g=2, 3 evaluated, 2 expanded
+[t=0.002499s, 10240 KB] Solution found!
+[t=0.002565s, 10240 KB] Actual search time: 0.000167s
+move hero1 cave forest (1)
+take-sword hero1 forest (1)
+slay-dragon hero1 smaug forest (1)
+[t=0.002575s, 10240 KB] Plan length: 3 step(s).
+[t=0.002575s, 10240 KB] Plan cost: 3
+[t=0.002575s, 10240 KB] Expanded 4 state(s).
+[t=0.002575s, 10240 KB] Reopened 0 state(s).
+[t=0.002575s, 10240 KB] Evaluated 5 state(s).
+[t=0.002575s, 10240 KB] Evaluations: 5
+[t=0.002575s, 10240 KB] Generated 9 state(s).
+[t=0.002575s, 10240 KB] Dead ends: 0 state(s).
+[t=0.002575s, 10240 KB] Number of registered states: 5
+[t=0.002575s, 10240 KB] Int hash set load factor: 5/8 = 0.625000
+[t=0.002575s, 10240 KB] Int hash set resizes: 3
+[t=0.002575s, 10240 KB] Search time: 0.000192s
+[t=0.002575s, 10240 KB] Total time: 0.002575s
+Solution found.
+Peak memory: 10240 KB
+Remove intermediate file output.sas
+search exit code: 0
+
+INFO     Planner time: 0.09s
+✅ Piano salvato in /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250617-173154-0bcf7a/plan.txt
+Attenzione: file /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250617-173154-0bcf7a/action_costs_dragon-quest.json non trovato. Uso mapping di default (0 per tutte le azioni).
+📋 Piano formattato:
+
+📍  1. move hero1 cave forest  (Costo azione: 0.0, Costo cumulativo: 0.0)
+📍  2. take-sword hero1 forest  (Costo azione: 0.0, Costo cumulativo: 0.0)
+📍  3. slay-dragon hero1 smaug forest  (Costo azione: 0.0, Costo cumulativo: 0.0)
+
+💰 Costo totale: 3.00
+
+💾 Esportato in plan.csv e plan.json
+🔍 Validazione...
+✅ Validazione completata
+
+2025-06-17 17:33:43,518 [DEBUG] STDERR:
+
+2025-06-17 17:33:43,545 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-17 17:33:43,548 [INFO] 127.0.0.1 - - [17/Jun/2025 17:33:43] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-17 17:33:43,559 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250617-173154-0bcf7a'} form_keys=[]
+2025-06-17 17:33:43,669 [ERROR] Exception on /result [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/result.py", line 104, in result
+    return render_template(
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/templates/result.html", line 112, in top-level template code
+    <td>{{ "%.3f"|format(step.time) }}s</td>
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/filters.py", line 1043, in do_format
+    return soft_str(value) % (kwargs or args)
+jinja2.exceptions.UndefinedError: 'str object' has no attribute 'time'
+2025-06-17 17:33:43,704 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-17 17:33:43,705 [DEBUG] ← RESPONSE GET /result status=500
+2025-06-17 17:33:43,705 [INFO] 127.0.0.1 - - [17/Jun/2025 17:33:43] "[35m[1mGET /result?session=the_hero_must_reach_the_tower_-20250617-173154-0bcf7a HTTP/1.1[0m" 500 -
+2025-06-20 22:00:06,172 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-20 22:00:06,178 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-20 22:00:17,676 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 22:00:17,735 [ERROR] Exception on / [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/app.py", line 48, in index
+    return render_template("index.html")
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/templates/index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/templates/base.html", line 11, in top-level template code
+    {% block content %}{% endblock %}
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/templates/index.html", line 28, in block 'content'
+    <form action="{{ url_for('generate.manual_upload') }}" method="post" enctype="multipart/form-data">
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'generate.manual_upload'. Did you mean 'generate.generate_from_lore' instead?
+2025-06-20 22:00:17,838 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-20 22:00:17,839 [DEBUG] ← RESPONSE GET / status=500
+2025-06-20 22:00:17,841 [INFO] 127.0.0.1 - - [20/Jun/2025 22:00:17] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-06-20 22:00:18,052 [DEBUG] → REQUEST GET /favicon.ico args={} form_keys=[]
+2025-06-20 22:00:18,053 [DEBUG] ← RESPONSE GET /favicon.ico status=404
+2025-06-20 22:00:18,054 [INFO] 127.0.0.1 - - [20/Jun/2025 22:00:18] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-20 22:03:04,132 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-20 22:03:04,133 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-20 22:04:52,840 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 22:04:52,909 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 22:04:52,911 [INFO] 127.0.0.1 - - [20/Jun/2025 22:04:52] "GET / HTTP/1.1" 200 -
+2025-06-20 22:04:52,945 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-20 22:04:52,948 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 22:04:52,979 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-20 22:04:52,980 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 22:04:52,981 [INFO] 127.0.0.1 - - [20/Jun/2025 22:04:52] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-20 22:04:52,982 [INFO] 127.0.0.1 - - [20/Jun/2025 22:04:52] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 22:04:56,639 [DEBUG] → REQUEST GET /generate args={'lore_path': 'lore/example_lore.json'} form_keys=[]
+2025-06-20 22:04:56,642 [DEBUG] ← RESPONSE GET /generate status=405
+2025-06-20 22:04:56,644 [INFO] 127.0.0.1 - - [20/Jun/2025 22:04:56] "[31m[1mGET /generate?lore_path=lore/example_lore.json HTTP/1.1[0m" 405 -
+2025-06-20 22:10:48,974 [DEBUG] → REQUEST GET /generate args={'lore_path': 'lore/example_lore.json'} form_keys=[]
+2025-06-20 22:10:48,977 [DEBUG] ← RESPONSE GET /generate status=405
+2025-06-20 22:10:48,978 [INFO] 127.0.0.1 - - [20/Jun/2025 22:10:48] "[31m[1mGET /generate?lore_path=lore/example_lore.json HTTP/1.1[0m" 405 -
+2025-06-20 22:10:53,806 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 22:10:53,809 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 22:10:53,811 [INFO] 127.0.0.1 - - [20/Jun/2025 22:10:53] "GET / HTTP/1.1" 200 -
+2025-06-20 22:10:53,848 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-20 22:10:53,851 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 22:10:53,863 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-20 22:10:53,864 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 22:10:53,865 [INFO] 127.0.0.1 - - [20/Jun/2025 22:10:53] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-20 22:10:53,866 [INFO] 127.0.0.1 - - [20/Jun/2025 22:10:53] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 22:10:58,969 [DEBUG] → REQUEST GET /generate args={'lore_path': 'lore/example_lore.json'} form_keys=[]
+2025-06-20 22:10:58,970 [DEBUG] ← RESPONSE GET /generate status=405
+2025-06-20 22:10:58,971 [INFO] 127.0.0.1 - - [20/Jun/2025 22:10:58] "[31m[1mGET /generate?lore_path=lore/example_lore.json HTTP/1.1[0m" 405 -
+2025-06-20 22:11:14,893 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 22:11:14,895 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 22:11:14,896 [INFO] 127.0.0.1 - - [20/Jun/2025 22:11:14] "GET / HTTP/1.1" 200 -
+2025-06-20 22:11:14,943 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 22:11:14,945 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-20 22:11:14,959 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 22:11:14,960 [INFO] 127.0.0.1 - - [20/Jun/2025 22:11:14] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 22:11:14,960 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-20 22:11:14,962 [INFO] 127.0.0.1 - - [20/Jun/2025 22:11:14] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-20 22:41:02,992 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 22:41:02,995 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 22:41:02,996 [INFO] 127.0.0.1 - - [20/Jun/2025 22:41:02] "GET / HTTP/1.1" 200 -
+2025-06-20 22:41:03,017 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-20 22:41:03,018 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 22:41:03,026 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-20 22:41:03,026 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 22:41:03,027 [INFO] 127.0.0.1 - - [20/Jun/2025 22:41:03] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-20 22:41:03,027 [INFO] 127.0.0.1 - - [20/Jun/2025 22:41:03] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 22:41:07,346 [DEBUG] → REQUEST GET /generate args={'lore_path': 'lore/example_lore.json'} form_keys=[]
+2025-06-20 22:41:07,349 [DEBUG] ← RESPONSE GET /generate status=405
+2025-06-20 22:41:07,350 [INFO] 127.0.0.1 - - [20/Jun/2025 22:41:07] "[31m[1mGET /generate?lore_path=lore/example_lore.json HTTP/1.1[0m" 405 -
+2025-06-20 22:41:27,181 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-20 22:41:27,182 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-20 22:41:34,114 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 22:41:34,166 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 22:41:34,167 [INFO] 127.0.0.1 - - [20/Jun/2025 22:41:34] "GET / HTTP/1.1" 200 -
+2025-06-20 22:41:34,211 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-20 22:41:34,212 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 22:41:34,225 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-20 22:41:34,226 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 22:41:34,226 [INFO] 127.0.0.1 - - [20/Jun/2025 22:41:34] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-20 22:41:34,227 [INFO] 127.0.0.1 - - [20/Jun/2025 22:41:34] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 22:41:38,172 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-20 22:41:38,175 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-20 22:41:38,329 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-20 22:41:38,330 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-20 22:43:18,858 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-20 22:43:18,927 [INFO] ✅ File PDDL salvati.
+2025-06-20 22:43:18,946 [INFO] ⚙️ Avvio run_planner()
+2025-06-20 22:43:19,564 [INFO] ⏱️ Fast Downward completato in 0.62s
+2025-06-20 22:43:19,571 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-224138-67a775/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-224138-67a775/problem.pddl con lazy_greedy([ff()]) (dominio: dragon-quest)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-224138-67a775/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-224138-67a775/problem.pddl --sas-file output.sas
+Parsing...
+Parsing: [0.000s CPU, 0.010s wall-clock]
+Normalizing task... [0.000s CPU, 0.000s wall-clock]
+Instantiating...
+Generating Datalog program... [0.000s CPU, 0.000s wall-clock]
+Normalizing Datalog program...
+Trivial rules: Converted to facts.
+Normalizing Datalog program: [0.000s CPU, 0.002s wall-clock]
+Preparing model... [0.000s CPU, 0.000s wall-clock]
+Generated 14 rules.
+Computing model... [0.000s CPU, 0.000s wall-clock]
+25 relevant atoms
+15 auxiliary atoms
+40 final queue length
+44 total queue pushes
+Completing instantiation... [0.000s CPU, 0.000s wall-clock]
+Instantiating: [0.000s CPU, 0.003s wall-clock]
+Computing fact groups...
+Finding invariants...
+7 initial candidates
+Finding invariants: [0.000s CPU, 0.001s wall-clock]
+Checking invariant weight... [0.000s CPU, 0.000s wall-clock]
+Instantiating groups... [0.000s CPU, 0.000s wall-clock]
+Collecting mutex groups... [0.000s CPU, 0.000s wall-clock]
+Choosing groups...
+2 uncovered facts
+Choosing groups: [0.000s CPU, 0.000s wall-clock]
+Building translation key... [0.000s CPU, 0.000s wall-clock]
+Computing fact groups: [0.000s CPU, 0.001s wall-clock]
+Building STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]
+Building dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]
+Building mutex information...
+Building mutex information: [0.000s CPU, 0.000s wall-clock]
+Translating task...
+Processing axioms...
+Simplifying axioms... [0.000s CPU, 0.000s wall-clock]
+Translator axioms removed by simplifying: 0
+Processing axioms: [0.000s CPU, 0.000s wall-clock]
+Translating task: [0.000s CPU, 0.001s wall-clock]
+1 effect conditions simplified
+0 implied preconditions added
+Detecting unreachable propositions...
+0 operators removed
+0 axioms removed
+1 propositions removed
+Detecting unreachable propositions: [0.000s CPU, 0.000s wall-clock]
+Reordering and filtering variables...
+3 of 3 variables necessary.
+0 of 1 mutex groups necessary.
+5 of 5 operators necessary.
+0 of 0 axiom rules necessary.
+Reordering and filtering variables: [0.000s CPU, 0.000s wall-clock]
+Translator variables: 3
+Translator derived variables: 0
+Translator facts: 6
+Translator goal facts: 1
+Translator mutex groups: 0
+Translator total mutex groups size: 0
+Translator operators: 5
+Translator axioms: 0
+Translator task size: 27
+Translator peak memory: 28916 KB
+Writing output... [0.000s CPU, 0.002s wall-clock]
+Done! [0.000s CPU, 0.018s wall-clock]
+translate exit code: 0
+
+INFO     Running search (release).
+INFO     search stdin: output.sas
+INFO     search time limit: None
+INFO     search memory limit: None
+INFO     search command line string: /home/paolop/downward/builds/release/bin/downward --search 'lazy_greedy([ff()])' --internal-plan-file sas_plan < output.sas
+[t=0.000725s, 9976 KB] reading input...
+[t=0.001039s, 9976 KB] done reading input!
+[t=0.004243s, 10240 KB] Simplifying 5 unary operators... done! [5 unary operators]
+[t=0.004340s, 10240 KB] time to simplify: 0.000115s
+[t=0.004358s, 10240 KB] Initializing additive heuristic...
+[t=0.004366s, 10240 KB] Initializing FF heuristic...
+[t=0.004407s, 10240 KB] Building successor generator...done!
+[t=0.004480s, 10240 KB] peak memory difference for successor generator creation: 0 KB
+[t=0.004501s, 10240 KB] time for successor generation creation: 0.000018s
+[t=0.004523s, 10240 KB] Variables: 3
+[t=0.004546s, 10240 KB] FactPairs: 6
+[t=0.004557s, 10240 KB] Bytes per state: 4
+[t=0.004581s, 10240 KB] Conducting lazy best first search, (real) bound = 2147483647
+[t=0.004655s, 10240 KB] New best heuristic value for ff: 3
+[t=0.004683s, 10240 KB] g=0, 1 evaluated, 0 expanded
+[t=0.004698s, 10240 KB] Initial heuristic value for ff: 3
+[t=0.004722s, 10240 KB] New best heuristic value for ff: 2
+[t=0.004745s, 10240 KB] g=1, 2 evaluated, 1 expanded
+[t=0.004761s, 10240 KB] New best heuristic value for ff: 1
+[t=0.004781s, 10240 KB] g=2, 3 evaluated, 2 expanded
+[t=0.004799s, 10240 KB] Solution found!
+[t=0.004821s, 10240 KB] Actual search time: 0.000224s
+move hero1 cave forest (1)
+take-sword hero1 forest (1)
+slay-dragon hero1 smaug forest (1)
+[t=0.004832s, 10240 KB] Plan length: 3 step(s).
+[t=0.004832s, 10240 KB] Plan cost: 3
+[t=0.004832s, 10240 KB] Expanded 4 state(s).
+[t=0.004832s, 10240 KB] Reopened 0 state(s).
+[t=0.004832s, 10240 KB] Evaluated 5 state(s).
+[t=0.004832s, 10240 KB] Evaluations: 5
+[t=0.004832s, 10240 KB] Generated 9 state(s).
+[t=0.004832s, 10240 KB] Dead ends: 0 state(s).
+[t=0.004832s, 10240 KB] Number of registered states: 5
+[t=0.004832s, 10240 KB] Int hash set load factor: 5/8 = 0.625000
+[t=0.004832s, 10240 KB] Int hash set resizes: 3
+[t=0.004832s, 10240 KB] Search time: 0.000252s
+[t=0.004832s, 10240 KB] Total time: 0.004832s
+Solution found.
+Peak memory: 10240 KB
+Remove intermediate file output.sas
+search exit code: 0
+
+INFO     Planner time: 0.13s
+✅ Piano salvato in /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-224138-67a775/plan.txt
+Attenzione: file /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-224138-67a775/action_costs_dragon-quest.json non trovato. Uso mapping di default (0 per tutte le azioni).
+📋 Piano formattato:
+
+📍  1. move hero1 cave forest  (Costo azione: 0.0, Costo cumulativo: 0.0)
+📍  2. take-sword hero1 forest  (Costo azione: 0.0, Costo cumulativo: 0.0)
+📍  3. slay-dragon hero1 smaug forest  (Costo azione: 0.0, Costo cumulativo: 0.0)
+
+💰 Costo totale: 3.00
+
+💾 Esportato in plan.csv e plan.json
+🔍 Validazione...
+✅ Validazione completata
+
+2025-06-20 22:43:19,573 [DEBUG] STDERR:
+
+2025-06-20 22:43:19,612 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-20 22:43:19,622 [INFO] 127.0.0.1 - - [20/Jun/2025 22:43:19] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-20 22:43:19,650 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250620-224138-67a775'} form_keys=[]
+2025-06-20 22:43:19,744 [ERROR] Exception on /result [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/result.py", line 104, in result
+    return render_template(
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/templates/result.html", line 30, in template
+    {% include "partials/source_display.html" with title="📄 Contenuto di domain.pddl" content=domain %}
+jinja2.exceptions.TemplateSyntaxError: expected token 'end of statement block', got 'with'
+2025-06-20 22:43:19,788 [ERROR] 500 Internal Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-06-20 22:43:19,790 [DEBUG] ← RESPONSE GET /result status=500
+2025-06-20 22:43:19,790 [INFO] 127.0.0.1 - - [20/Jun/2025 22:43:19] "[35m[1mGET /result?session=the_hero_must_reach_the_tower_-20250620-224138-67a775 HTTP/1.1[0m" 500 -
+2025-06-20 22:48:10,739 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 22:48:10,744 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 22:48:10,744 [INFO] 127.0.0.1 - - [20/Jun/2025 22:48:10] "GET / HTTP/1.1" 200 -
+2025-06-20 22:48:10,769 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-20 22:48:10,772 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 22:48:10,788 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 22:48:10,788 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-20 22:48:10,789 [INFO] 127.0.0.1 - - [20/Jun/2025 22:48:10] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 22:48:10,790 [INFO] 127.0.0.1 - - [20/Jun/2025 22:48:10] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-20 22:48:14,284 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-20 22:48:14,286 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-20 22:48:14,588 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-20 22:48:14,596 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-20 22:49:52,193 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-20 22:49:52,210 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-20 22:49:52,210 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-20 22:49:52,211 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 51, in generate_from_lore
+    raise ValueError("❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.")
+ValueError: ❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.
+2025-06-20 22:49:52,221 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-20 22:49:52,222 [INFO] 127.0.0.1 - - [20/Jun/2025 22:49:52] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-20 22:51:28,932 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 22:51:28,933 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 22:51:28,934 [INFO] 127.0.0.1 - - [20/Jun/2025 22:51:28] "GET / HTTP/1.1" 200 -
+2025-06-20 22:51:28,951 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 22:51:28,953 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-20 22:51:29,072 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 22:51:29,072 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-20 22:51:29,073 [INFO] 127.0.0.1 - - [20/Jun/2025 22:51:29] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 22:51:29,075 [INFO] 127.0.0.1 - - [20/Jun/2025 22:51:29] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-20 22:51:35,779 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-20 22:51:35,783 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-20 22:51:35,977 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-20 22:51:35,980 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-20 22:52:36,529 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-20 22:52:36,538 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-20 22:52:36,538 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-20 22:52:36,539 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 51, in generate_from_lore
+    raise ValueError("❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.")
+ValueError: ❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.
+2025-06-20 22:52:36,541 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-20 22:52:36,542 [INFO] 127.0.0.1 - - [20/Jun/2025 22:52:36] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-20 22:53:04,580 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-20 22:53:04,581 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-20 22:53:08,028 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 22:53:08,078 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 22:53:08,079 [INFO] 127.0.0.1 - - [20/Jun/2025 22:53:08] "GET / HTTP/1.1" 200 -
+2025-06-20 22:53:08,107 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-20 22:53:08,107 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 22:53:08,131 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 22:53:08,132 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-20 22:53:08,132 [INFO] 127.0.0.1 - - [20/Jun/2025 22:53:08] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 22:53:08,133 [INFO] 127.0.0.1 - - [20/Jun/2025 22:53:08] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-20 22:53:17,044 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-20 22:53:17,048 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-20 22:53:17,162 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-20 22:53:17,163 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-20 22:55:27,643 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-20 22:55:27,683 [INFO] ✅ File PDDL salvati.
+2025-06-20 22:55:27,691 [INFO] ⚙️ Avvio run_planner()
+2025-06-20 22:55:28,469 [INFO] ⏱️ Fast Downward completato in 0.78s
+2025-06-20 22:55:28,471 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-225317-b7eb6f/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-225317-b7eb6f/problem.pddl con lazy_greedy([ff()]) (dominio: blocks_world)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-225317-b7eb6f/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-225317-b7eb6f/problem.pddl --sas-file output.sas
+Parsing...
+Error: Could not parse domain file: /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-225317-b7eb6f/domain.pddl
+Reason: Missing ')'
+translate exit code: 31
+
+Driver aborting after translate
+INFO     Planner time: 0.10s
+
+2025-06-20 22:55:28,472 [DEBUG] STDERR:
+
+2025-06-20 22:55:28,558 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-20 22:55:28,561 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-20 22:59:23,029 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-20 22:59:23,036 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-20 22:59:23,036 [ERROR] ❌ Fallita la raffinazione automatica: ❌ DOMAIN block not found.
+2025-06-20 22:59:23,067 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-20 22:59:23,069 [INFO] 127.0.0.1 - - [20/Jun/2025 22:59:23] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-20 22:59:23,117 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250620-225317-b7eb6f'} form_keys=[]
+2025-06-20 22:59:23,274 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-20 22:59:23,275 [INFO] 127.0.0.1 - - [20/Jun/2025 22:59:23] "GET /result?session=the_hero_must_reach_the_tower_-20250620-225317-b7eb6f HTTP/1.1" 200 -
+2025-06-20 22:59:23,361 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 22:59:23,364 [DEBUG] → REQUEST GET /static/css/index.css args={} form_keys=[]
+2025-06-20 22:59:23,373 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 22:59:23,374 [INFO] 127.0.0.1 - - [20/Jun/2025 22:59:23] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 22:59:23,374 [DEBUG] ← RESPONSE GET /static/css/index.css status=304
+2025-06-20 22:59:23,375 [INFO] 127.0.0.1 - - [20/Jun/2025 22:59:23] "[36mGET /static/css/index.css HTTP/1.1[0m" 304 -
+2025-06-20 23:03:18,898 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-20 23:03:18,899 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-20 23:03:21,404 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 23:03:21,432 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 23:03:21,432 [INFO] 127.0.0.1 - - [20/Jun/2025 23:03:21] "GET / HTTP/1.1" 200 -
+2025-06-20 23:03:21,449 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-20 23:03:21,450 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 23:03:21,463 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-06-20 23:03:21,464 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 23:03:21,464 [INFO] 127.0.0.1 - - [20/Jun/2025 23:03:21] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 23:03:21,465 [INFO] 127.0.0.1 - - [20/Jun/2025 23:03:21] "GET /static/style.css HTTP/1.1" 200 -
+2025-06-20 23:03:27,370 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-20 23:03:27,371 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-20 23:03:27,605 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-20 23:03:27,607 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-20 23:05:11,274 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-20 23:05:11,315 [INFO] ✅ File PDDL salvati.
+2025-06-20 23:05:11,328 [INFO] ⚙️ Avvio run_planner()
+2025-06-20 23:05:11,671 [INFO] ⏱️ Fast Downward completato in 0.34s
+2025-06-20 23:05:11,672 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-230327-eae6f7/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-230327-eae6f7/problem.pddl con lazy_greedy([ff()]) (dominio: blocks-world)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-230327-eae6f7/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-230327-eae6f7/problem.pddl --sas-file output.sas
+Parsing...
+Error: Could not parse domain file: /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-230327-eae6f7/domain.pddl
+Reason: Tokens remaining after parsing: ( :action put-down :parameters ( ?a - block ) ( ?g - agent ) ) ( :effect ( and ( clear ?a ) ( not ( holding ?a ?g ) ) ) ) ( :action stack :parameters ( ?b1 - block ) ( ?b2 - block ) ( ?g - agent ) ) ( :condition ( and ( blockp ?b1 ) ( blockp ?b2 ) ) ) ( :effect ( and ( not ( clear ?b1 ) ) ( on ?b1 ?b2 ) ( clear ?b2 ) ) ) ) ( :action unstack :parameters ( ?b1 - block ) ( ?b2 - block ) ( ?g - agent ) ) ( :condition ( and ( blockp ?b1 ) ( blockp ?b2 ) ( on ?b1 ?b2 ) ) ) ( :effect ( and ( clear ?b1 ) ( not ( on ?b1 ?b2 ) ) ) ) :action stacking-sequence :parameters ( ?bs - sequence-of blocks ) ( ?g - agent ) ) ( :condition ( every ( blockp ?x ) ?bs ) ) ( :effect ( if ( len ?bs ) ( and ( not ( clear ( first ?bs ) ) ) ( stack ( first ?bs ) ( rest ?bs ) ?g ) ) ) ) ) :action unstacking-sequence :parameters ( ?bs - sequence-of blocks ) ( ?g - agent ) ) ( :condition ( every ( blockp ?x ) ?bs ) ) ( :effect ( if ( len ?bs ) ( and ( clear ( first ?bs ) ) ( unstack ( first ?bs ) ( rest ?bs ) ?g ) ) ) ) )
+translate exit code: 31
+
+Driver aborting after translate
+INFO     Planner time: 0.07s
+
+2025-06-20 23:05:11,672 [DEBUG] STDERR:
+
+2025-06-20 23:05:11,732 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-20 23:05:11,734 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-20 23:08:11,662 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-20 23:08:11,700 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250620-230327-eae6f7/llm_suggestion.pddl
+2025-06-20 23:08:11,709 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-20 23:08:11,710 [INFO] 127.0.0.1 - - [20/Jun/2025 23:08:11] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-20 23:08:11,722 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250620-230327-eae6f7'} form_keys=[]
+2025-06-20 23:08:11,857 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-20 23:08:11,858 [INFO] 127.0.0.1 - - [20/Jun/2025 23:08:11] "GET /result?session=the_hero_must_reach_the_tower_-20250620-230327-eae6f7 HTTP/1.1" 200 -
+2025-06-20 23:08:11,892 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-20 23:08:11,893 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 23:08:11,898 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-20 23:08:11,898 [INFO] 127.0.0.1 - - [20/Jun/2025 23:08:11] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-20 23:08:11,900 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 23:08:11,901 [INFO] 127.0.0.1 - - [20/Jun/2025 23:08:11] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 23:13:32,826 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-20 23:13:32,827 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-20 23:13:43,559 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 23:13:43,591 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 23:13:43,592 [INFO] 127.0.0.1 - - [20/Jun/2025 23:13:43] "GET / HTTP/1.1" 200 -
+2025-06-20 23:13:43,611 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-20 23:13:43,611 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 23:13:43,627 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-20 23:13:43,627 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 23:13:43,628 [INFO] 127.0.0.1 - - [20/Jun/2025 23:13:43] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-20 23:13:43,628 [INFO] 127.0.0.1 - - [20/Jun/2025 23:13:43] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 23:13:49,263 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-20 23:13:49,267 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-20 23:13:49,287 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 36, in generate_from_lore
+    prompt, used_examples = build_prompt_from_lore(lore)
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/game/generator.py", line 55, in build_prompt_from_lore
+    examples = retrieve_best_example(lore_text)
+NameError: name 'retrieve_best_example' is not defined
+2025-06-20 23:13:49,322 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-20 23:13:49,323 [INFO] 127.0.0.1 - - [20/Jun/2025 23:13:49] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-20 23:13:55,857 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 23:13:55,860 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 23:13:55,862 [INFO] 127.0.0.1 - - [20/Jun/2025 23:13:55] "GET / HTTP/1.1" 200 -
+2025-06-20 23:13:55,882 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-20 23:13:55,883 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 23:13:55,888 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-20 23:13:55,889 [INFO] 127.0.0.1 - - [20/Jun/2025 23:13:55] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-20 23:13:55,892 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 23:13:55,893 [INFO] 127.0.0.1 - - [20/Jun/2025 23:13:55] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 23:15:30,317 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-20 23:15:30,318 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-20 23:15:34,803 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 23:15:34,829 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 23:15:34,830 [INFO] 127.0.0.1 - - [20/Jun/2025 23:15:34] "GET / HTTP/1.1" 200 -
+2025-06-20 23:15:34,846 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-20 23:15:34,848 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 23:15:34,856 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-20 23:15:34,857 [INFO] 127.0.0.1 - - [20/Jun/2025 23:15:34] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-20 23:15:34,858 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 23:15:34,859 [INFO] 127.0.0.1 - - [20/Jun/2025 23:15:34] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 23:15:37,951 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-20 23:15:37,952 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-20 23:15:38,038 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-20 23:15:38,039 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-20 23:17:28,945 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-20 23:17:28,981 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-20 23:17:28,982 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-20 23:17:28,985 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 51, in generate_from_lore
+    raise ValueError("❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.")
+ValueError: ❌ PDDL non generati correttamente: controlla se la risposta include i blocchi richiesti.
+2025-06-20 23:17:29,001 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-20 23:17:29,009 [INFO] 127.0.0.1 - - [20/Jun/2025 23:17:29] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-20 23:25:14,469 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-20 23:25:14,470 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-20 23:25:27,062 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 23:25:27,093 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 23:25:27,094 [INFO] 127.0.0.1 - - [20/Jun/2025 23:25:27] "GET / HTTP/1.1" 200 -
+2025-06-20 23:25:27,121 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-20 23:25:27,124 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 23:25:27,139 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-20 23:25:27,140 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 23:25:27,140 [INFO] 127.0.0.1 - - [20/Jun/2025 23:25:27] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-20 23:25:27,141 [INFO] 127.0.0.1 - - [20/Jun/2025 23:25:27] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 23:25:30,486 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-20 23:25:30,492 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-20 23:25:30,598 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-20 23:25:30,599 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-20 23:27:26,873 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-20 23:27:26,886 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-20 23:27:26,887 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-20 23:27:26,887 [WARNING] ❌ Output PDDL incompleto o malformato.
+2025-06-20 23:27:26,912 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-20 23:27:26,914 [INFO] 127.0.0.1 - - [20/Jun/2025 23:27:26] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-20 23:27:26,925 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250620-232530-4451bb'} form_keys=[]
+2025-06-20 23:27:27,020 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-20 23:27:27,021 [INFO] 127.0.0.1 - - [20/Jun/2025 23:27:27] "GET /result?session=the_hero_must_reach_the_tower_-20250620-232530-4451bb HTTP/1.1" 200 -
+2025-06-20 23:27:27,054 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-20 23:27:27,054 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 23:27:27,058 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-20 23:27:27,059 [INFO] 127.0.0.1 - - [20/Jun/2025 23:27:27] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-20 23:27:27,063 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 23:27:27,063 [INFO] 127.0.0.1 - - [20/Jun/2025 23:27:27] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 23:32:45,086 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-20 23:32:45,087 [DEBUG] ← RESPONSE GET / status=200
+2025-06-20 23:32:45,088 [INFO] 127.0.0.1 - - [20/Jun/2025 23:32:45] "GET / HTTP/1.1" 200 -
+2025-06-20 23:32:45,104 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-20 23:32:45,105 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-20 23:32:45,110 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-20 23:32:45,111 [INFO] 127.0.0.1 - - [20/Jun/2025 23:32:45] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-20 23:32:45,113 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-20 23:32:45,114 [INFO] 127.0.0.1 - - [20/Jun/2025 23:32:45] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-20 23:32:50,751 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-20 23:32:50,754 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-20 23:32:50,890 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-20 23:32:50,894 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-21 09:57:51,632 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-21 09:57:51,933 [DEBUG] ← RESPONSE GET / status=200
+2025-06-21 09:57:52,386 [INFO] 127.0.0.1 - - [21/Jun/2025 09:57:52] "GET / HTTP/1.1" 200 -
+2025-06-21 09:57:56,950 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-21 09:57:56,951 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-21 09:57:59,046 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-21 09:57:59,221 [INFO] 127.0.0.1 - - [21/Jun/2025 09:57:59] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-21 09:58:00,078 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-21 09:58:00,310 [INFO] 127.0.0.1 - - [21/Jun/2025 09:58:00] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-21 09:58:08,465 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-21 09:58:08,619 [INFO] 🧠 Avvio generate_pddl_from_lore()
+2025-06-21 09:58:13,695 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-21 09:58:13,754 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-21 10:01:31,546 [ERROR] ❌ Errore di rete con Ollama: HTTPConnectionPool(host='127.0.0.1', port=11434): Read timed out. (read timeout=360)
+2025-06-21 10:01:31,575 [DEBUG] 📄 Prompt (primi 500 caratteri):
+You are a professional PDDL generator for classical planners like Fast Downward.
+
+Your task is to generate exactly two valid PDDL files: `domain.pddl` and `problem.pddl`.
+⚠️ Use ONLY **standard PDDL syntax** — do NOT include any pseudocode or comments.
+
+Your DOMAIN file must:
+- Start with (define (domain ...))
+- Include (:requirements), (:types), (:predicates), and at least one (:action).
+- Each (:action) must include ONLY :parameters, :precondition, and :effect.
+- DO NOT use :condition, if, eve
+2025-06-21 10:01:31,579 [ERROR] ❌ Errore in generate_from_lore()
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/urllib3/connection.py", line 516, in getresponse
+    httplib_response = super().getresponse()
+  File "/usr/lib/python3.10/http/client.py", line 1375, in getresponse
+    response.begin()
+  File "/usr/lib/python3.10/http/client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib/python3.10/http/client.py", line 279, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/usr/lib/python3.10/socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/adapters.py", line 667, in send
+    resp = conn.urlopen(
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/urllib3/util/retry.py", line 474, in increment
+    raise reraise(type(error), error, _stacktrace)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py", line 536, in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py", line 367, in _raise_timeout
+    raise ReadTimeoutError(
+urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='127.0.0.1', port=11434): Read timed out. (read timeout=360)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/generate.py", line 37, in generate_from_lore
+    # 3. Caso di errore: PDDL non validi
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/game/utils.py", line 73, in ask_ollama
+    response = requests.post(
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/requests/adapters.py", line 713, in send
+    raise ReadTimeout(e, request=request)
+requests.exceptions.ReadTimeout: HTTPConnectionPool(host='127.0.0.1', port=11434): Read timed out. (read timeout=360)
+2025-06-21 10:01:31,765 [DEBUG] ← RESPONSE POST /generate status=500
+2025-06-21 10:01:31,773 [INFO] 127.0.0.1 - - [21/Jun/2025 10:01:31] "[35m[1mPOST /generate HTTP/1.1[0m" 500 -
+2025-06-21 10:03:22,779 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-21 10:03:22,885 [INFO] ✅ File PDDL salvati.
+2025-06-21 10:03:22,939 [INFO] ⚙️ Avvio run_planner()
+2025-06-21 10:03:24,678 [INFO] ⏱️ Fast Downward completato in 1.74s
+2025-06-21 10:03:24,684 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250621-095808-e4de82/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250621-095808-e4de82/problem.pddl con lazy_greedy([ff()]) (dominio: robot-world)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250621-095808-e4de82/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250621-095808-e4de82/problem.pddl --sas-file output.sas
+Parsing...
+Error: Could not parse domain file: /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250621-095808-e4de82/domain.pddl
+Reason: Tokens remaining after parsing: ( :action reach-goal :parameters ( ?r - robot ?g - goal ) :precondition ( and ( at ?r ( position ?g ) ) ( goal-reached ?g ) ) :effect ( not ( goal-reached ?g ) ) )
+translate exit code: 31
+
+Driver aborting after translate
+INFO     Planner time: 0.48s
+
+2025-06-21 10:03:24,688 [DEBUG] STDERR:
+
+2025-06-21 10:03:24,867 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-21 10:03:24,879 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-21 10:07:24,204 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-21 10:07:24,318 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250621-095808-e4de82/llm_suggestion.pddl
+2025-06-21 10:07:24,364 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-21 10:07:24,372 [INFO] 127.0.0.1 - - [21/Jun/2025 10:07:24] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-21 10:07:24,441 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250621-095808-e4de82'} form_keys=[]
+2025-06-21 10:07:24,562 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-21 10:07:24,563 [INFO] 127.0.0.1 - - [21/Jun/2025 10:07:24] "GET /result?session=the_hero_must_reach_the_tower_-20250621-095808-e4de82 HTTP/1.1" 200 -
+2025-06-21 10:07:24,652 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-21 10:07:24,658 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-21 10:07:24,675 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-21 10:07:24,676 [INFO] 127.0.0.1 - - [21/Jun/2025 10:07:24] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-21 10:07:24,677 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-21 10:07:24,678 [INFO] 127.0.0.1 - - [21/Jun/2025 10:07:24] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-21 10:15:37,201 [DEBUG] → REQUEST GET /result args={} form_keys=[]
+2025-06-21 10:15:37,202 [DEBUG] ← RESPONSE GET /result status=400
+2025-06-21 10:15:37,203 [INFO] 127.0.0.1 - - [21/Jun/2025 10:15:37] "[31m[1mGET /result HTTP/1.1[0m" 400 -
+2025-06-21 10:15:46,147 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250621-095808-e4de82'} form_keys=[]
+2025-06-21 10:15:46,208 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-21 10:15:46,209 [INFO] 127.0.0.1 - - [21/Jun/2025 10:15:46] "GET /result?session=the_hero_must_reach_the_tower_-20250621-095808-e4de82 HTTP/1.1" 200 -
+2025-06-21 10:15:46,252 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-21 10:15:46,253 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-21 10:15:46,257 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-21 10:15:46,258 [INFO] 127.0.0.1 - - [21/Jun/2025 10:15:46] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-21 10:15:46,260 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-21 10:15:46,261 [INFO] 127.0.0.1 - - [21/Jun/2025 10:15:46] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
