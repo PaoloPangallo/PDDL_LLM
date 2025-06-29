@@ -1,65 +1,54 @@
 === DOMAIN START ===
-  (define (domain my_domain)
+  (define (domain robot-world)
     (:requirements :strips)
-    (:types agent object location)
+    (:types robot location block)
     (:predicates
-      (at ?a - agent ?l - location)
-      (holding ?a - agent ?o - object)
-      (on ?o - object ?l - location)
+      (at ?r - robot ?l - location)
+      (on ?r - robot ?b - block)
       (clear ?l - location)
-      (block ?b1 - object ?b2 - object)
     )
 
-    (:action pickup
-      :parameters (?a - agent ?o - object)
-      :precondition (and (at ?a ?l) (on ?o ?l) (clear ?l))
-      :effect (and (not (on ?o ?l)) (holding ?a ?o))
+    (:action move-robot
+      :parameters (?r - robot ?from - location ?to - location)
+      :precondition (and (at ?r ?from) (clear ?to))
+      :effect (and (not (at ?r ?from)) (at ?r ?to) (clear ?from))
     )
 
-    (:action putdown
-      :parameters (?a - agent ?o - object)
-      :precondition (holding ?a ?o)
-      :effect (and (clear (location ?o)) (not (holding ?a ?o)) (on ?o (location ?a)))
+    (:action pick-up
+      :parameters (?r - robot ?b - block)
+      :precondition (and (at ?r ?l) (on ?l ?b))
+      :effect (and (not (on ?l ?b)) (on ?r ?b))
     )
 
-    (:action move-to
-      :parameters (?a - agent ?l1 - location ?l2 - location)
-      :precondition (and (at ?a ?l1) (clear ?l2))
-      :effect (and (not (at ?a ?l1)) (at ?a ?l2))
-    )
-
-    (:action stack
-      :parameters (?a - agent ?o1 - object ?o2 - object)
-      :precondition (and (clear (location ?a)) (holding ?a ?o1) (on ?o2 (location ?a)))
-      :effect (and (not (holding ?a ?o1)) (block ?o1 ?o2) (clear (location ?o1)) (on ?o1 ?a))
-    )
-
-    (:action unstack
-      :parameters (?a - agent ?o1 - object)
-      :precondition (and (holding ?a ?o1) (block ?o1 ?o2))
-      :effect (and (clear (location ?o1)) (not (block ?o1 ?o2)) (on ?o1 (location ?a)))
+    (:action put-down
+      :parameters (?r - robot ?b - block)
+      :precondition (and (at ?r ?l) (on ?r ?b))
+      :effect (and (not (on ?r ?b)) (on ?l ?b))
     )
   )
   === DOMAIN END ===
 
   === PROBLEM START ===
-  (define (problem my_puzzle)
-    (:domain my_domain)
-    (:objects agent1 - agent block1 block2 box1 table - location)
-    (:init
-      (at agent1 table)
-      (on block1 table)
-      (on block2 table)
-      (clear box1)
-      (holding agent1 block1)
+  (define (problem blocked-room)
+    (:domain robot-world)
+    (:objects
+      rover - robot
+      room1 room2 room3 - location
+      blockA blockB blockC - block
     )
-    (:goal (and (on block1 box1) (clear table)))
+    (:init
+      (and (at rover room1) (clear room1) (on blockA room1))
+      (clear room2)
+      (not (clear room3))
+    )
+    (:goal (clear room3))
   )
   === PROBLEM END ===
 
-QUEST TITLE: Stack and Unstack Blocks Puzzle
-WORLD CONTEXT: The world consists of an agent, a table, two blocks, and a box. The agent can move to different locations, pick up or put down objects, stack one block on top of another, or unstack a block from another.
+QUEST TITLE: Blocked Room Exploration
 
-INITIAL STATE: The agent is standing at the table. One block is on the table, another block is also on the table but not being held by the agent. The box is clear (not holding anything) and is also on the table. The agent is holding the first block.
+WORLD CONTEXT: A robot can move between different locations and pick up or put down blocks. There are three locations (room1, room2, room3) and three blocks (blockA, blockB, blockC). The robot starts in room1 with blockA on the floor. Room3 is blocked by a block.
 
-GOAL CONDITIONS: The goal of this puzzle is to stack the first block onto the box while making sure the table is clear.
+INITIAL STATE: The robot is in room1 with blockA on the floor. Room2 is clear. Room3 is blocked by a block.
+
+GOAL CONDITIONS: Clear room3 by moving or rearranging blocks.

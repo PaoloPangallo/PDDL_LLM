@@ -1,0 +1,12 @@
+(define (problem blocked-path)
+    (:domain simple-robot)
+    (:objects robot1 - robot block1 block2 location1 location2)
+    (:init
+      (at robot1 location1)
+      (clear location1)
+      (on block1 nil)
+      (on block2 nil)
+      (and (at block1 location2) (not (clear location2)))
+    )
+    (:goal (and (at robot1 location2) (clear location2)))
+  )

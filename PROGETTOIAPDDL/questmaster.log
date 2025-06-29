@@ -3122,3 +3122,122 @@ b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/relea
 2025-06-29 17:14:32,893 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
 2025-06-29 17:14:33,359 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
 2025-06-29 17:14:33,364 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-29 17:19:26,322 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 17:19:27,843 [INFO] ⏱️ Planner terminato in 1.36s (exit code: 30)
+2025-06-29 17:19:27,845 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-171432-dc3f57/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-171432-dc3f57/problem.pddl con lazy_greedy([ff()]) (dominio: robot-world)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-171432-dc3f57/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-171432-dc3f57/problem.pddl --sas-file output.sas
+Parsing...
+translate exit code: 30
+
+Driver aborting after translate
+INFO     Planner time: 0.36s
+
+2025-06-29 17:19:27,860 [DEBUG] STDERR:
+b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 747, in <module>\n    main()\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 705, in main\n    task = pddl_parser.open(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/pddl_file.py", line 39, in open\n    return parsing_functions.parse_task(domain_pddl, task_pddl)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 634, in parse_task\n    task_name, task_domain_name, task_requirements, objects, init, goal, \\\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 782, in parse_task_pddl\n    yield parse_init(context, init)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 617, in parse_init\n    atom = pddl.Atom(fact[0], fact[1:])\n  File "/home/paolop/downward/builds/release/bin/translate/pddl/conditions.py", line 232, in __init__\n    self.hash = hash((self.__class__, self.predicate, self.args))\nTypeError: unhashable type: \'list\'\n'
+
+2025-06-29 17:19:28,113 [INFO] 🔁 LLM invoked with error: b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/relea
+2025-06-29 17:19:28,116 [INFO] 🧠 Validation summary: {
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "clear"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}
+2025-06-29 17:19:28,144 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-29 17:19:28,160 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-29 17:20:45,651 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 17:20:45,696 [ERROR] ❌ Fallita la raffinazione automatica: ❌ DOMAIN non valido. Controlla 'llm_raw_output.txt'
+2025-06-29 17:20:45,724 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-29 17:20:45,740 [INFO] 127.0.0.1 - - [29/Jun/2025 17:20:45] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-29 17:20:45,805 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250629-171432-dc3f57'} form_keys=[]
+2025-06-29 17:20:45,872 [INFO] 🤖 Nessun piano trovato. Avvio riflessione automatica con LLM...
+2025-06-29 17:20:45,962 [INFO] 🔁 LLM invoked with error: b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/relea
+2025-06-29 17:20:45,963 [INFO] 🧠 Validation summary: {
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "clear"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}
+2025-06-29 17:20:45,976 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-29 17:20:45,981 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-29 17:23:47,560 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 17:23:47,565 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-29 17:23:47,610 [WARNING] ⚠️ Output LLM incompleto o malformato:
+I am an assistant that can help you with PDDL files correction based on the error messages provided. However, please note that I can only provide guidance for common issues, and you may need to adjust the corrections based on your specific context. Here's a sample correction for a simple example:
+
+Let's say the original domain file contains:
+
+=== DOMAIN START ===
+(define (domain my_domain)
+   (:requirements :equality :quantifiers :action-cost)
+   (:predicates
+      (at ?x - Location)
+      (has_
+2025-06-29 17:23:47,638 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-171432-dc3f57
+2025-06-29 17:23:47,649 [INFO] ✅ Riflessione completata.
+2025-06-29 17:23:47,940 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-29 17:23:47,942 [INFO] 127.0.0.1 - - [29/Jun/2025 17:23:47] "GET /result?session=the_hero_must_reach_the_tower_-20250629-171432-dc3f57 HTTP/1.1" 200 -
+2025-06-29 17:23:48,099 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 17:23:48,109 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 17:23:48,135 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 17:23:48,136 [INFO] 127.0.0.1 - - [29/Jun/2025 17:23:48] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 17:23:48,138 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 17:23:48,139 [INFO] 127.0.0.1 - - [29/Jun/2025 17:23:48] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 17:35:36,522 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-29 17:35:36,530 [DEBUG] ← RESPONSE GET / status=200
+2025-06-29 17:35:36,533 [INFO] 127.0.0.1 - - [29/Jun/2025 17:35:36] "GET / HTTP/1.1" 200 -
+2025-06-29 17:35:36,586 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 17:35:36,589 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 17:35:36,626 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 17:35:36,628 [INFO] 127.0.0.1 - - [29/Jun/2025 17:35:36] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 17:35:36,630 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 17:35:36,631 [INFO] 127.0.0.1 - - [29/Jun/2025 17:35:36] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 17:35:38,102 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-29 17:35:38,105 [DEBUG] ← RESPONSE GET / status=200
+2025-06-29 17:35:38,107 [INFO] 127.0.0.1 - - [29/Jun/2025 17:35:38] "GET / HTTP/1.1" 200 -
+2025-06-29 17:35:38,151 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 17:35:38,153 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 17:35:38,213 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 17:35:38,220 [INFO] 127.0.0.1 - - [29/Jun/2025 17:35:38] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 17:35:38,245 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 17:35:38,254 [INFO] 127.0.0.1 - - [29/Jun/2025 17:35:38] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 17:39:29,508 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-29 17:39:29,512 [DEBUG] ← RESPONSE GET / status=200
+2025-06-29 17:39:29,516 [INFO] 127.0.0.1 - - [29/Jun/2025 17:39:29] "GET / HTTP/1.1" 200 -
+2025-06-29 17:39:29,564 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 17:39:29,567 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 17:39:29,584 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 17:39:29,586 [INFO] 127.0.0.1 - - [29/Jun/2025 17:39:29] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 17:39:29,591 [DEBUG] ← RESPONSE GET /static/js/index.js status=200
+2025-06-29 17:39:29,600 [INFO] 127.0.0.1 - - [29/Jun/2025 17:39:29] "GET /static/js/index.js HTTP/1.1" 200 -
+2025-06-29 17:39:31,038 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-29 17:39:31,041 [DEBUG] ← RESPONSE GET / status=200
+2025-06-29 17:39:31,042 [INFO] 127.0.0.1 - - [29/Jun/2025 17:39:31] "GET / HTTP/1.1" 200 -
+2025-06-29 17:39:31,088 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 17:39:31,090 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 17:39:31,106 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 17:39:31,107 [INFO] 127.0.0.1 - - [29/Jun/2025 17:39:31] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 17:39:31,113 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 17:39:31,114 [INFO] 127.0.0.1 - - [29/Jun/2025 17:39:31] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 17:39:32,187 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-29 17:39:32,189 [DEBUG] ← RESPONSE GET / status=200
+2025-06-29 17:39:32,190 [INFO] 127.0.0.1 - - [29/Jun/2025 17:39:32] "GET / HTTP/1.1" 200 -
+2025-06-29 17:39:32,236 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 17:39:32,239 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 17:39:32,257 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 17:39:32,258 [INFO] 127.0.0.1 - - [29/Jun/2025 17:39:32] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 17:39:32,263 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 17:39:32,265 [INFO] 127.0.0.1 - - [29/Jun/2025 17:39:32] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -

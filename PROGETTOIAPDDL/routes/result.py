@@ -1,18 +1,14 @@
 # routes/result.py
 
 from flask import Blueprint, request, render_template, current_app
-import os
-import json
 from game.utils import read_text_file
 
 result_bp = Blueprint("result", __name__)
 
 # routes/result.py
 
-from flask import Blueprint, request, render_template, current_app
 import os
 import json
-from game.utils import read_text_file
 from agent.reflection_agent import refine_and_save  # <--- Importa refine
 # from game.utils import load_lore  # Se hai una funzione di load_lore, altrimenti usiamo json.load diretto
 
