@@ -1,0 +1,20 @@
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-141618-b97894/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-141618-b97894/problem.pddl con lazy_greedy([ff()]) (dominio: robot-world)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-141618-b97894/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-141618-b97894/problem.pddl --sas-file output.sas
+Parsing...
+Parsing: [0.000s CPU, 0.021s wall-clock]
+Normalizing task... [0.000s CPU, 0.000s wall-clock]
+Instantiating...
+Generating Datalog program... translate exit code: 30
+
+Driver aborting after translate
+INFO     Planner time: 0.11s
+
+--- STDERR ---
+b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 747, in <module>\n    main()\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 718, in main\n    sas_task = pddl_to_sas(task)\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 547, in pddl_to_sas\n    reachable_action_params) = instantiate.explore(task)\n  File "/home/paolop/downward/builds/release/bin/translate/instantiate.py", line 116, in explore\n    prog = pddl_to_prolog.translate(task)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_to_prolog.py", line 167, in translate\n    translate_facts(prog, task)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_to_prolog.py", line 153, in translate_facts\n    translate_typed_object(prog, obj, type_dict)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_to_prolog.py", line 146, in translate_typed_object\n    supertypes = type_dict[obj.type_name].supertype_names\nKeyError: \'location\'\n'

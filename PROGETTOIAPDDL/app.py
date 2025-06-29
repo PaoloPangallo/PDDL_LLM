@@ -97,3 +97,7 @@ register_routes(app)
 # 🚀 Avvio applicazione
 if __name__ == "__main__":
     app.run(debug=False)
+
+
+# Serve per FLASK_APP=app:app
+application = app

@@ -49,7 +49,7 @@ Return ONLY the action block.
     logger.debug("🧠 Risposta grezza LLM:\n%s", text)
 
     match = re.search(
-        r"\(:action\s+(.*?)\s+:parameters\s+(.*?)\s+:precondition\s+(.*?)\s+:effect\s+(.*?)\)",
+        r"\(:action\s+(.*?)\s*:parameters\s*(\([^\)]*\))\s*:precondition\s*(\(.+?\))\s*:effect\s*(\(.+?\))\s*\)",
         text,
         re.DOTALL
     )
@@ -61,12 +61,13 @@ Return ONLY the action block.
             name=match.group(1).strip(),
             parameters=match.group(2).strip(),
             precondition=match.group(3).strip(),
-            effect=match.group(4).strip()
+            effect=match.group(4).strip()  # eventualmente: sanitize_effect(...)
         )
         return parsed.to_pddl()
     except ValidationError as ve:
         logger.error("❌ Errore nella validazione PDDL", exc_info=True)
         raise ValueError(f"❌ Errore nella validazione del contenuto PDDL: {ve}") from ve
+
 
 
 @extract_bp.route('/extract', methods=['GET', 'POST'])

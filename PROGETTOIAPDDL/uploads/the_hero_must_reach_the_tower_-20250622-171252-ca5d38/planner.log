@@ -1,0 +1,25 @@
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250622-171252-ca5d38/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250622-171252-ca5d38/problem.pddl con lazy_greedy([ff()]) (dominio: world_of_puzzles)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250622-171252-ca5d38/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250622-171252-ca5d38/problem.pddl --sas-file output.sas
+Parsing...
+Parsing domain
+	->Parsing 2. axiom/action entry
+	->Parsing 2. action
+	->Parsing action 'pickup'
+	->Parsing effect
+	->Parsing effect
+	->Parsing literal
+Undeclared predicate
+Got: held
+translate exit code: 31
+
+Driver aborting after translate
+INFO     Planner time: 0.05s
+
+--- STDERR ---

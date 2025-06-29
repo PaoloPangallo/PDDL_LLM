@@ -51,9 +51,8 @@
 
 <a href="{{ url_for('index') }}">🔙 Torna alla Home</a>
 
-{% if chat_history %}
-    {% include "partials/chat_interface.html" %}
-{% endif %}
+{% include "partials/chat_langgraph.html" %}
+
 
 {% include "partials/extract_inline.html" %}
 {% include "partials/loading_modal.html" %}

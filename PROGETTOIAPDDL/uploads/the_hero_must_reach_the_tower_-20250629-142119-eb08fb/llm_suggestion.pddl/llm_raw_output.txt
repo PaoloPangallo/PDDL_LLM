@@ -1,0 +1,31 @@
+I am an assistant that can help you with classical planning tasks, including suggesting corrections to your PDDL files based on the error messages from a validator. Please note that the correction suggestions below are general and might not always apply to every specific case. For accurate corrections, it's essential to have the exact error message or context regarding the issue in the PDDL files.
+
+Here is an example of how I would suggest correcting a domain file:
+
+=== DOMAIN START ===
+(define (domain my-planning)
+  (:requirements :equality :qualified :strips :regular :history)
+  (:action move
+    :parameters (?x ?y)
+    :precondition (and (at ?x ?y) (clear ?y))
+    :effect (and (at ?x ?y) (not (at ?x ?x)))
+  )
+)
+=== DOMAIN END ===
+
+In the above example, there seems to be no problem with this domain file. The domain is well-structured and follows PDDL standards. However, if there was an error regarding the action's parameters or preconditions/effects, you would need to adjust them accordingly.
+
+Now, let me show you how I would suggest correcting a problem file:
+
+=== PROBLEM START ===
+(define (problem my-initial-state)
+  (:domain my-planning)
+  (:objects A B C D)
+  (:init (and (at A 1) (clear 1)))
+  (:goal (and (at B 2) (at C 3) (at D 4)))
+)
+=== PROBLEM END ===
+
+In this problem file, there are no apparent errors. However, if there was an issue with the objects or initial state, you would need to correct them accordingly. For example, if the objects were misspelled, you should change A, B, C, D to their correct names in both the domain and the problem files.
+
+Additionally, ensure that all the required functions (in this case, `at` and `clear`) are defined within your domain file, or use built-in PDDL predicates if available. If you encounter errors related to those, adjust the function definitions accordingly.

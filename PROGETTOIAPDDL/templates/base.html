@@ -4,10 +4,20 @@
     <meta charset="UTF-8">
     <title>{% block title %}QuestMaster{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- ✅ Stili principali -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='js/index.js') }}" defer></script>
+
+    <!-- ✅ Blocchi per script specifici per pagina -->
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     {% block content %}{% endblock %}
+
+    <!-- ✅ Script base -->
+    <script src="{{ url_for('static', filename='js/index.js') }}" defer></script>
+
+    <!-- ✅ Blocchi per JS specifico -->
+    {% block scripts %}{% endblock %}
 </body>
 </html>

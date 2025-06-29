@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}QuestMaster - Chat{% endblock %}
+
+{% block content %}
+<main>
+    <h1>🧠 Chat con il Generatore Intelligente</h1>
+
+    <section class="result-section info">
+        <h2>🗨️ Cronologia Conversazione</h2>
+        <div class="chat-history-box" id="chatHistory"></div>
+    </section>
+
+    <section class="result-section">
+        <h2>💬 Chatta con il Generatore</h2>
+        <textarea id="userMessage" rows="3" placeholder="Es: il piano non ha senso, il drago non viene mai incontrato..."></textarea>
+        <div style="margin: 10px 0;">
+            <button id="sendBtn">✉️ Invia</button>
+        </div>
+        <pre id="llmReply" class="readonly-textarea"></pre>
+    </section>
+</main>
+
+<script>
+const chatHistory = document.getElementById("chatHistory");
+const llmReply = document.getElementById("llmReply");
+const sendBtn = document.getElementById("sendBtn");
+const messageInput = document.getElementById("userMessage");
+
+// Usa sessionStorage come thread_id
+const threadId = sessionStorage.getItem("thread_id") || crypto.randomUUID();
+sessionStorage.setItem("thread_id", threadId);
+
+const allMessages = [];
+
+function renderMessages() {
+    chatHistory.innerHTML = "";
+    allMessages.forEach(msg => {
+        const div = document.createElement("div");
+        div.className = "chat-bubble " + msg.role;
+        div.innerHTML = `<strong>${msg.role === "user" ? "👤 Tu" : "🤖 LLM"}:</strong> ${msg.content}`;
+        chatHistory.appendChild(div);
+    });
+}
+
+sendBtn.addEventListener("click", async () => {
+    const userMsg = messageInput.value.trim();
+    if (!userMsg) return;
+
+    allMessages.push({ role: "user", content: userMsg });
+    renderMessages();
+    messageInput.value = "";
+    llmReply.textContent = "🧠 Attendi risposta...";
+
+    try {
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userMsg, thread_id: threadId })
+        });
+
+        const data = await response.json();
+        if (data.reply) {
+            allMessages.push({ role: "assistant", content: data.reply });
+            llmReply.textContent = data.reply;
+        } else {
+            llmReply.textContent = data.error || "❌ Errore generico.";
+        }
+        renderMessages();
+    } catch (e) {
+        console.error("Errore:", e);
+        llmReply.textContent = "❌ Errore di rete.";
+    }
+});
+</script>
+{% endblock %}

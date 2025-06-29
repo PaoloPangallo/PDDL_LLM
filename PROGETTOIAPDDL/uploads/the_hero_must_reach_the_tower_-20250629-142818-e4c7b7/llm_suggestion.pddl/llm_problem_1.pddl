@@ -1,0 +1,5 @@
+(define (problem initial)
+  (:domain simple-world)
+  (:objects Table, Block1, Block2 - Block)
+  (:init (and (on Block1 Table) (clear Block2)))
+  (:goal (and (not (on Block1 Table)) (clear Block2))))

@@ -1,8 +1,8 @@
-from langgraph.graph import StateGraph, START
-from langgraph.graph.message import add_messages
-from typing import Annotated, TypedDict, Optional
+from langgraph.graph import StateGraph
 
-from langgraph.checkpoint.sqlite import SqliteSaver
+from typing import TypedDict, Optional
+
+from langgraph.checkpoint.memory import MemorySaver
 
 from game.generator import build_prompt_from_lore
 from game.utils import ask_ollama, extract_between
@@ -14,10 +14,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-import logging
 
 
-logger = logging.getLogger(__name__)
 
 # ---------------------
 # 1. Stato del flusso
@@ -85,11 +83,11 @@ workflow.add_edge("BuildPrompt", "GeneratePDDL")
 workflow.add_edge("GeneratePDDL", "Validate")
 workflow.add_conditional_edges(
     "Validate",
-    condition=lambda state: "Refine" if state["error_message"] else None,
-    path_map={"Refine": "Refine"}
+    path=lambda state: "Refine" if state["error_message"] else None
 )
 
-checkpointer = SqliteSaver.from_path("checkpoints.sqlite")
+
+checkpointer = MemorySaver()
 # oppure, se usi Postgres:
 # checkpointer = PostgresSaver.from_connection_string("postgresql://user:password@host/dbname")
 

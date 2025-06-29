@@ -1,0 +1,10 @@
+(define (problem puzzle-solution)
+    (:domain puzzle-game)
+    (:objects player1 - player room1 room2 - room goal - goal)
+    (:init
+      (at player1 room1)
+      (in-room goal room1)
+      (not (goal-reached goal))
+    )
+    (:goal (and (goal-reached goal)))
+  )
