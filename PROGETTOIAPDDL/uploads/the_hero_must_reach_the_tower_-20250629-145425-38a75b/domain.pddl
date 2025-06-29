@@ -1,0 +1,1 @@
+❌ Domain PDDL non generato.

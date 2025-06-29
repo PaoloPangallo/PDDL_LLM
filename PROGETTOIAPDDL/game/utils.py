@@ -148,3 +148,13 @@ def save_text_file(path: str, content: str) -> None:
 
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
+        
+def get_unique_filename(folder: str, base_name: str, ext: str = ".pddl") -> str:
+    """Genera un nome file univoco nella cartella specificata."""
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    base_path = Path(folder) / f"{base_name}-{timestamp}{ext}"
+    counter = 1
+    while base_path.exists():
+        base_path = Path(folder) / f"{base_name}-{timestamp}-{counter}{ext}"
+        counter += 1
+    return str(base_path)

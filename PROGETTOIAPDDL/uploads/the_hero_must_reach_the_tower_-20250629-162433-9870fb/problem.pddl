@@ -1,0 +1,12 @@
+(define (problem my_puzzle)
+    (:domain my_domain)
+    (:objects agent1 - agent block1 block2 box1 table - location)
+    (:init
+      (at agent1 table)
+      (on block1 table)
+      (on block2 table)
+      (clear box1)
+      (holding agent1 block1)
+    )
+    (:goal (and (on block1 box1) (clear table)))
+  )

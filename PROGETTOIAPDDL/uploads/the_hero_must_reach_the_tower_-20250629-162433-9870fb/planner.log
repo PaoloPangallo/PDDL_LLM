@@ -1,0 +1,17 @@
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-162433-9870fb/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-162433-9870fb/problem.pddl con lazy_greedy([ff()]) (dominio: my_domain)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-162433-9870fb/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-162433-9870fb/problem.pddl --sas-file output.sas
+Parsing...
+translate exit code: 30
+
+Driver aborting after translate
+INFO     Planner time: 0.23s
+
+--- STDERR ---
+b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 747, in <module>\n    main()\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 705, in main\n    task = pddl_parser.open(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/pddl_file.py", line 39, in open\n    return parsing_functions.parse_task(domain_pddl, task_pddl)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 630, in parse_task\n    domain_name, domain_requirements, types, type_dict, constants, predicates, \\\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 733, in parse_domain_pddl\n    the_axioms, the_actions = parse_axioms_and_actions(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 569, in parse_axioms_and_actions\n    action = parse_action(context, entry, type_dict, predicate_dict)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 523, in parse_action\n    cost = parse_effects(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 332, in parse_effects\n    tmp_effect = parse_effect(context, alist, type_dict, predicate_dict)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 393, in parse_effect\n    effects.append(parse_effect(context, eff, type_dict, predicate_dict))\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 434, in parse_effect\n    return pddl.SimpleEffect(parse_literal(context, alist, {}, predicate_dict))\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 305, in parse_literal\n    return pddl.Atom(pred_id, alist[1:])\n  File "/home/paolop/downward/builds/release/bin/translate/pddl/conditions.py", line 232, in __init__\n    self.hash = hash((self.__class__, self.predicate, self.args))\nTypeError: unhashable type: \'list\'\n'

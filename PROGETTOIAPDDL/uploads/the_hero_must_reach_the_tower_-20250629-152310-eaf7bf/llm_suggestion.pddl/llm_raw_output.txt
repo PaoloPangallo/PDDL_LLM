@@ -1,0 +1,53 @@
+To correct the provided PDDL files, I will need to know the specific error messages you are encountering. Here is a general template for classical planning domains and problems in PDDL format:
+
+=== DOMAIN START ===
+(define (domain domain-name)
+  (:requirements :equality :qualified :strips :deterministic :typed :action-chaining)
+  (:predicates
+    (P1 ?x - type1)       ; Define your predicate here
+    (P2 (AND ?x ?y - type2)) ; Note the use of 'AND' for binary predicates
+    ...
+  )
+  (:action action-name
+    (:parameters (?p - parameter1) (?q - parameter2))
+    (:precondition (and (P1 ?p) (not (P2 ?p ?q)))) ; Define preconditions here
+    (:effect (and (not P1 ?p) (not P2 ?p ?q) (P3 ?p))) ; Define effects here
+  )
+  ...
+)
+=== DOMAIN END ===
+
+=== PROBLEM START ===
+(define (problem problem-name :domain domain-name)
+  (:object-schemas (ObjectSchema1 ObjectSchema2 ...))
+  (:init
+    (P1 ?o - ObjectSchema1)     ; Initialize the state here
+    (not P2 ?o ?o)               ; Ensure that there are no initial conflicts
+    ...
+  )
+  (:goal (P4 ?o))                 ; Define the goal here
+  (:action-schemas (ActionScheme1 ActionScheme2 ...))
+)
+=== PROBLEM END ===
+
+Here are some common errors and their solutions:
+
+1. Missing ':' at the beginning of a line or before keywords like 'define', 'requirements' etc.:
+   - Change this: (domain my-domain)
+   - To this: (:domain my-domain)
+
+2. Incorrect use of 'and' and 'or':
+   - Replace 'AND' with 'and' (lowercase 'a') for binary predicates and boolean expressions within a condition.
+   - Use 'OR' instead of ',' to combine alternative conditions in the precondition or effect clauses.
+
+3. Incorrectly defined actions:
+   - Ensure that each action is defined with parameters, preconditions, and effects.
+   - Make sure that action names are unique within the domain definition.
+
+4. Missing or incorrect object schemas:
+   - Define object schemas for all types of objects used in the problem or domain definitions.
+   - Use 'ObjectSchema' as the name for each schema, and define them at the beginning of the problem definition.
+
+5. Incorrectly defined goals:
+   - Ensure that there is a single goal for the problem, defining the desired state to be reached.
+   - The goal should be expressed using a predicate with a single argument, representing the final state of the world.

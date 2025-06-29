@@ -1,5 +1,4 @@
-=== DOMAIN START ===
-  (define (domain my_domain)
+(define (domain my_domain)
     (:requirements :strips)
     (:types agent object location)
     (:predicates
@@ -40,26 +39,3 @@
       :effect (and (clear (location ?o1)) (not (block ?o1 ?o2)) (on ?o1 (location ?a)))
     )
   )
-  === DOMAIN END ===
-
-  === PROBLEM START ===
-  (define (problem my_puzzle)
-    (:domain my_domain)
-    (:objects agent1 - agent block1 block2 box1 table - location)
-    (:init
-      (at agent1 table)
-      (on block1 table)
-      (on block2 table)
-      (clear box1)
-      (holding agent1 block1)
-    )
-    (:goal (and (on block1 box1) (clear table)))
-  )
-  === PROBLEM END ===
-
-QUEST TITLE: Stack and Unstack Blocks Puzzle
-WORLD CONTEXT: The world consists of an agent, a table, two blocks, and a box. The agent can move to different locations, pick up or put down objects, stack one block on top of another, or unstack a block from another.
-
-INITIAL STATE: The agent is standing at the table. One block is on the table, another block is also on the table but not being held by the agent. The box is clear (not holding anything) and is also on the table. The agent is holding the first block.
-
-GOAL CONDITIONS: The goal of this puzzle is to stack the first block onto the box while making sure the table is clear.

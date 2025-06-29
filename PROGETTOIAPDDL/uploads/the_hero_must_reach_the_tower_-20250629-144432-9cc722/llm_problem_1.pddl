@@ -1,0 +1,6 @@
+(define (problem my-problem)
+  (:domain my-domain)
+  (:objects p1 p2 start goal)
+  (:goal (and (at p1 goal) (at p2 goal)))
+  (:init (at p1 start) (at p2 start))
+  (:action do-something :parameters (?x - integer) :precondition (at ?x start) :effect (and (not (at ?x start)) (at ?x goal))))

@@ -1,0 +1,55 @@
+I'm an assistant that helps correct errors in PDDL files based on the provided error message. Here's a simple example of how I might help with your request:
+
+Let's assume you have the following errors in your domain and problem files:
+
+**domain.pddl:**
+
+```
+(define (domain my-domain)
+  :requires all (action do-something)
+  :effects (condition (and (at p1 goal) (at p2 goal)))
+  (action do-something
+    :parameters (?x - integer)
+    :precondition (and (at ?x start))
+    :effect (and (at ?x goal))))
+```
+
+Error: Invalid or missing action name in the effects clause.
+
+**problem.pddl:**
+
+```
+(define (problem my-problem)
+  (:domain my-domain)
+  (:objects p1 p2 start goal)
+  (:goal (and (at p1 goal) (at p2 goal)))
+  (:init (at p1 start) (at p2 start))
+  (:action do-something :parameters (?x - integer) :precondition (at ?x start) :effect (at ?x goal)))
+```
+
+Error: Invalid or missing action name in the :action declaration.
+
+Here's how I would correct them:
+
+**domain.pddl:**
+
+=== DOMAIN START ===
+(define (domain my-domain)
+  :requires all (action do-something)
+  :effects (condition (and (at p1 goal) (at p2 goal)))
+  (action do-something
+    :parameters (?x - integer)
+    :precondition (and (at ?x start))
+    :effect (and (at ?x goal))))
+=== DOMAIN END ===
+
+**problem.pddl:**
+
+=== PROBLEM START ===
+(define (problem my-problem)
+  (:domain my-domain)
+  (:objects p1 p2 start goal)
+  (:goal (and (at p1 goal) (at p2 goal)))
+  (:init (at p1 start) (at p2 start))
+  (:action do-something :parameters (?x - integer) :precondition (at ?x start) :effect (and (not (at ?x start)) (at ?x goal))))
+=== PROBLEM END ===

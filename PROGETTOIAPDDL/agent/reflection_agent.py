@@ -2,13 +2,17 @@
 
 import os
 import json
-import shutil
 import logging
 import requests
 from pathlib import Path
+from typing import Optional
 
 from game.validator import validate_pddl
-from game.utils import read_text_file, save_text_file, extract_between
+from game.utils import (
+    read_text_file,
+    save_text_file,
+    extract_between,
+)
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 DEFAULT_MODEL = "mistral"
@@ -21,6 +25,7 @@ if not logger.hasHandlers():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
+
 
 def ask_local_llm(prompt: str, model: str = DEFAULT_MODEL) -> str:
     """Invia un prompt a Ollama e restituisce la risposta testuale."""
@@ -43,46 +48,64 @@ def ask_local_llm(prompt: str, model: str = DEFAULT_MODEL) -> str:
         logger.error("❌ Errore nella richiesta a Ollama: %s", e, exc_info=True)
         raise
 
-def build_prompt(domain: str, problem: str, error_message: str, validation: dict = None) -> str:
+
+def build_prompt(domain_text: str, problem_text: str, error_message: str, validation: Optional[dict] = None) -> str:
     """Costruisce un prompt dettagliato da dominio, problema e messaggio d'errore."""
     template_path = Path("prompts/reflection_prompt.txt")
     if not template_path.exists():
         raise FileNotFoundError("Prompt template mancante: prompts/reflection_prompt.txt")
     prompt_template = template_path.read_text(encoding="utf-8")
 
+    additional_notes = ""
+    if "unhashable type: 'list'" in error_message:
+        additional_notes += (
+            "\n⚠️ ERROR HINT: Avoid nested lists or tuples in the :init section."
+            " Each fact must be in the form (predicate arg1 arg2 ...) with flat arguments.\n"
+        )
+
+    if isinstance(validation, dict) and validation.get("undefined_objects_in_goal"):
+        missing = ", ".join(validation["undefined_objects_in_goal"])
+        additional_notes += (
+            f"\n🛠️ NOTE: The following predicates are used in the goal but not defined in the domain: {missing}.\n"
+        )
+
     return prompt_template.format(
-        domain=domain,
-        problem=problem,
-        error_message=error_message,
+        domain=domain_text,
+        problem=problem_text,
+        error_message=error_message + additional_notes,
         validation=json.dumps(validation, indent=2) if validation else ""
     )
 
+
 def refine_pddl(domain_path: str, problem_path: str, error_message: str,
-                lore: dict = None, model: str = DEFAULT_MODEL) -> str:
+                lore: Optional[dict] = None, model: str = DEFAULT_MODEL) -> str:
     """Invoca l'LLM per proporre una versione corretta dei file PDDL."""
-    domain = read_text_file(domain_path)
-    problem = read_text_file(problem_path)
-    if not domain or not problem:
+    domain_text = read_text_file(domain_path)
+    problem_text = read_text_file(problem_path)
+
+    fallback_dir = Path(domain_path).parent
+    save_text_file(fallback_dir / "original_domain.pddl", domain_text)
+    save_text_file(fallback_dir / "original_problem.pddl", problem_text)
+
+    logger.debug("📄 DOMAIN ORIGINALE:\n%s", domain_text[:500])
+    logger.debug("📄 PROBLEM ORIGINALE:\n%s", problem_text[:500])
+
+    if not domain_text or not problem_text:
         raise ValueError("❌ I file domain.pddl o problem.pddl sono vuoti o mancanti.")
 
-    validation = validate_pddl(domain, problem, lore) if lore else None
+    validation = validate_pddl(domain_text, problem_text, lore) if lore else None
     logger.info("🔁 LLM invoked with error: %s", error_message.strip()[:80])
     logger.info("🧠 Validation summary: %s", json.dumps(validation or {}, indent=2)[:500])
 
-    prompt = build_prompt(domain, problem, error_message, validation)
+    prompt = build_prompt(domain_text, problem_text, error_message, validation)
     return ask_local_llm(prompt, model)
 
-def get_unique_filename(output_dir: str, base: str) -> str:
-    i = 1
-    while True:
-        path = Path(output_dir) / f"{base}_{i}.pddl"
-        if not path.exists():
-            return str(path)
-        i += 1
 
 def refine_and_save(domain_path: str, problem_path: str, error_message: str,
-                    output_dir: str, lore: dict = None):
+                    output_dir: str, lore: Optional[dict] = None):
     """Esegue il raffinamento PDDL e salva i file suggeriti nella directory di output."""
+    from game.utils import get_unique_filename  # ✅ import ritardato per evitare import circolari
+
     suggestion_raw = refine_pddl(domain_path, problem_path, error_message, lore)
 
     domain_suggestion = extract_between(
@@ -93,6 +116,9 @@ def refine_and_save(domain_path: str, problem_path: str, error_message: str,
     os.makedirs(output_dir, exist_ok=True)
     raw_output_path = os.path.join(output_dir, "llm_raw_output.txt")
     save_text_file(raw_output_path, suggestion_raw)
+
+    if not domain_suggestion or not problem_suggestion:
+        logger.warning("⚠️ Output LLM incompleto o malformato:\n%s", suggestion_raw[:500])
 
     if not domain_suggestion:
         raise ValueError("❌ DOMAIN block not found.")
@@ -108,16 +134,3 @@ def refine_and_save(domain_path: str, problem_path: str, error_message: str,
 
     logger.info("✅ Suggestions saved in %s", output_dir)
     return domain_suggestion, problem_suggestion
-
-if __name__ == "__main__":
-    TEST_DOMAIN = "planner/test_plans/broken_domain.pddl"
-    TEST_PROBLEM = "planner/test_plans/problem.pddl"
-    TEST_ERROR = "Fast Downward: nessun piano trovato - azione 'move' irrealizzabile"
-
-    print("🧠 Richiedo suggerimento all'LLM...\n")
-    try:
-        refined = refine_pddl(TEST_DOMAIN, TEST_PROBLEM, TEST_ERROR)
-        print("✅ Suggerimento LLM:\n")
-        print(refined)
-    except Exception as e:
-        print(f"❌ Errore: {e}")

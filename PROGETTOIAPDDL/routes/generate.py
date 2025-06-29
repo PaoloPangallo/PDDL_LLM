@@ -2,6 +2,7 @@
 
 import os
 import json
+import shutil
 from flask import Blueprint, request, redirect, url_for, current_app
 from agent.reflection_agent import refine_and_save
 from game.validator import validate_pddl
@@ -73,11 +74,15 @@ def generate_from_lore():
 
             if not success:
                 try:
+                    # 🔒 Backup dei file originali prima del refine
+                    shutil.copy(os.path.join(session_dir, "domain.pddl"), os.path.join(session_dir, "original_domain.pddl"))
+                    shutil.copy(os.path.join(session_dir, "problem.pddl"), os.path.join(session_dir, "original_problem.pddl"))
+
                     refine_and_save(
                         os.path.join(session_dir, "domain.pddl"),
                         os.path.join(session_dir, "problem.pddl"),
                         error_msg,
-                        os.path.join(session_dir, "llm_suggestion.pddl"),
+                        session_dir,
                         lore
                     )
                 except Exception as refine_error:  # mantenuto generico per fallback

@@ -2777,3 +2777,348 @@ INFO     Planner time: 0.08s
 2025-06-29 14:44:32,100 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
 2025-06-29 14:44:32,396 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
 2025-06-29 14:44:32,404 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-29 14:46:44,959 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 14:46:45,389 [INFO] ⏱️ Planner terminato in 0.38s (exit code: 30)
+2025-06-29 14:46:45,390 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-144432-9cc722/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-144432-9cc722/problem.pddl con lazy_greedy([ff()]) (dominio: world-exploration)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-144432-9cc722/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-144432-9cc722/problem.pddl --sas-file output.sas
+Parsing...
+translate exit code: 30
+
+Driver aborting after translate
+INFO     Planner time: 0.09s
+
+2025-06-29 14:46:45,390 [DEBUG] STDERR:
+b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 747, in <module>\n    main()\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 705, in main\n    task = pddl_parser.open(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/pddl_file.py", line 39, in open\n    return parsing_functions.parse_task(domain_pddl, task_pddl)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 634, in parse_task\n    task_name, task_domain_name, task_requirements, objects, init, goal, \\\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 782, in parse_task_pddl\n    yield parse_init(context, init)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 617, in parse_init\n    atom = pddl.Atom(fact[0], fact[1:])\n  File "/home/paolop/downward/builds/release/bin/translate/pddl/conditions.py", line 232, in __init__\n    self.hash = hash((self.__class__, self.predicate, self.args))\nTypeError: unhashable type: \'list\'\n'
+
+2025-06-29 14:46:45,441 [INFO] 🔁 LLM invoked with error: b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/relea
+2025-06-29 14:46:45,442 [INFO] 🧠 Validation summary: {
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "has-item",
+    "open"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}
+2025-06-29 14:46:45,446 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-29 14:46:45,452 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-29 14:48:35,075 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 14:48:35,081 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-29 14:48:35,082 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-29 14:48:35,093 [ERROR] ❌ Fallita la raffinazione automatica: ❌ DOMAIN block not found.
+2025-06-29 14:48:35,127 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-29 14:48:35,132 [INFO] 127.0.0.1 - - [29/Jun/2025 14:48:35] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-29 14:48:35,150 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250629-144432-9cc722'} form_keys=[]
+2025-06-29 14:48:35,254 [INFO] 🤖 Nessun piano trovato. Avvio riflessione automatica con LLM...
+2025-06-29 14:48:35,327 [INFO] 🔁 LLM invoked with error: b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/relea
+2025-06-29 14:48:35,328 [INFO] 🧠 Validation summary: {
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "has-item",
+    "open"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}
+2025-06-29 14:48:35,339 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-29 14:48:35,342 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-29 14:49:42,161 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 14:49:42,210 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-144432-9cc722
+2025-06-29 14:49:42,215 [INFO] ✅ Riflessione completata.
+2025-06-29 14:49:42,240 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-29 14:49:42,241 [INFO] 127.0.0.1 - - [29/Jun/2025 14:49:42] "GET /result?session=the_hero_must_reach_the_tower_-20250629-144432-9cc722 HTTP/1.1" 200 -
+2025-06-29 14:49:42,296 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 14:49:42,300 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 14:49:42,314 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 14:49:42,314 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 14:49:42,315 [INFO] 127.0.0.1 - - [29/Jun/2025 14:49:42] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 14:49:42,316 [INFO] 127.0.0.1 - - [29/Jun/2025 14:49:42] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 14:54:22,953 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-29 14:54:22,956 [DEBUG] ← RESPONSE GET / status=200
+2025-06-29 14:54:22,957 [INFO] 127.0.0.1 - - [29/Jun/2025 14:54:22] "GET / HTTP/1.1" 200 -
+2025-06-29 14:54:22,972 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 14:54:22,973 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 14:54:22,988 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 14:54:22,989 [INFO] 127.0.0.1 - - [29/Jun/2025 14:54:22] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 14:54:22,990 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 14:54:22,990 [INFO] 127.0.0.1 - - [29/Jun/2025 14:54:22] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 14:54:25,399 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-29 14:54:25,783 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-29 14:54:25,786 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-29 14:56:40,132 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 14:56:40,159 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-29 14:56:40,159 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-29 14:56:40,160 [WARNING] ⚠️ Generazione fallita: PDDL non valido.
+2025-06-29 14:56:40,197 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-29 14:56:40,198 [INFO] 127.0.0.1 - - [29/Jun/2025 14:56:40] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-29 14:56:40,240 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250629-145425-38a75b'} form_keys=[]
+2025-06-29 14:56:40,294 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-29 14:56:40,294 [INFO] 127.0.0.1 - - [29/Jun/2025 14:56:40] "GET /result?session=the_hero_must_reach_the_tower_-20250629-145425-38a75b HTTP/1.1" 200 -
+2025-06-29 14:56:40,365 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 14:56:40,367 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 14:56:40,372 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 14:56:40,372 [INFO] 127.0.0.1 - - [29/Jun/2025 14:56:40] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 14:56:40,375 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 14:56:40,376 [INFO] 127.0.0.1 - - [29/Jun/2025 14:56:40] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 15:23:10,475 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-29 15:23:10,769 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-29 15:23:10,780 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-29 15:27:08,080 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 15:27:08,951 [INFO] ⏱️ Planner terminato in 0.76s (exit code: 30)
+2025-06-29 15:27:08,952 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-152310-eaf7bf/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-152310-eaf7bf/problem.pddl con lazy_greedy([ff()]) (dominio: simple_maze)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-152310-eaf7bf/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-152310-eaf7bf/problem.pddl --sas-file output.sas
+Parsing...
+translate exit code: 30
+
+Driver aborting after translate
+INFO     Planner time: 0.15s
+
+2025-06-29 15:27:08,953 [DEBUG] STDERR:
+b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 747, in <module>\n    main()\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 705, in main\n    task = pddl_parser.open(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/pddl_file.py", line 39, in open\n    return parsing_functions.parse_task(domain_pddl, task_pddl)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 630, in parse_task\n    domain_name, domain_requirements, types, type_dict, constants, predicates, \\\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 733, in parse_domain_pddl\n    the_axioms, the_actions = parse_axioms_and_actions(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 569, in parse_axioms_and_actions\n    action = parse_action(context, entry, type_dict, predicate_dict)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 523, in parse_action\n    cost = parse_effects(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 332, in parse_effects\n    tmp_effect = parse_effect(context, alist, type_dict, predicate_dict)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 393, in parse_effect\n    effects.append(parse_effect(context, eff, type_dict, predicate_dict))\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 434, in parse_effect\n    return pddl.SimpleEffect(parse_literal(context, alist, {}, predicate_dict))\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 305, in parse_literal\n    return pddl.Atom(pred_id, alist[1:])\n  File "/home/paolop/downward/builds/release/bin/translate/pddl/conditions.py", line 232, in __init__\n    self.hash = hash((self.__class__, self.predicate, self.args))\nTypeError: unhashable type: \'list\'\n'
+
+2025-06-29 15:27:09,000 [INFO] 🔁 LLM invoked with error: b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/relea
+2025-06-29 15:27:09,001 [INFO] 🧠 Validation summary: {
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "clear"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}
+2025-06-29 15:27:09,018 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-29 15:27:09,031 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-29 15:29:17,258 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 15:29:17,318 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-152310-eaf7bf/llm_suggestion.pddl
+2025-06-29 15:29:17,340 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-29 15:29:17,349 [INFO] 127.0.0.1 - - [29/Jun/2025 15:29:17] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-29 15:29:17,381 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250629-152310-eaf7bf'} form_keys=[]
+2025-06-29 15:29:17,441 [INFO] 🤖 Nessun piano trovato. Avvio riflessione automatica con LLM...
+2025-06-29 15:29:17,479 [INFO] 🔁 LLM invoked with error: b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/relea
+2025-06-29 15:29:17,480 [INFO] 🧠 Validation summary: {
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "clear"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}
+2025-06-29 15:29:17,493 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-29 15:29:17,496 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-29 15:31:22,508 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 15:31:22,517 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-29 15:31:22,518 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-29 15:31:22,536 [WARNING] ⚠️ Errore durante la riflessione automatica: ❌ DOMAIN block not found.
+2025-06-29 15:31:22,556 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-29 15:31:22,557 [INFO] 127.0.0.1 - - [29/Jun/2025 15:31:22] "GET /result?session=the_hero_must_reach_the_tower_-20250629-152310-eaf7bf HTTP/1.1" 200 -
+2025-06-29 15:31:22,623 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 15:31:22,628 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 15:31:22,644 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 15:31:22,646 [INFO] 127.0.0.1 - - [29/Jun/2025 15:31:22] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 15:31:22,647 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 15:31:22,648 [INFO] 127.0.0.1 - - [29/Jun/2025 15:31:22] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 15:51:37,480 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-29 15:51:38,028 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-29 15:51:38,035 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-29 15:53:47,740 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 15:53:47,771 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-29 15:53:47,772 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-29 15:53:47,773 [WARNING] ⚠️ Generazione fallita: PDDL non valido.
+2025-06-29 15:53:47,824 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-29 15:53:47,830 [INFO] 127.0.0.1 - - [29/Jun/2025 15:53:47] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-29 15:53:47,848 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250629-155137-a65466'} form_keys=[]
+2025-06-29 15:53:47,921 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-29 15:53:47,922 [INFO] 127.0.0.1 - - [29/Jun/2025 15:53:47] "GET /result?session=the_hero_must_reach_the_tower_-20250629-155137-a65466 HTTP/1.1" 200 -
+2025-06-29 15:53:47,992 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 15:53:47,997 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 15:53:48,009 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 15:53:48,011 [INFO] 127.0.0.1 - - [29/Jun/2025 15:53:48] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 15:53:48,013 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 15:53:48,014 [INFO] 127.0.0.1 - - [29/Jun/2025 15:53:48] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 15:55:14,311 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-29 15:55:14,317 [DEBUG] ← RESPONSE GET / status=200
+2025-06-29 15:55:14,318 [INFO] 127.0.0.1 - - [29/Jun/2025 15:55:14] "GET / HTTP/1.1" 200 -
+2025-06-29 15:55:14,344 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 15:55:14,345 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 15:55:14,349 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 15:55:14,351 [INFO] 127.0.0.1 - - [29/Jun/2025 15:55:14] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 15:55:14,353 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 15:55:14,354 [INFO] 127.0.0.1 - - [29/Jun/2025 15:55:14] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 15:55:16,736 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-29 15:55:16,812 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-29 15:55:16,815 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-29 15:56:14,920 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 15:56:14,938 [WARNING] ⚠️ Delimitatori non trovati: === DOMAIN START === / === DOMAIN END ===
+2025-06-29 15:56:14,939 [WARNING] ⚠️ Delimitatori non trovati: === PROBLEM START === / === PROBLEM END ===
+2025-06-29 15:56:14,940 [WARNING] ⚠️ Generazione fallita: PDDL non valido.
+2025-06-29 15:56:14,962 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-29 15:56:14,963 [INFO] 127.0.0.1 - - [29/Jun/2025 15:56:14] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-29 15:56:14,977 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250629-155516-32908e'} form_keys=[]
+2025-06-29 15:56:15,015 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-29 15:56:15,016 [INFO] 127.0.0.1 - - [29/Jun/2025 15:56:15] "GET /result?session=the_hero_must_reach_the_tower_-20250629-155516-32908e HTTP/1.1" 200 -
+2025-06-29 15:56:15,083 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 15:56:15,086 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 15:56:15,091 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 15:56:15,092 [INFO] 127.0.0.1 - - [29/Jun/2025 15:56:15] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 15:56:15,094 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 15:56:15,095 [INFO] 127.0.0.1 - - [29/Jun/2025 15:56:15] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 16:04:42,490 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-29 16:04:42,495 [DEBUG] ← RESPONSE GET / status=200
+2025-06-29 16:04:42,496 [INFO] 127.0.0.1 - - [29/Jun/2025 16:04:42] "GET / HTTP/1.1" 200 -
+2025-06-29 16:04:42,518 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 16:04:42,519 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 16:04:42,526 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 16:04:42,527 [INFO] 127.0.0.1 - - [29/Jun/2025 16:04:42] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 16:04:42,529 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 16:04:42,530 [INFO] 127.0.0.1 - - [29/Jun/2025 16:04:42] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 16:04:44,806 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-29 16:04:44,896 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-29 16:04:44,900 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-29 16:07:47,003 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 16:07:47,531 [INFO] ⏱️ Planner terminato in 0.47s (exit code: 31)
+2025-06-29 16:07:47,532 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-160444-e2500e/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-160444-e2500e/problem.pddl con lazy_greedy([ff()]) (dominio: robot-assembly)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-160444-e2500e/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-160444-e2500e/problem.pddl --sas-file output.sas
+Parsing...
+Error: Could not parse domain file: /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-160444-e2500e/domain.pddl
+Reason: Tokens remaining after parsing: ( define ( function get-robots-at ?assembly-line ) ( all ( ?robot ) ( implies ( and ( eq ?robot ( type-of ?robot ) ) ( at-robot ?robot ?assembly-line ) ) true ) ) )
+translate exit code: 31
+
+Driver aborting after translate
+INFO     Planner time: 0.09s
+
+2025-06-29 16:07:47,533 [DEBUG] STDERR:
+
+2025-06-29 16:07:47,563 [INFO] 🔁 LLM invoked with error: 
+2025-06-29 16:07:47,565 [INFO] 🧠 Validation summary: {
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "assembled"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}
+2025-06-29 16:07:47,573 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-29 16:07:47,575 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-29 16:09:32,355 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 16:09:32,410 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-160444-e2500e/llm_suggestion.pddl
+2025-06-29 16:09:32,424 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-29 16:09:32,427 [INFO] 127.0.0.1 - - [29/Jun/2025 16:09:32] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-29 16:09:32,457 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250629-160444-e2500e'} form_keys=[]
+2025-06-29 16:09:32,516 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-29 16:09:32,517 [INFO] 127.0.0.1 - - [29/Jun/2025 16:09:32] "GET /result?session=the_hero_must_reach_the_tower_-20250629-160444-e2500e HTTP/1.1" 200 -
+2025-06-29 16:09:32,603 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 16:09:32,604 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 16:09:32,612 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 16:09:32,613 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 16:09:32,614 [INFO] 127.0.0.1 - - [29/Jun/2025 16:09:32] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 16:09:32,614 [INFO] 127.0.0.1 - - [29/Jun/2025 16:09:32] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 16:24:33,937 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-29 16:24:34,512 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-29 16:24:34,522 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
+2025-06-29 16:27:49,130 [DEBUG] http://127.0.0.1:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 16:27:49,901 [INFO] ⏱️ Planner terminato in 0.67s (exit code: 30)
+2025-06-29 16:27:49,902 [DEBUG] STDOUT:
+==> Eseguo Fast Downward su /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-162433-9870fb/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-162433-9870fb/problem.pddl con lazy_greedy([ff()]) (dominio: my_domain)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/bin/python3 /home/paolop/downward/builds/release/bin/translate/translate.py /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-162433-9870fb/domain.pddl /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-162433-9870fb/problem.pddl --sas-file output.sas
+Parsing...
+translate exit code: 30
+
+Driver aborting after translate
+INFO     Planner time: 0.23s
+
+2025-06-29 16:27:49,903 [DEBUG] STDERR:
+b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 747, in <module>\n    main()\n  File "/home/paolop/downward/builds/release/bin/translate/translate.py", line 705, in main\n    task = pddl_parser.open(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/pddl_file.py", line 39, in open\n    return parsing_functions.parse_task(domain_pddl, task_pddl)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 630, in parse_task\n    domain_name, domain_requirements, types, type_dict, constants, predicates, \\\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 733, in parse_domain_pddl\n    the_axioms, the_actions = parse_axioms_and_actions(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 569, in parse_axioms_and_actions\n    action = parse_action(context, entry, type_dict, predicate_dict)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 523, in parse_action\n    cost = parse_effects(\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 332, in parse_effects\n    tmp_effect = parse_effect(context, alist, type_dict, predicate_dict)\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 393, in parse_effect\n    effects.append(parse_effect(context, eff, type_dict, predicate_dict))\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 434, in parse_effect\n    return pddl.SimpleEffect(parse_literal(context, alist, {}, predicate_dict))\n  File "/home/paolop/downward/builds/release/bin/translate/pddl_parser/parsing_functions.py", line 305, in parse_literal\n    return pddl.Atom(pred_id, alist[1:])\n  File "/home/paolop/downward/builds/release/bin/translate/pddl/conditions.py", line 232, in __init__\n    self.hash = hash((self.__class__, self.predicate, self.args))\nTypeError: unhashable type: \'list\'\n'
+
+2025-06-29 16:27:49,952 [INFO] 🔁 LLM invoked with error: b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/relea
+2025-06-29 16:27:49,953 [INFO] 🧠 Validation summary: {
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "on",
+    "clear"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}
+2025-06-29 16:27:49,967 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-29 16:27:49,975 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-29 16:29:23,118 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 16:29:23,166 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-162433-9870fb/llm_suggestion.pddl
+2025-06-29 16:29:23,189 [DEBUG] ← RESPONSE POST /generate status=302
+2025-06-29 16:29:23,194 [INFO] 127.0.0.1 - - [29/Jun/2025 16:29:23] "[32mPOST /generate HTTP/1.1[0m" 302 -
+2025-06-29 16:29:23,224 [DEBUG] → REQUEST GET /result args={'session': 'the_hero_must_reach_the_tower_-20250629-162433-9870fb'} form_keys=[]
+2025-06-29 16:29:23,269 [INFO] 🤖 Nessun piano trovato. Avvio riflessione automatica con LLM...
+2025-06-29 16:29:23,299 [INFO] 🔁 LLM invoked with error: b'Traceback (most recent call last):\n  File "/home/paolop/downward/builds/relea
+2025-06-29 16:29:23,299 [INFO] 🧠 Validation summary: {
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "on",
+    "clear"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}
+2025-06-29 16:29:23,306 [INFO] 🤖 Invio richiesta a Ollama...
+2025-06-29 16:29:23,308 [DEBUG] Starting new HTTP connection (1): localhost:11434
+2025-06-29 16:30:31,686 [DEBUG] http://localhost:11434 "POST /api/generate HTTP/1.1" 200 None
+2025-06-29 16:30:31,718 [INFO] ✅ Suggestions saved in /mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/uploads/the_hero_must_reach_the_tower_-20250629-162433-9870fb
+2025-06-29 16:30:31,723 [INFO] ✅ Riflessione completata.
+2025-06-29 16:30:31,743 [DEBUG] ← RESPONSE GET /result status=200
+2025-06-29 16:30:31,745 [INFO] 127.0.0.1 - - [29/Jun/2025 16:30:31] "GET /result?session=the_hero_must_reach_the_tower_-20250629-162433-9870fb HTTP/1.1" 200 -
+2025-06-29 16:30:31,818 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 16:30:31,823 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 16:30:31,836 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 16:30:31,837 [INFO] 127.0.0.1 - - [29/Jun/2025 16:30:31] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 16:30:31,838 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 16:30:31,838 [INFO] 127.0.0.1 - - [29/Jun/2025 16:30:31] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 17:14:20,468 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-29 17:14:20,469 [INFO] [33mPress CTRL+C to quit[0m
+2025-06-29 17:14:29,673 [DEBUG] → REQUEST GET / args={} form_keys=[]
+2025-06-29 17:14:29,728 [DEBUG] ← RESPONSE GET / status=200
+2025-06-29 17:14:29,731 [INFO] 127.0.0.1 - - [29/Jun/2025 17:14:29] "GET / HTTP/1.1" 200 -
+2025-06-29 17:14:29,769 [DEBUG] → REQUEST GET /static/style.css args={} form_keys=[]
+2025-06-29 17:14:29,770 [DEBUG] → REQUEST GET /static/js/index.js args={} form_keys=[]
+2025-06-29 17:14:29,790 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-06-29 17:14:29,791 [DEBUG] ← RESPONSE GET /static/js/index.js status=304
+2025-06-29 17:14:29,792 [INFO] 127.0.0.1 - - [29/Jun/2025 17:14:29] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-29 17:14:29,792 [INFO] 127.0.0.1 - - [29/Jun/2025 17:14:29] "[36mGET /static/js/index.js HTTP/1.1[0m" 304 -
+2025-06-29 17:14:32,893 [DEBUG] → REQUEST POST /generate args={} form_keys=['run', 'lore_path']
+2025-06-29 17:14:33,359 [INFO] 📤 Invio prompt a Ollama con modello: mistral e num_ctx: 2048
+2025-06-29 17:14:33,364 [DEBUG] Starting new HTTP connection (1): 127.0.0.1:11434
