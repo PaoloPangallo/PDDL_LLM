@@ -63,10 +63,15 @@
     <section class="card">
       <h2 class="card-header">🧠 Pipeline Automatica</h2>
       <form id="pipeline-form" class="pipeline-form" novalidate>
-        <label for="lore-json" class="input-label">📜 Incolla Lore JSON:</label>
-        <textarea id="lore-json" name="lore_json" rows="10" placeholder='{"quest_title": "...", ...}' required aria-live="polite"></textarea>
-        <button type="submit" class="btn btn-primary">🚀 Esegui Pipeline</button>
-      </form>
+  <div class="form-group">
+    <label for="lore_path" class="input-label">📘 Seleziona storia:</label>
+    <select id="lore_path" name="lore_path" class="text-input" required>
+      <option value="">Caricamento storie...</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">🚀 Esegui Pipeline</button>
+</form>
+
 
       <!-- Output dei risultati -->
       <div id="pipeline-result" class="result-section hidden" role="region" aria-live="polite">

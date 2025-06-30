@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("loadingModal");
-  const modalText = modal.querySelector("p");
+  const modalText = modal?.querySelector("p");
   const audio = document.getElementById("successSound");
+  const pipelineForm = document.getElementById("pipeline-form");
+  const resultBox = document.getElementById("pipeline-result");
+  const loreSelect = document.getElementById("lore_path");
 
   const phrases = [
     "🧩 Sto ragionando sul piano...",
@@ -29,14 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function playSuccessSound() {
     if (audio) {
-      audio.play().catch(err => console.warn("Audio playback blocked:", err));
+      audio.play().catch(err => console.warn("🔇 Audio playback blocked:", err));
     }
   }
 
-  // Mostra modal e disabilita bottone per tutti i form tranne #pipeline-form
+  // Mostra modale su invio di tutti i form tranne #pipeline-form
   document.querySelectorAll("form").forEach(form => {
     if (form.id === "pipeline-form") return;
-
     form.addEventListener("submit", function () {
       const button = form.querySelector("button[type='submit']");
       if (button) {
@@ -44,39 +46,51 @@ document.addEventListener("DOMContentLoaded", () => {
         button.textContent = "⏳ Attendere...";
         button.style.opacity = 0.6;
       }
-      modal.classList.remove("hidden");
+      modal?.classList.remove("hidden");
       modal.style.display = "flex";
       startPhraseRotation();
     });
   });
 
-  // Gestione LangGraph pipeline (fetch)
-  const pipelineForm = document.getElementById("pipeline-form");
-  const resultBox = document.getElementById("pipeline-result");
+  // Popola i titoli delle lore nel <select>
+  if (loreSelect) {
+    fetch("/api/lore_titles")
+      .then(res => res.json())
+      .then(data => {
+        loreSelect.innerHTML = "<option value=''>📘 Seleziona una storia</option>";
+        data.forEach(item => {
+          const opt = document.createElement("option");
+          opt.value = item.filename;
+          opt.textContent = item.title;
+          loreSelect.appendChild(opt);
+        });
+      })
+      .catch(err => {
+        console.error("Errore nel caricamento titoli:", err);
+        loreSelect.innerHTML = "<option disabled>⚠️ Errore nel caricamento</option>";
+      });
+  }
 
+  // Gestione submit pipeline
   if (pipelineForm) {
     pipelineForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      const loreText = document.getElementById("lore-json").value.trim();
-      const submitBtn = pipelineForm.querySelector("button[type='submit']");
-
-      // Validazione JSON
-      let jsonPayload;
-      try {
-        jsonPayload = JSON.parse(loreText);
-      } catch (err) {
-        resultBox.innerHTML = `<p>⚠️ <strong>JSON non valido:</strong> ${err.message}</p>`;
+      const selectedPath = loreSelect?.value.trim();
+      if (!selectedPath) {
+        resultBox.innerHTML = `<p>⚠️ <strong>Seleziona una storia valida</strong></p>`;
         resultBox.classList.remove("hidden");
         return;
       }
 
+      const jsonPayload = { lore_path: selectedPath };
+      const submitBtn = pipelineForm.querySelector("button[type='submit']");
+
       // Mostra modale
-      modal.classList.remove("hidden");
+      modal?.classList.remove("hidden");
       modal.style.display = "flex";
       startPhraseRotation();
 
-      // Disabilita bottone
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = "⏳ Attendere...";
@@ -106,67 +120,45 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
 
           const validation = data.validation;
-
           if (validation) {
             html += `<hr><h3 style="color:#333;">🧪 <strong>Report di Validazione</strong></h3>`;
 
             if (!validation.valid_syntax) {
-              html += `
-                <h4 style="color:red;">❌ Errori di Sintassi</h4>
-                <ul>${validation.missing_sections.map(s => `<li>Sezione mancante: <code>${s}</code></li>`).join("")}</ul>`;
+              html += `<h4 style="color:red;">❌ Errori di Sintassi</h4><ul>${validation.missing_sections.map(s => `<li><code>${s}</code></li>`).join("")}</ul>`;
             }
-
             if (validation.undefined_objects_in_goal?.length > 0) {
-              html += `
-                <h4 style="color:darkred;">🚫 Oggetti non definiti nel goal</h4>
-                <ul>${validation.undefined_objects_in_goal.map(obj => `<li><code>${obj}</code></li>`).join("")}</ul>`;
+              html += `<h4 style="color:darkred;">🚫 Oggetti non definiti nel goal</h4><ul>${validation.undefined_objects_in_goal.map(obj => `<li><code>${obj}</code></li>`).join("")}</ul>`;
             }
-
             if (validation.undefined_actions?.length > 0) {
-              html += `
-                <h4 style="color:darkorange;">⚠️ Azioni non definite usate nel piano</h4>
-                <ul>${validation.undefined_actions.map(a => `<li><code>${a}</code></li>`).join("")}</ul>`;
+              html += `<h4 style="color:darkorange;">⚠️ Azioni non definite usate nel piano</h4><ul>${validation.undefined_actions.map(a => `<li><code>${a}</code></li>`).join("")}</ul>`;
             }
-
             if (validation.mismatched_lore_entities?.length > 0) {
-              html += `
-                <h4 style="color:darkmagenta;">🔍 Entità presenti nel lore ma non negli oggetti</h4>
-                <ul>${validation.mismatched_lore_entities.map(e => `<li><code>${e}</code></li>`).join("")}</ul>`;
+              html += `<h4 style="color:darkmagenta;">🔍 Entità nel lore non presenti negli oggetti</h4><ul>${validation.mismatched_lore_entities.map(e => `<li><code>${e}</code></li>`).join("")}</ul>`;
             }
-
             if (validation.semantic_errors?.length > 0) {
-              html += `
-                <h4 style="color:orange;">⚠️ Errori Semantici</h4>
-                <ul>${validation.semantic_errors.map(err => `<li>${err}</li>`).join("")}</ul>`;
+              html += `<h4 style="color:orange;">⚠️ Errori Semantici</h4><ul>${validation.semantic_errors.map(err => `<li>${err}</li>`).join("")}</ul>`;
             }
 
-            html += `
-              <details style="margin-top:1em;">
-                <summary>📋 Visualizza JSON completo</summary>
-                <pre>${JSON.stringify(validation, null, 2)}</pre>
-              </details>`;
+            html += `<details style="margin-top:1em;"><summary>📋 Visualizza JSON completo</summary><pre>${JSON.stringify(validation, null, 2)}</pre></details>`;
           }
 
           resultBox.innerHTML = html;
         } else {
           resultBox.innerHTML = `<p>❌ Errore: ${data.error || "Errore sconosciuto"}</p>`;
         }
-
       } catch (err) {
         resultBox.innerHTML = `<p>⚠️ Errore di rete: ${err.message}</p>`;
       }
 
-      // Ripristina bottone
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = "🚀 Esegui Pipeline";
         submitBtn.style.opacity = 1;
       }
 
-      // Ferma animazione, suona, mostra risultato
       stopPhraseRotation();
       playSuccessSound();
-      modal.classList.add("hidden");
+      modal?.classList.add("hidden");
       modal.style.display = "none";
       resultBox.classList.remove("hidden");
     });

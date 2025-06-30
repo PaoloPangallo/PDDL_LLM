@@ -238,6 +238,24 @@ a.primary-btn {
   border-radius: 4px;
   font-weight: bold;
 }
+.result-box pre {
+  background-color: #f8f8f8;
+  padding: 1em;
+  margin: 0.5em 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  max-height: 400px;
+  overflow: auto;
+  white-space: pre; /* previene il wrap */
+}
+
+.result-box {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 
 
 

@@ -3,7 +3,7 @@
 import os
 import json
 import shutil
-from flask import Blueprint, request, redirect, url_for, current_app
+from flask import Blueprint, request, redirect, url_for, current_app, jsonify
 from agent.reflection_agent import refine_and_save
 from game.validator import validate_pddl
 from game.utils import create_session_dir, run_planner, read_text_file, save_text_file
@@ -129,3 +129,24 @@ def manual_upload():
     run_planner(session_dir)
 
     return redirect(url_for("result.result", session=session_id))
+
+
+LORE_DIR = "lore"
+
+@generate_bp.route("/api/lore_titles", methods=["GET"])
+def get_lore_titles():
+    titles = []
+    for filename in os.listdir(LORE_DIR):
+        if filename.endswith(".json"):
+            filepath = os.path.join(LORE_DIR, filename)
+            try:
+                with open(filepath, encoding="utf-8") as f:
+                    data = json.load(f)
+                    title = data.get("quest_title") or data.get("title") or data.get("description") or filename
+                    titles.append({
+                        "title": title,
+                        "filename": filepath.replace("\\", "/")  # compatibilità Windows
+                    })
+            except Exception as e:
+                current_app.logger.warning(f"⚠️ Errore parsing {filename}: {e}")
+    return jsonify(titles)

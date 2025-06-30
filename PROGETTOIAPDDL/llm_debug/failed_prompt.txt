@@ -28,14 +28,10 @@ The result MUST strictly begin and end with the following delimiters:
 {
   "valid_syntax": true,
   "missing_sections": [],
-  "undefined_objects_in_goal": [
-    "defeated"
-  ],
+  "undefined_objects_in_goal": [],
   "undefined_actions": [],
   "mismatched_lore_entities": [],
-  "semantic_errors": [
-    "❌ Init mismatch: expected '(on-ground sword-of-fire tower-of-varnak)' not found in problem."
-  ]
+  "semantic_errors": []
 }
 
 ---
@@ -49,65 +45,44 @@ Missing domain or problem for validation.
 - Evita simboli speciali o nomi non validi. Usa nomi semplici e coerenti.
 - Tutte le sezioni devono essere presenti e complete.
 
-🧩 Oggetti usati nel goal non definiti: defeated
-
-⚠️ Errori semantici:
-❌ Init mismatch: expected '(on-ground sword-of-fire tower-of-varnak)' not found in problem.
 
 ---
 
 ### Original domain.pddl:
-(define (domain hero-quest)
-       (:requirements :equality :deterministic :negative-preconditions :static)
-
-       (:types location action agent creature goal)
-
-       (:predicates
-        (at ?a location)
-        (on-ground ?i item location)
-        (carrying ?h ?i item)
-        (awake ?c creature)
-        (sleeping ?c creature)
-        (defeated ?c creature))
-
-       (:action move
-         :parameters (?a agent) (?l location)
-         :precondition (at ?a ?l)
-         :effect (not (at ?a ?l))
-         :effect (at ?a ?l))
-
-       (:action take
-         :parameters (?h agent) (?i item)
-         :precondition (and (on-ground ?i ?l) (at ?h ?l))
-         :effect (not (on-ground ?i ?l))
-         :effect (carrying ?h ?i))
-
-       (:action drop
-         :parameters (?h agent) (?i item)
-         :precondition (and (carrying ?h ?i))
-         :effect (at (find-entity) (location ?l))
-         :effect (on-ground ?i ?l)
-         :effect (not (carrying ?h ?i)))
-
-       (:action wake-creature
-         :parameters (?c creature)
-         :precondition (at hero ?l) (not (awake ?c))
-         :effect (awake ?c))
-
-       (:action defeat
-         :parameters (?h agent) (?c creature)
-         :precondition (and (carrying weapon-for-defeating ?h) (awake ?c))
-         :effect (defeated ?c))
+(define (domain dragon-tower)
+     (:requirements :equality :typing :fluent :duration)
+     (:types agent object dragon fire-dragon sleeping)
+     (:predicates
+       (at ?a ?loc)
+       (on-ground ?o ?l)
+       (carrying ?h ?o)
+       (sleeping ?d))
+     (:action pick-up
+              (:parameters ?h ?o)
+              (:precondition and (at ?h ?loc) (and (on-ground ?o ?loc) (not (carrying ?h ?o))))
+              (:effect (and (not (on-ground ?o ?loc)) (carrying ?h ?o)
+                             (not (at ?h ?loc)))))
+     (:action put-down
+              (:parameters ?h ?o)
+              (:precondition and (carrying ?h ?o))
+              (:effect (and (on-ground ?o ?loc) (not (carrying ?h ?o))
+                             (at ?h ?loc))))
+     (:action move-to
+              (:parameters ?a ?d)
+              (:precondition at ?a ?loc)
+              (:effect (and (not (at ?a ?loc)) (at ?a ?d))))
+     (:action wake-dragon
+              (:parameters ?h)
+              (:precondition and (carrying ?h sword-of-fire) (at ?h tower-of-varnak))
+              (:effect (not (sleeping ice-dragon))))
    )
 
 ---
 
 ### Original problem.pddl:
-(define (problem hero-quest-1)
-       (:domain hero-quest)
-       (:objects hero tower-of-varnak ice-dragon sword-for-defeating village)
-       (:init
-        (at hero village)
-        (on-ground sword-for-defeating tower-of-varnak)
-        (sleeping ice-dragon))
-       (:goal (and (defeated ice-dragon))))
+(define (problem dragon-tower)
+     (:domain dragon-tower)
+     (:objects ?h hero village tower-of-varnak sword-of-fire ice-dragon)
+     (:init and (at hero village) (on-ground sword-of-fire tower-of-varnak) (sleeping ice-dragon))
+     (:goal and (not (sleeping ice-dragon)))
+   )
