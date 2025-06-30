@@ -1,5 +1,37 @@
 document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("loadingModal");
+  const modalText = modal.querySelector("p");
+  const audio = document.getElementById("successSound");
+
+  const phrases = [
+    "🧩 Sto ragionando sul piano...",
+    "🔎 Validazione in corso...",
+    "📜 Elaborazione lore in atto...",
+    "⚙️ Costruzione dominio e problema...",
+    "🧠 Consulto la mia memoria logica..."
+  ];
+
+  let phraseInterval;
+
+  function startPhraseRotation() {
+    if (!modalText) return;
+    modalText.textContent = phrases[0];
+    let index = 1;
+    phraseInterval = setInterval(() => {
+      modalText.textContent = phrases[index % phrases.length];
+      index++;
+    }, 2000);
+  }
+
+  function stopPhraseRotation() {
+    clearInterval(phraseInterval);
+  }
+
+  function playSuccessSound() {
+    if (audio) {
+      audio.play().catch(err => console.warn("Audio playback blocked:", err));
+    }
+  }
 
   // Mostra modal e disabilita bottone per tutti i form tranne #pipeline-form
   document.querySelectorAll("form").forEach(form => {
@@ -14,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       modal.classList.remove("hidden");
       modal.style.display = "flex";
+      startPhraseRotation();
     });
   });
 
@@ -41,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Mostra modale
       modal.classList.remove("hidden");
       modal.style.display = "flex";
+      startPhraseRotation();
 
       // Disabilita bottone
       if (submitBtn) {
@@ -79,54 +113,38 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!validation.valid_syntax) {
               html += `
                 <h4 style="color:red;">❌ Errori di Sintassi</h4>
-                <ul>
-                  ${validation.missing_sections.map(s => `<li>Sezione mancante: <code>${s}</code></li>`).join("")}
-                </ul>
-              `;
+                <ul>${validation.missing_sections.map(s => `<li>Sezione mancante: <code>${s}</code></li>`).join("")}</ul>`;
             }
 
             if (validation.undefined_objects_in_goal?.length > 0) {
               html += `
                 <h4 style="color:darkred;">🚫 Oggetti non definiti nel goal</h4>
-                <ul>
-                  ${validation.undefined_objects_in_goal.map(obj => `<li><code>${obj}</code></li>`).join("")}
-                </ul>
-              `;
+                <ul>${validation.undefined_objects_in_goal.map(obj => `<li><code>${obj}</code></li>`).join("")}</ul>`;
             }
 
             if (validation.undefined_actions?.length > 0) {
               html += `
                 <h4 style="color:darkorange;">⚠️ Azioni non definite usate nel piano</h4>
-                <ul>
-                  ${validation.undefined_actions.map(a => `<li><code>${a}</code></li>`).join("")}
-                </ul>
-              `;
+                <ul>${validation.undefined_actions.map(a => `<li><code>${a}</code></li>`).join("")}</ul>`;
             }
 
             if (validation.mismatched_lore_entities?.length > 0) {
               html += `
                 <h4 style="color:darkmagenta;">🔍 Entità presenti nel lore ma non negli oggetti</h4>
-                <ul>
-                  ${validation.mismatched_lore_entities.map(e => `<li><code>${e}</code></li>`).join("")}
-                </ul>
-              `;
+                <ul>${validation.mismatched_lore_entities.map(e => `<li><code>${e}</code></li>`).join("")}</ul>`;
             }
 
             if (validation.semantic_errors?.length > 0) {
               html += `
                 <h4 style="color:orange;">⚠️ Errori Semantici</h4>
-                <ul>
-                  ${validation.semantic_errors.map(err => `<li>${err}</li>`).join("")}
-                </ul>
-              `;
+                <ul>${validation.semantic_errors.map(err => `<li>${err}</li>`).join("")}</ul>`;
             }
 
             html += `
               <details style="margin-top:1em;">
                 <summary>📋 Visualizza JSON completo</summary>
                 <pre>${JSON.stringify(validation, null, 2)}</pre>
-              </details>
-            `;
+              </details>`;
           }
 
           resultBox.innerHTML = html;
@@ -145,7 +163,9 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.style.opacity = 1;
       }
 
-      // Nascondi modal e mostra risultato
+      // Ferma animazione, suona, mostra risultato
+      stopPhraseRotation();
+      playSuccessSound();
       modal.classList.add("hidden");
       modal.style.display = "none";
       resultBox.classList.remove("hidden");

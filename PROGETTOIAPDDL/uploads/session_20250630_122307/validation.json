@@ -1,0 +1,12 @@
+{
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "defeated"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": [],
+  "semantic_errors": [
+    "❌ Init mismatch: expected '(on-ground sword-of-fire tower-of-varnak)' not found in problem."
+  ]
+}

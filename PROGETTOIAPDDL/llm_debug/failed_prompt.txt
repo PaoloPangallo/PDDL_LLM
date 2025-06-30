@@ -1,0 +1,113 @@
+You are an expert in classical planning and PDDL modeling.
+
+You are given two possibly invalid PDDL files: a domain and a problem file.
+These may contain missing types, objects, predicates, or ill-formed goal/init sections.
+You are also given a validation report and an error message indicating what is wrong.
+
+Your job is to revise both files to ensure:
+- Valid PDDL syntax and structure.
+- All referenced objects and predicates are declared appropriately.
+- The domain includes all types, predicates, and actions used in the problem.
+- The problem contains a complete :objects, :init, and :goal section.
+- Any undefined entity (e.g., sword, dragon) should be invented if not present in lore.
+
+Always return the corrected domain and problem as two distinct blocks.
+The result MUST strictly begin and end with the following delimiters:
+
+=== DOMAIN START ===
+<corrected domain.pddl>
+=== DOMAIN END ===
+
+=== PROBLEM START ===
+<corrected problem.pddl>
+=== PROBLEM END ===
+
+---
+
+### Validation Report:
+{
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "defeated"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": [],
+  "semantic_errors": [
+    "❌ Init mismatch: expected '(on-ground sword-of-fire tower-of-varnak)' not found in problem."
+  ]
+}
+
+---
+
+### Error message:
+Missing domain or problem for validation.
+
+🎯 OBIETTIVO:
+- Correggi i file domain.pddl e problem.pddl in modo che siano validi e coerenti.
+- Se mancano oggetti o predicati nel goal, aggiungili nel dominio o negli oggetti.
+- Evita simboli speciali o nomi non validi. Usa nomi semplici e coerenti.
+- Tutte le sezioni devono essere presenti e complete.
+
+🧩 Oggetti usati nel goal non definiti: defeated
+
+⚠️ Errori semantici:
+❌ Init mismatch: expected '(on-ground sword-of-fire tower-of-varnak)' not found in problem.
+
+---
+
+### Original domain.pddl:
+(define (domain hero-quest)
+       (:requirements :equality :deterministic :negative-preconditions :static)
+
+       (:types location action agent creature goal)
+
+       (:predicates
+        (at ?a location)
+        (on-ground ?i item location)
+        (carrying ?h ?i item)
+        (awake ?c creature)
+        (sleeping ?c creature)
+        (defeated ?c creature))
+
+       (:action move
+         :parameters (?a agent) (?l location)
+         :precondition (at ?a ?l)
+         :effect (not (at ?a ?l))
+         :effect (at ?a ?l))
+
+       (:action take
+         :parameters (?h agent) (?i item)
+         :precondition (and (on-ground ?i ?l) (at ?h ?l))
+         :effect (not (on-ground ?i ?l))
+         :effect (carrying ?h ?i))
+
+       (:action drop
+         :parameters (?h agent) (?i item)
+         :precondition (and (carrying ?h ?i))
+         :effect (at (find-entity) (location ?l))
+         :effect (on-ground ?i ?l)
+         :effect (not (carrying ?h ?i)))
+
+       (:action wake-creature
+         :parameters (?c creature)
+         :precondition (at hero ?l) (not (awake ?c))
+         :effect (awake ?c))
+
+       (:action defeat
+         :parameters (?h agent) (?c creature)
+         :precondition (and (carrying weapon-for-defeating ?h) (awake ?c))
+         :effect (defeated ?c))
+   )
+
+---
+
+### Original problem.pddl:
+(define (problem hero-quest-1)
+       (:domain hero-quest)
+       (:objects hero tower-of-varnak ice-dragon sword-for-defeating village)
+       (:init
+        (at hero village)
+        (on-ground sword-for-defeating tower-of-varnak)
+        (sleeping ice-dragon))
+       (:goal (and (defeated ice-dragon))))
