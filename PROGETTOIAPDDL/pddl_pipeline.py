@@ -1,14 +1,19 @@
-from langgraph.graph import StateGraph
-from typing import TypedDict, Optional
-# from langgraph.checkpoint.memory import MemorySaver  # Non usato
+"""
+Pipeline LangGraph per generare, validare e raffinare file PDDL a partire da una lore.
+Include RAG (Retrieval-Augmented Generation) da database locale.
+"""
 
+import os
+import json
+import logging
+from typing import TypedDict, Optional
+
+from langgraph.graph import StateGraph
 from game.generator import build_prompt_from_lore
 from game.utils import ask_ollama, extract_between, save_text_file
 from game.validator import validate_pddl
 from agent.reflection_agent import refine_pddl
-
-import os
-import logging
+from db.db import retrieve_similar_examples_from_db
 
 # ---------------------
 # Logging setup
@@ -20,6 +25,7 @@ logging.basicConfig(level=logging.DEBUG)
 # Stato del flusso
 # ---------------------
 class PDDLState(TypedDict):
+    """Stato condiviso tra i nodi della pipeline PDDL."""
     lore: dict
     prompt: Optional[str]
     domain: Optional[str]
@@ -29,16 +35,30 @@ class PDDLState(TypedDict):
     refined_domain: Optional[str]
     refined_problem: Optional[str]
 
+
 # ---------------------
-# Nodi
+# Nodi della pipeline
 # ---------------------
 def node_build_prompt(state: PDDLState) -> dict:
+    """Costruisce il prompt da lore e include esempi simili dal DB (RAG)."""
     logger.debug("🧠 [BuildPrompt] Lore ricevuto:\n%s", state["lore"])
-    prompt, _ = build_prompt_from_lore(state["lore"])
+
+    examples_raw = retrieve_similar_examples_from_db(state["lore"], k=1)
+    examples = [e for e in examples_raw if isinstance(e, str)]  # garantisce che siano stringhe
+    prompt, _ = build_prompt_from_lore(state["lore"], examples=examples)
+
+    if examples:
+        logger.debug("📚 [BuildPrompt] Recuperato %d esempio simile.", len(examples))
+    else:
+        logger.debug("📚 [BuildPrompt] Nessun esempio simile trovato.")
+
+    prompt, _ = build_prompt_from_lore(state["lore"], examples=examples)
     logger.debug("📝 [BuildPrompt] Prompt costruito:\n%s", prompt[:300])
     return {"prompt": prompt}
 
+
 def node_generate_pddl(state: PDDLState) -> dict:
+    """Genera dominio e problema PDDL a partire dal prompt."""
     try:
         logger.debug("🤖 [GeneratePDDL] Invio a Ollama...")
         response = ask_ollama(state["prompt"])
@@ -54,14 +74,16 @@ def node_generate_pddl(state: PDDLState) -> dict:
 
         logger.debug("✅ [GeneratePDDL] Dominio e problema generati con successo.")
         return {"domain": domain, "problem": problem}
-    except Exception as e:
-        logger.error("❌ Errore in node_generate_pddl: %s", e, exc_info=True)
-        return {"domain": None, "problem": None, "error_message": str(e)}
+    except Exception as err:
+        logger.error("❌ Errore in node_generate_pddl: %s", err, exc_info=True)
+        return {"domain": None, "problem": None, "error_message": str(err)}
+
 
 def node_validate(state: PDDLState) -> dict:
+    """Valida i file PDDL usando il contenuto della lore."""
     domain = state.get("domain")
     problem = state.get("problem")
-    lore = state.get("lore", {})
+    lore_data = state.get("lore", {})
 
     if not domain or not problem:
         return {
@@ -70,27 +92,29 @@ def node_validate(state: PDDLState) -> dict:
         }
 
     try:
-        validation = validate_pddl(domain, problem, lore)
+        validation = validate_pddl(domain, problem, lore_data)
         logger.debug("📋 [Validate] Risultato validazione:\n%s", validation)
 
         if not validation.get("valid_syntax", False):
             return {"validation": validation, "error_message": "Invalid PDDL syntax."}
 
         return {"validation": validation, "error_message": None}
-    except Exception as e:
-        logger.error("❌ Errore durante la validazione: %s", e, exc_info=True)
-        return {"validation": None, "error_message": f"Errore nella validazione: {str(e)}"}
+    except Exception as err:
+        logger.error("❌ Errore durante la validazione: %s", err, exc_info=True)
+        return {"validation": None, "error_message": f"Errore nella validazione: {str(err)}"}
+
 
 def node_refine(state: PDDLState) -> dict:
+    """Raffina i file PDDL in base all'errore segnalato."""
     try:
-        lore = state.get("lore", {})
+        lore_data = state.get("lore", {})
         logger.debug("🔁 [Refine] Avvio raffinamento con messaggio: %s", state.get("error_message"))
 
         refined = refine_pddl(
             domain_path="TEMP/domain.pddl",
             problem_path="TEMP/problem.pddl",
             error_message=state["error_message"],
-            lore=lore
+            lore=lore_data
         )
 
         domain = extract_between(refined, "=== DOMAIN START ===", "=== DOMAIN END ===")
@@ -107,22 +131,23 @@ def node_refine(state: PDDLState) -> dict:
             "problem": problem,
             "error_message": None
         }
-    except Exception as e:
-        logger.error("❌ Errore nel raffinamento: %s", e, exc_info=True)
+    except Exception as err:
+        logger.error("❌ Errore nel raffinamento: %s", err, exc_info=True)
         return {
             "refined_domain": None,
             "refined_problem": None,
-            "error_message": f"Errore nel raffinamento: {str(e)}"
+            "error_message": f"Errore nel raffinamento: {str(err)}"
         }
-        
-        
-# 🔧 Nodo final (serve per chiudere il grafo)
+
+
 def end_node(state: PDDLState) -> dict:
+    """Nodo terminale: ritorna lo stato finale."""
     logger.debug("✅ [End] Fine del grafo.")
     return state
 
+
 # ---------------------
-# Grafo (senza memory)
+# Costruzione grafo LangGraph
 # ---------------------
 workflow = StateGraph(PDDLState)
 workflow.add_node("BuildPrompt", node_build_prompt)
@@ -131,12 +156,10 @@ workflow.add_node("Validate", node_validate)
 workflow.add_node("Refine", node_refine)
 workflow.add_node("End", end_node)
 
-
+# Definisce il flusso di esecuzione
 workflow.set_entry_point("BuildPrompt")
 workflow.add_edge("BuildPrompt", "GeneratePDDL")
 workflow.add_edge("GeneratePDDL", "Validate")
-
-# Flusso condizionale: se c'è errore → Refine, altrimenti fine
 workflow.add_conditional_edges(
     "Validate",
     path=lambda state: "Refine" if state.get("error_message") else "End"
@@ -144,18 +167,20 @@ workflow.add_conditional_edges(
 
 graph = workflow.compile()
 
+
 # ---------------------
 # Test locale
 # ---------------------
 if __name__ == "__main__":
-    import json
-    lore_path = "lore/example_lore.json"
-    lore = json.load(open(lore_path, encoding="utf-8"))
+    LORE_PATH = "lore/example_lore.json"
+    with open(LORE_PATH, encoding="utf-8") as f:
+        lore_data = json.load(f)
 
-    result = graph.invoke({"lore": lore})
+    result = graph.invoke({"lore": lore_data})
 
     print("\n✅ DOMINIO:\n", result["domain"][:600])
     print("\n✅ PROBLEMA:\n", result["problem"][:600])
     print("\n📋 VALIDAZIONE:\n", json.dumps(result["validation"], indent=2, ensure_ascii=False))
     if result.get("refined_domain"):
         print("\n🔁 È stato eseguito un raffinamento con successo.")
+        print("\n🔁 DOMINIO RAFFINATO:\n", result["refined_domain"][:600])

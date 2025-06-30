@@ -1,10 +1,14 @@
+"""Pipeline conversazionale per la generazione, validazione e rifinitura di file PDDL tramite LLM + RAG."""
+
+
 from typing import Annotated
 import json
 import os
+import logging
 
 from langgraph.graph import StateGraph, START
 from langgraph.graph.message import add_messages
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.prebuilt import tools_condition, ToolNode
 from typing_extensions import TypedDict
 from langchain_core.messages import BaseMessage
@@ -15,12 +19,24 @@ from game.generator import build_prompt_from_lore, ask_ollama, extract_between
 from game.validator import validate_pddl
 from agent.reflection_agent import refine_pddl
 from game.utils import save_text_file
+from db.db import retrieve_similar_examples_from_db
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 # ================================
 # 1. Stato condiviso
 # ================================
 class ChatState(TypedDict):
+    """
+    Stato condiviso della pipeline conversazionale:
+    - messages: cronologia della chat
+    - lore: JSON in formato stringa
+    - domain / problem: file PDDL
+    - validation: risultato della validazione
+    - error_message: eventuale errore da validazione
+    """
     messages: Annotated[list[BaseMessage], add_messages]
     lore: str | None
     domain: str | None
@@ -35,19 +51,24 @@ class ChatState(TypedDict):
 @tool
 def generate_pddl_from_lore(lore: str) -> dict:
     """
-    Generate domain and problem PDDL files from a given lore in JSON format.
+    Genera i file PDDL (domain e problem) da un lore in formato JSON.
+    Include esempi rilevanti (RAG) dal database locale.
     """
-    prompt, _ = build_prompt_from_lore(json.loads(lore))
+    lore_dict = json.loads(lore)
+    examples = retrieve_similar_examples_from_db(lore_dict, k=1)
+    prompt, _ = build_prompt_from_lore(lore_dict, examples=examples)
     result = ask_ollama(prompt)
+
     domain = extract_between(result, "=== DOMAIN START ===", "=== DOMAIN END ===")
     problem = extract_between(result, "=== PROBLEM START ===", "=== PROBLEM END ===")
+
     return {"domain": domain, "problem": problem, "lore": lore}
 
 
 @tool
 def validate(domain: str, problem: str, lore: str) -> dict:
     """
-    Validate the given domain and problem PDDL files using the provided lore.
+    Valida i file PDDL generati usando il lore.
     """
     validation = validate_pddl(domain, problem, json.loads(lore))
     return {
@@ -59,7 +80,7 @@ def validate(domain: str, problem: str, lore: str) -> dict:
 @tool
 def reflect(domain: str, problem: str, error_message: str, lore: str) -> dict:
     """
-    Refine the PDDL files based on the validation error and the given lore.
+    Raffina i file PDDL sulla base dell'errore segnalato e del lore.
     """
     os.makedirs("TEMP", exist_ok=True)
     save_text_file("TEMP/domain.pddl", domain)
@@ -89,8 +110,10 @@ llm_with_tools = llm.bind_tools(tools)
 # 4. Costruzione del grafo
 # ================================
 def chat_node(state: ChatState) -> dict:
+    """Nodo conversazionale: invoca LLM con gli strumenti."""
     response = llm_with_tools.invoke(state["messages"])
     return {"messages": state["messages"] + [response]}
+
 
 builder = StateGraph(ChatState)
 builder.add_node("chat", chat_node)
@@ -105,19 +128,20 @@ graph = builder.compile()
 # ================================
 # 5. Gestione memoria persistente
 # ================================
-def get_memory_for_thread(thread_id: str) -> MemorySaver:
+def get_memory_for_thread(thread_id: str) -> SqliteSaver:
+    """Recupera o crea la memoria persistente per un thread."""
     memory_dir = "memory"
     os.makedirs(memory_dir, exist_ok=True)
-    return MemorySaver.from_path(os.path.join(memory_dir, f"{thread_id}.json"))  # type: ignore[attr-defined]
+    return SqliteSaver.from_path(os.path.join(memory_dir, f"{thread_id}.sqlite"))
 
 
 # ================================
 # 6. Loop REPL o API
 # ================================
 def process_input(user_input: str, thread_id: str):
-    # Comando per reset della memoria
+    """Processa input utente tramite grafo con memoria per thread."""
     if user_input.strip().lower() == "/reset":
-        path = os.path.join("memory", f"{thread_id}.json")
+        path = os.path.join("memory", f"{thread_id}.sqlite")
         if os.path.exists(path):
             os.remove(path)
             print("🔄 Memoria del thread resettata.")

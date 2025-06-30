@@ -1,44 +1,51 @@
+import os
+import json
+import logging
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from pddl_pipeline import graph
-import json
-import os
-from datetime import datetime
-import traceback  # ✅
 from db.db import save_generation_session
 
-
 pipeline_bp = Blueprint("pipeline", __name__)
+logger = logging.getLogger(__name__)
 
 @pipeline_bp.route("/api/pipeline/run", methods=["POST"])
 def run_pipeline():
+    """
+    Avvia la pipeline LangGraph per generare, validare e raffinare file PDDL da una lore.
+    
+    Richiede: JSON con campo 'lore' (dict con descrizione, oggetti, init).
+    Restituisce: JSON con dominio, problema, validazione, raffinamento (se avvenuto) e session ID.
+    """
     try:
         lore = request.get_json(force=True)
         if not lore:
-            return jsonify({"error": "Lore JSON mancante o vuoto."}), 400
+            return jsonify({"error": "❌ Lore JSON mancante o vuoto."}), 400
 
-        print("📥 JSON ricevuto correttamente.")
+        logger.info("📥 JSON ricevuto correttamente.")
 
         result = graph.invoke({"lore": lore})
-        print("✅ Pipeline completata. Risultato:", result)
+        logger.info("✅ Pipeline completata.")
 
         session_id = datetime.now().strftime("session_%Y%m%d_%H%M%S")
         output_dir = os.path.join("uploads", session_id)
         os.makedirs(output_dir, exist_ok=True)
 
-        def save(text, filename):
-            with open(os.path.join(output_dir, filename), "w", encoding="utf-8") as f:
-                f.write(text.strip() if text else "")
+        def save(content: str | dict | None, filename: str) -> None:
+            if content is None:
+                return
+            path = os.path.join(output_dir, filename)
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(content if isinstance(content, str) else json.dumps(content, indent=2, ensure_ascii=False))
 
+        # Salva tutti gli output
         save(result.get("domain"), "domain.pddl")
         save(result.get("problem"), "problem.pddl")
-        save(json.dumps(result.get("validation"), indent=2, ensure_ascii=False), "validation.json")
+        save(result.get("validation"), "validation.json")
+        save(result.get("refined_domain"), "domain_refined.pddl")
+        save(result.get("refined_problem"), "problem_refined.pddl")
 
-        if result.get("refined_domain"):
-            save(result.get("refined_domain"), "domain_refined.pddl")
-        if result.get("refined_problem"):
-            save(result.get("refined_problem"), "problem_refined.pddl")
-
-        # ✅ Salvataggio nel database
+        # Salva anche nel DB
         save_generation_session({
             "session_id": session_id,
             "lore": json.dumps(lore, indent=2, ensure_ascii=False),
@@ -49,7 +56,6 @@ def run_pipeline():
             "refined_problem": result.get("refined_problem"),
         })
 
-        # ✅ Risposta HTTP
         return jsonify({
             "session_id": session_id,
             "domain": result.get("domain"),
@@ -58,7 +64,6 @@ def run_pipeline():
             "refined": bool(result.get("refined_domain")),
         })
 
-    except Exception as e:
-        print("❌ Errore nella pipeline:")
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+    except Exception as err:
+        logger.exception("❌ Errore durante l'esecuzione della pipeline.")
+        return jsonify({"error": str(err)}), 500

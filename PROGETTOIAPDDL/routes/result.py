@@ -1,21 +1,30 @@
-# routes/result.py
+"""
+Modulo Flask per la visualizzazione del risultato della pianificazione PDDL.
 
-from flask import Blueprint, request, render_template, current_app
-from game.utils import read_text_file
-
-result_bp = Blueprint("result", __name__)
-
-# routes/result.py
+Gestisce:
+- visualizzazione del piano generato;
+- parsing dei file di validazione;
+- raffinamento automatico se il planner fallisce;
+- visualizzazione cronologia chat e esempi RAG.
+"""
 
 import os
 import json
-from agent.reflection_agent import refine_and_save  # <--- Importa refine
-# from game.utils import load_lore  # Se hai una funzione di load_lore, altrimenti usiamo json.load diretto
+
+from flask import Blueprint, request, render_template, current_app
+from game.utils import read_text_file
+from agent.reflection_agent import refine_and_save
 
 result_bp = Blueprint("result", __name__)
 
+
 @result_bp.route("/result")
 def result():
+    """
+    Route per la visualizzazione della pagina dei risultati.
+    Recupera file generati nella sessione, esegue raffinamento se necessario,
+    e li passa al template result.html.
+    """
     session = request.args.get("session")
     if not session:
         return "❌ Errore: ID di sessione mancante.", 400
@@ -26,6 +35,7 @@ def result():
         return f"❌ Errore: sessione {session} non trovata.", 404
 
     def safe_content(path, placeholder=""):
+        """Legge il file e restituisce testo ripulito o un placeholder."""
         content = read_text_file(path)
         return content.strip() if content and content.strip() else placeholder
 
@@ -38,22 +48,23 @@ def result():
         "planner_error": os.path.join(session_dir, "planner_error.txt"),
         "chat_history": os.path.join(session_dir, "chat_history.json"),
         "lore": os.path.join(session_dir, "lore.json"),
-        "examples": os.path.join(session_dir, "examples_used.json")  # 👈 nuovo
+        "examples": os.path.join(session_dir, "examples_used.json")
     }
 
     # Caricamento piano
     try:
-        plan = json.load(open(paths["plan"], encoding="utf-8")) if os.path.exists(paths["plan"]) else None
-    except Exception as e:
-        current_app.logger.warning(f"⚠️ Errore nel parsing di plan.json: {e}")
+        plan = json.load(open(paths["plan"], encoding="utf-8")) \
+            if os.path.exists(paths["plan"]) else None
+    except json.JSONDecodeError as err:
+        current_app.logger.warning("⚠️ Errore nel parsing di plan.json: %s", err)
         plan = None
 
     # Validazione
     validation_text = read_text_file(paths["validation"])
     try:
         validation_json = json.loads(validation_text) if validation_text else {}
-    except Exception as e:
-        current_app.logger.warning(f"⚠️ Errore nel parsing di validation.json: {e}")
+    except json.JSONDecodeError as err:
+        current_app.logger.warning("⚠️ Errore nel parsing di validation.json: %s", err)
         validation_json = {}
 
     # Altri contenuti
@@ -66,7 +77,8 @@ def result():
     if plan is None and planner_error and not suggestion:
         current_app.logger.info("🤖 Nessun piano trovato. Avvio riflessione automatica con LLM...")
         try:
-            lore = json.load(open(paths["lore"], encoding="utf-8")) if os.path.exists(paths["lore"]) else None
+            lore = json.load(open(paths["lore"], encoding="utf-8")) \
+                if os.path.exists(paths["lore"]) else None
             refine_and_save(
                 domain_path=paths["domain"],
                 problem_path=paths["problem"],
@@ -76,8 +88,8 @@ def result():
             )
             suggestion = safe_content(paths["suggestion"])
             current_app.logger.info("✅ Riflessione completata.")
-        except Exception as e:
-            current_app.logger.warning(f"⚠️ Errore durante la riflessione automatica: {e}")
+        except Exception as err:
+            current_app.logger.warning("⚠️ Errore durante la riflessione automatica: %s", err)
 
     # Chat history
     chat_history = []
@@ -85,17 +97,17 @@ def result():
         try:
             with open(paths["chat_history"], encoding="utf-8") as f:
                 chat_history = json.load(f)
-        except Exception as e:
-            current_app.logger.warning(f"⚠️ Errore nel parsing di chat_history.json: {e}")
+        except json.JSONDecodeError as err:
+            current_app.logger.warning("⚠️ Errore nel parsing di chat_history.json: %s", err)
 
-    # 👇 Lettura esempi usati nel RAG
+    # Esempi RAG usati
     examples = []
     if os.path.exists(paths["examples"]):
         try:
             with open(paths["examples"], encoding="utf-8") as f:
                 examples = json.load(f)
-        except Exception as e:
-            current_app.logger.warning(f"⚠️ Errore nel parsing di examples_used.json: {e}")
+        except json.JSONDecodeError as err:
+            current_app.logger.warning("⚠️ Errore nel parsing di examples_used.json: %s", err)
 
     return render_template(
         "result.html",
@@ -108,5 +120,5 @@ def result():
         planner_error=planner_error,
         session=session,
         chat_history=chat_history,
-        examples=examples  # 👈 passato al template
+        examples=examples
     )

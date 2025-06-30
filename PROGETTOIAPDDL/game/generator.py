@@ -1,21 +1,28 @@
+"""
+Modulo per generare i file PDDL da un lore JSON, utilizzando esempi simili e un LLM locale.
+"""
+
 import os
 import json
 import logging
-from game.utils import ask_ollama, extract_between, save_text_file
+from typing import Optional
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from typing import Optional
+
+from game.utils import ask_ollama, extract_between, save_text_file
 from db.db import retrieve_similar_examples_from_db
 
-
 logger = logging.getLogger(__name__)
+
 
 def load_lore(lore_path: str) -> dict:
     """Carica il file di lore JSON dal percorso fornito."""
     with open(lore_path, encoding="utf-8") as f:
         return json.load(f)
 
-def load_pddl_examples(max_examples=0) -> list[tuple[str, str]]:
+
+def load_pddl_examples(max_examples: int = 0) -> list[tuple[str, str]]:
     """Carica esempi PDDL da sottocartelle di 'pddl_examples'."""
     examples_dir = os.path.join(os.path.dirname(__file__), "..", "pddl_examples")
     results = []
@@ -34,11 +41,13 @@ def load_pddl_examples(max_examples=0) -> list[tuple[str, str]]:
         except (FileNotFoundError, OSError) as e:
             logger.warning("Errore nel caricamento dell'esempio '%s': %s", folder, e)
             continue
+
     return results
+
 
 def retrieve_best_example(lore_text: str) -> list[tuple[str, str]]:
     """Recupera l'esempio PDDL più simile al testo del lore."""
-    examples = load_pddl_examples(max_examples=0)  # Lascia 0 per evitare distorsioni
+    examples = load_pddl_examples(max_examples=0)
     if not examples:
         return []
     texts = [ex[1] for ex in examples]
@@ -52,24 +61,20 @@ def retrieve_best_example(lore_text: str) -> list[tuple[str, str]]:
         logger.warning("Errore durante la similarità: %s", e)
         return []
 
-def build_prompt_from_lore(lore: dict) -> tuple[str, list[str]]:
-    """Costruisce il prompt da inviare al modello LLM a partire dal lore."""
+
+def build_prompt_from_lore(lore: dict, examples: Optional[list[str]] = None) -> tuple[str, list[str]]:
+    """Costruisce il prompt da inviare al modello LLM a partire dal lore ed esempi opzionali RAG."""
     lore_text = json.dumps(lore, indent=2)
-    examples = retrieve_best_example(lore_text)
-    
-    db_examples = retrieve_similar_examples_from_db(lore, k=2)
-
-
+    examples = examples or []
     examples_text = ""
-    for name, content in examples:
-        if "(define" in content and "(:action" in content:
-            examples_text += f"\n// ---- {name} ----\n{content.strip()}\n"
 
-    # ✅ Campi corretti per init e goal
+    for i, content in enumerate(examples):
+        if "(define" in content and "(:action" in content:
+            examples_text += f"\n// ---- Example {i + 1} ----\n{content.strip()}\n"
+
     initial_state = "\n".join(lore.get("init", []))
     goal_conditions = "\n".join(lore.get("goal", []))
 
-    # ✅ Prompt robusto con descrizione testuale
     prompt = (
         "You are a professional PDDL generator for classical planners like Fast Downward.\n\n"
         "Your task is to generate exactly two valid PDDL files: `domain.pddl` and `problem.pddl`.\n"
@@ -103,15 +108,20 @@ def build_prompt_from_lore(lore: dict) -> tuple[str, list[str]]:
         f"GOAL CONDITIONS:\n{goal_conditions}\n"
     )
 
-    used_example_names = [name for name, _ in examples]
-    return prompt, used_example_names
+    return prompt, [f"Example {i + 1}" for i in range(len(examples))]
+
+
 
 def generate_pddl_from_lore(lore_path: str) -> tuple[str, str, list[str]]:
     """Genera i file PDDL a partire da un file JSON di lore."""
     lore = load_lore(lore_path)
     return generate_pddl_from_dict(lore, lore_path)
 
-def generate_pddl_from_dict(lore: dict, lore_path: str = None) -> tuple[Optional[str], Optional[str], list[str]]:
+
+def generate_pddl_from_dict(
+    lore: dict,
+    lore_path: Optional[str] = None
+) -> tuple[Optional[str], Optional[str], list[str]]:
     """Genera i file PDDL a partire da un dizionario di lore."""
     prompt, used_examples = build_prompt_from_lore(lore)
     raw = ask_ollama(prompt)

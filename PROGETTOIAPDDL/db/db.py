@@ -1,17 +1,38 @@
-# db/db.py
+"""
+Modulo per la gestione del database nel progetto QuestMaster.
+Contiene funzioni per salvare ed estrarre sessioni di generazione PDDL.
+"""
+
+import json
+from typing import List
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
 from db.schema import GenerationSession, Base
 
 # 🔧 Connessione a SQLite
 engine = create_engine("sqlite:///questmaster.db", echo=False)
 Session = sessionmaker(bind=engine)
 
-# ✅ Crea le tabelle se non esistono
-Base.metadata.create_all(engine)
+
+def init_db():
+    """
+    Inizializza il database creando tutte le tabelle se non esistono.
+    """
+    Base.metadata.create_all(engine)
+
 
 def save_generation_session(data: dict):
+    """
+    Salva una sessione di generazione PDDL nel database.
+
+    :param data: Dizionario con chiavi: session_id, lore, domain, problem, validation,
+                 refined_domain, refined_problem
+    """
     session = Session()
     try:
         entry = GenerationSession(
@@ -25,30 +46,31 @@ def save_generation_session(data: dict):
         )
         session.add(entry)
         session.commit()
-    except Exception as e:
+    except Exception:  # È meglio evitare di catturare `Exception` generico; specificare in futuro.
         session.rollback()
-        raise e
+        raise
     finally:
         session.close()
-        
-        
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import json
 
-def retrieve_similar_examples_from_db(input_lore: dict, k: int = 1) -> list[str]:
+
+def retrieve_similar_examples_from_db(input_lore: dict, k: int = 1) -> List[str]:
+    """
+    Recupera fino a k esempi simili dal database in base alla descrizione del lore.
+
+    :param input_lore: Dizionario contenente la chiave "description"
+    :param k: Numero di esempi da restituire
+    :return: Lista di stringhe con contenuti PDDL simili
+    """
     session = Session()
     try:
         all_sessions = session.query(GenerationSession).all()
         if not all_sessions:
             return []
 
-        # Testo del nuovo lore
         query_text = input_lore.get("description", "")
-
-        # Corpus: le lore description salvate
         corpus = []
         contents = []
+
         for s in all_sessions:
             try:
                 old_lore = json.loads(s.lore)
@@ -56,8 +78,8 @@ def retrieve_similar_examples_from_db(input_lore: dict, k: int = 1) -> list[str]
                 domain = s.domain or ""
                 problem = s.problem or ""
                 contents.append(domain.strip() + "\n\n" + problem.strip())
-            except Exception as e:
-                continue
+            except json.JSONDecodeError:
+                continue  # Ignora entry non valide nel lore
 
         vec = TfidfVectorizer().fit_transform(corpus + [query_text])
         sims = cosine_similarity(vec[-1], vec[:-1]).flatten()
@@ -67,7 +89,5 @@ def retrieve_similar_examples_from_db(input_lore: dict, k: int = 1) -> list[str]
 
     finally:
         session.close()
-        
-def init_db():
-    Base.metadata.create_all(engine)
+
 
