@@ -114,6 +114,12 @@ def node_refine(state: PDDLState) -> dict:
             "refined_problem": None,
             "error_message": f"Errore nel raffinamento: {str(e)}"
         }
+        
+        
+# 🔧 Nodo final (serve per chiudere il grafo)
+def end_node(state: PDDLState) -> dict:
+    logger.debug("✅ [End] Fine del grafo.")
+    return state
 
 # ---------------------
 # Grafo (senza memory)
@@ -123,6 +129,8 @@ workflow.add_node("BuildPrompt", node_build_prompt)
 workflow.add_node("GeneratePDDL", node_generate_pddl)
 workflow.add_node("Validate", node_validate)
 workflow.add_node("Refine", node_refine)
+workflow.add_node("End", end_node)
+
 
 workflow.set_entry_point("BuildPrompt")
 workflow.add_edge("BuildPrompt", "GeneratePDDL")
@@ -131,7 +139,7 @@ workflow.add_edge("GeneratePDDL", "Validate")
 # Flusso condizionale: se c'è errore → Refine, altrimenti fine
 workflow.add_conditional_edges(
     "Validate",
-    path=lambda state: "Refine" if state.get("error_message") else None
+    path=lambda state: "Refine" if state.get("error_message") else "End"
 )
 
 graph = workflow.compile()

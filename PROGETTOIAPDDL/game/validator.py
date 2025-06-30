@@ -11,7 +11,6 @@ logger.setLevel(logging.DEBUG)
 
 PDDL_SECTIONS = ["(:types", "(:predicates", "(:action", "(:objects", "(:init", "(:goal)"]
 
-
 def validate_pddl(domain: str, problem: str, lore: dict) -> Dict:
     """Valida la correttezza dei file domain/problem PDDL in base al contenuto del lore."""
     report = {
@@ -19,7 +18,8 @@ def validate_pddl(domain: str, problem: str, lore: dict) -> Dict:
         "missing_sections": [],
         "undefined_objects_in_goal": [],
         "undefined_actions": [],
-        "mismatched_lore_entities": []
+        "mismatched_lore_entities": [],
+        "semantic_errors": []
     }
 
     # 1. Verifica sezioni obbligatorie
@@ -35,17 +35,20 @@ def validate_pddl(domain: str, problem: str, lore: dict) -> Dict:
 
     # 3. Confronto con entità del lore
     lore_entities = lore.get("entities", []) + lore.get("inventory", [])
+    object_set = set(object_list)
     report["mismatched_lore_entities"] = [
-        e for e in lore_entities if e not in object_list
+        e for e in lore_entities if e not in object_set
     ]
 
     # 4. Controllo coerenza azioni (dummy)
     defined_actions = extract_action_names(domain)
-    used_actions = extract_plan_actions(problem)  # opzionale, vuoto
+    used_actions = extract_plan_actions(problem)
     report["undefined_actions"] = [a for a in used_actions if a not in defined_actions]
 
-    return report
+    # 5. Validazione semantica coerente con init e goal della lore
+    report["semantic_errors"] = semantic_check(problem, lore)
 
+    return report
 
 # =======================
 # 🔍 Helper Functions
@@ -65,7 +68,6 @@ def check_required_sections(domain: str, problem: str, report: Dict):
             report["missing_sections"].append(section)
             report["valid_syntax"] = False
 
-
 def extract_objects(problem: str) -> List[str]:
     """Estrae gli oggetti dichiarati nella sezione :objects del problem."""
     match = re.search(r"\(:objects(.*?)\)", problem, re.DOTALL)
@@ -75,7 +77,6 @@ def extract_objects(problem: str) -> List[str]:
     tokens = content.split()
     return [t for t in tokens if not t.startswith("-")]
 
-
 def extract_goal_atoms(problem: str) -> List[List[str]]:
     """Estrae gli atomi obiettivo dalla sezione :goal del file problem.pddl."""
     match = re.search(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
@@ -84,16 +85,45 @@ def extract_goal_atoms(problem: str) -> List[List[str]]:
     atoms = re.findall(r"\(([^()]+)\)", match.group(1))
     return [atom.split() for atom in atoms]
 
-
 def extract_action_names(domain: str) -> List[str]:
     """Estrae i nomi delle azioni definite nel domain."""
     return re.findall(r"\(:action\s+([\w-]+)", domain)
-
 
 def extract_plan_actions(problem: str) -> List[str]:
     """Estrae i nomi delle azioni usate nel piano (dummy per ora)."""
     return []
 
+def extract_init_facts(problem: str) -> List[str]:
+    match = re.search(r"\(:init(.*?)\)\s*\(:goal", problem, re.DOTALL)
+    if not match:
+        return []
+    atoms = re.findall(r"\(([^()]+)\)", match.group(1))
+    return ["(" + a.strip() + ")" for a in atoms]
+
+def extract_goal_facts(problem: str) -> List[str]:
+    match = re.search(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
+    if not match:
+        return []
+    atoms = re.findall(r"\(([^()]+)\)", match.group(1))
+    return ["(" + a.strip() + ")" for a in atoms]
+
+def semantic_check(problem: str, lore: dict) -> List[str]:
+    errors = []
+    init_expected = lore.get("init", [])
+    goal_expected = lore.get("goal", [])
+
+    init_actual = extract_init_facts(problem)
+    goal_actual = extract_goal_facts(problem)
+
+    for fact in init_expected:
+        if fact not in init_actual:
+            errors.append(f"❌ Init mismatch: expected '{fact}' not found in problem.")
+
+    for fact in goal_expected:
+        if fact not in goal_actual:
+            errors.append(f"❌ Goal mismatch: expected '{fact}' not found in problem.")
+
+    return errors
 
 # =======================
 # ✅ Test locale

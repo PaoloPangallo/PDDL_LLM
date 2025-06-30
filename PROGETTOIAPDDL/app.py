@@ -9,9 +9,12 @@ from flask import Flask, request, render_template, jsonify
 from agent.reflection_agent import ask_local_llm
 from game.utils import save_text_file
 from routes import register_routes
+from db.db import init_db
+
 
 # 🔧 Configurazione Flask
 app = Flask(__name__)
+init_db()
 UPLOAD_FOLDER = os.path.join(app.root_path, "uploads")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)

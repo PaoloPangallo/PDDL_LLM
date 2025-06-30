@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
           : { error: "Risposta non in formato JSON." };
 
         if (response.ok) {
-          resultBox.innerHTML = `
+          let html = `
             <p>✅ <strong>Dominio generato:</strong></p>
             <pre>${data.domain?.slice(0, 1000) || "(vuoto)"}</pre>
             <p>✅ <strong>Problema generato:</strong></p>
@@ -70,6 +70,66 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>🗂️ <strong>Sessione:</strong> <code>uploads/${data.session_id}</code></p>
             ${data.refined ? "<p>🔁 Raffinamento eseguito!</p>" : ""}
           `;
+
+          const validation = data.validation;
+
+          if (validation) {
+            html += `<hr><h3 style="color:#333;">🧪 <strong>Report di Validazione</strong></h3>`;
+
+            if (!validation.valid_syntax) {
+              html += `
+                <h4 style="color:red;">❌ Errori di Sintassi</h4>
+                <ul>
+                  ${validation.missing_sections.map(s => `<li>Sezione mancante: <code>${s}</code></li>`).join("")}
+                </ul>
+              `;
+            }
+
+            if (validation.undefined_objects_in_goal?.length > 0) {
+              html += `
+                <h4 style="color:darkred;">🚫 Oggetti non definiti nel goal</h4>
+                <ul>
+                  ${validation.undefined_objects_in_goal.map(obj => `<li><code>${obj}</code></li>`).join("")}
+                </ul>
+              `;
+            }
+
+            if (validation.undefined_actions?.length > 0) {
+              html += `
+                <h4 style="color:darkorange;">⚠️ Azioni non definite usate nel piano</h4>
+                <ul>
+                  ${validation.undefined_actions.map(a => `<li><code>${a}</code></li>`).join("")}
+                </ul>
+              `;
+            }
+
+            if (validation.mismatched_lore_entities?.length > 0) {
+              html += `
+                <h4 style="color:darkmagenta;">🔍 Entità presenti nel lore ma non negli oggetti</h4>
+                <ul>
+                  ${validation.mismatched_lore_entities.map(e => `<li><code>${e}</code></li>`).join("")}
+                </ul>
+              `;
+            }
+
+            if (validation.semantic_errors?.length > 0) {
+              html += `
+                <h4 style="color:orange;">⚠️ Errori Semantici</h4>
+                <ul>
+                  ${validation.semantic_errors.map(err => `<li>${err}</li>`).join("")}
+                </ul>
+              `;
+            }
+
+            html += `
+              <details style="margin-top:1em;">
+                <summary>📋 Visualizza JSON completo</summary>
+                <pre>${JSON.stringify(validation, null, 2)}</pre>
+              </details>
+            `;
+          }
+
+          resultBox.innerHTML = html;
         } else {
           resultBox.innerHTML = `<p>❌ Errore: ${data.error || "Errore sconosciuto"}</p>`;
         }

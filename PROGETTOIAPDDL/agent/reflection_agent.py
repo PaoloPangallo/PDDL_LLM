@@ -50,31 +50,45 @@ def ask_local_llm(prompt: str, model: str = DEFAULT_MODEL) -> str:
 
 
 def build_prompt(domain_text: str, problem_text: str, error_message: str, validation: Optional[dict] = None) -> str:
-    """Costruisce un prompt dettagliato da dominio, problema e messaggio d'errore."""
+    """Costruisce un prompt dettagliato e resiliente da dominio, problema e messaggio d'errore."""
     template_path = Path("prompts/reflection_prompt.txt")
     if not template_path.exists():
         raise FileNotFoundError("Prompt template mancante: prompts/reflection_prompt.txt")
     prompt_template = template_path.read_text(encoding="utf-8")
 
-    additional_notes = ""
+    additional_notes = "\n\n🎯 OBIETTIVO:\n"
+    additional_notes += (
+        "- Correggi i file domain.pddl e problem.pddl in modo che siano validi, coerenti e completi.\n"
+        "- Se ci sono oggetti o predicati nel goal non definiti, definiscili tu nel dominio o negli oggetti.\n"
+        "- Se il lore è incompleto, inventa entità coerenti per completare l'inizializzazione o gli obiettivi.\n"
+        "- NON lasciare sezioni mancanti: tutti i blocchi devono essere inclusi e ben formattati.\n"
+        "- Inserisci sempre almeno un'azione sensata, e assicurati che i predicati usati nelle azioni siano dichiarati.\n"
+        "- Evita nomi con apici ('), spazi o simboli speciali.\n"
+        "- I blocchi DOMAIN e PROBLEM devono iniziare con (define ...) e terminare in modo completo.\n"
+    )
+
     if "unhashable type: 'list'" in error_message:
         additional_notes += (
-            "\n⚠️ ERROR HINT: Avoid nested lists or tuples in the :init section."
-            " Each fact must be in the form (predicate arg1 arg2 ...) with flat arguments.\n"
+            "\n⚠️ ERROR HINT: Evita liste annidate o tuple nella sezione :init."
+            " Ogni fatto deve essere nella forma piatta: (predicato argomento1 argomento2 ...).\n"
         )
 
-    if isinstance(validation, dict) and validation.get("undefined_objects_in_goal"):
-        missing = ", ".join(validation["undefined_objects_in_goal"])
-        additional_notes += (
-            f"\n🛠️ NOTE: The following predicates are used in the goal but not defined in the domain: {missing}.\n"
-        )
+    if isinstance(validation, dict):
+        if validation.get("undefined_objects_in_goal"):
+            missing = ", ".join(validation["undefined_objects_in_goal"])
+            additional_notes += (
+                f"\n🧩 Oggetti usati nel goal ma non definiti: {missing}. Aggiungili in modo coerente.\n"
+            )
+        if validation.get("semantic_errors"):
+            additional_notes += "\n⚠️ Errori semantici rilevati:\n" + "\n".join(validation["semantic_errors"])
 
     return prompt_template.format(
-        domain=domain_text,
-        problem=problem_text,
-        error_message=error_message + additional_notes,
-        validation=json.dumps(validation, indent=2) if validation else ""
+        domain=domain_text.strip(),
+        problem=problem_text.strip(),
+        error_message=error_message.strip() + additional_notes,
+        validation=json.dumps(validation, indent=2, ensure_ascii=False) if validation else ""
     )
+
 
 
 def refine_pddl(domain_path: str, problem_path: str, error_message: str,

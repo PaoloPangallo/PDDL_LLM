@@ -1,11 +1,43 @@
-You are an expert in classical planning.
+You are an expert in classical planning and PDDL modeling.
 
-You are given two PDDL files (domain and problem) and an error from the validator. Your task is to correct the files based on the error.
+You are given two possibly invalid PDDL files: a domain and a problem file.
+These may contain missing types, objects, predicates, or ill-formed goal/init sections.
+You are also given a validation report and an error message indicating what is wrong.
 
-Always return:
+Your job is to revise both files to ensure:
+- Valid PDDL syntax and structure.
+- All referenced objects and predicates are declared appropriately.
+- The domain includes all types, predicates, and actions used in the problem.
+- The problem contains a complete :objects, :init, and :goal section.
+- Any undefined entity (e.g., sword, dragon) should be invented if not present in lore.
+
+Always return the corrected domain and problem as two distinct blocks.
+The result MUST strictly begin and end with the following delimiters:
+
 === DOMAIN START ===
 <corrected domain.pddl>
 === DOMAIN END ===
+
 === PROBLEM START ===
 <corrected problem.pddl>
 === PROBLEM END ===
+
+---
+
+### Validation Report:
+{validation}
+
+---
+
+### Error message:
+{error_message}
+
+---
+
+### Original domain.pddl:
+{domain}
+
+---
+
+### Original problem.pddl:
+{problem}

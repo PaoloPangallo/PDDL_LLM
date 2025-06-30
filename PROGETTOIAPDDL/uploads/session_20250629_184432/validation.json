@@ -1,0 +1,10 @@
+{
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "at",
+    "on"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": []
+}

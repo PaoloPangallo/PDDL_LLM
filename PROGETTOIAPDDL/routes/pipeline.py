@@ -4,6 +4,8 @@ import json
 import os
 from datetime import datetime
 import traceback  # ✅
+from db.db import save_generation_session
+
 
 pipeline_bp = Blueprint("pipeline", __name__)
 
@@ -36,6 +38,18 @@ def run_pipeline():
         if result.get("refined_problem"):
             save(result.get("refined_problem"), "problem_refined.pddl")
 
+        # ✅ Salvataggio nel database
+        save_generation_session({
+            "session_id": session_id,
+            "lore": json.dumps(lore, indent=2, ensure_ascii=False),
+            "domain": result.get("domain"),
+            "problem": result.get("problem"),
+            "validation": json.dumps(result.get("validation"), indent=2, ensure_ascii=False),
+            "refined_domain": result.get("refined_domain"),
+            "refined_problem": result.get("refined_problem"),
+        })
+
+        # ✅ Risposta HTTP
         return jsonify({
             "session_id": session_id,
             "domain": result.get("domain"),
@@ -46,5 +60,5 @@ def run_pipeline():
 
     except Exception as e:
         print("❌ Errore nella pipeline:")
-        traceback.print_exc()  # ✅ stampa stacktrace completo nel terminale
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
