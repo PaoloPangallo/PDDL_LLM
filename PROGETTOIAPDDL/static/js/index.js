@@ -165,44 +165,88 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   function renderPipelineResult(data) {
-  if (!data || data.error) return `<div class="result-card"><p>❌ Errore: ${data.error || "Errore sconosciuto"}</p></div>`;
+    if (!data || data.error) return `<div class="result-card"><p>❌ Errore: ${data.error || "Errore sconosciuto"}</p></div>`;
 
-  let html = `<div class="result-card">`;
+    let html = `<div class="result-card">`;
 
-  html += `<h3>✅ <strong>Dominio generato:</strong></h3>
-           <pre class="code-box">${data.domain?.slice(0, 3000) || "(vuoto)"}</pre>`;
+    html += `<h3>✅ <strong>Dominio generato:</strong></h3>
+             <pre class="code-box">${data.domain?.slice(0, 3000) || "(vuoto)"}</pre>`;
 
-  html += `<h3>✅ <strong>Problema generato:</strong></h3>
-           <pre class="code-box">${data.problem?.slice(0, 3000) || "(vuoto)"}</pre>`;
+    html += `<h3>✅ <strong>Problema generato:</strong></h3>
+             <pre class="code-box">${data.problem?.slice(0, 3000) || "(vuoto)"}</pre>`;
 
-  html += `<p>🗂️ <strong>Sessione:</strong> <code>uploads/${data.session_id}</code></p>`;
-  if (data.refined) html += `<p>🔁 Raffinamento eseguito!</p>`;
+    html += `<p>🗂️ <strong>Sessione:</strong> <code>uploads/${data.session_id}</code></p>`;
+    if (data.refined) html += `<p>🔁 Raffinamento eseguito!</p>`;
 
-  const v = data.validation;
-  if (v) {
-    html += `<hr><h3>🧪 <strong>Report di Validazione</strong></h3><ul>`;
-    if (!v.valid_syntax)
-      html += `<li style="color:red;">❌ Errori di sintassi. Sezioni mancanti: ${v.missing_sections.map(s => `<code>${s}</code>`).join(", ")}</li>`;
-    if (v.undefined_objects_in_goal?.length)
-      html += `<li style="color:darkred;">🎯 Oggetti non definiti nel goal: ${v.undefined_objects_in_goal.map(o => `<code>${o}</code>`).join(", ")}</li>`;
-    if (v.undefined_actions?.length)
-      html += `<li style="color:orange;">⚠️ Azioni non definite usate nel piano: ${v.undefined_actions.map(a => `<code>${a}</code>`).join(", ")}</li>`;
-    if (v.mismatched_lore_entities?.length)
-      html += `<li style="color:darkmagenta;">🔍 Entità nel lore ma non negli oggetti: ${v.mismatched_lore_entities.map(e => `<code>${e}</code>`).join(", ")}</li>`;
-    if (v.semantic_errors?.length)
-      html += `<li style="color:blue;">⚠️ Errori semantici: ${v.semantic_errors.map(e => `<code>${e}</code>`).join(", ")}</li>`;
-    html += `</ul>`;
+    const v = data.validation;
+    if (v) {
+      html += `<hr><h3>🧪 <strong>Report di Validazione</strong></h3><ul>`;
+      if (!v.valid_syntax)
+        html += `<li style="color:red;">❌ Errori di sintassi. Sezioni mancanti: ${v.missing_sections.map(s => `<code>${s}</code>`).join(", ")}</li>`;
+      if (v.undefined_objects_in_goal?.length)
+        html += `<li style="color:darkred;">🎯 Oggetti non definiti nel goal: ${v.undefined_objects_in_goal.map(o => `<code>${o}</code>`).join(", ")}</li>`;
+      if (v.undefined_actions?.length)
+        html += `<li style="color:orange;">⚠️ Azioni non definite usate nel piano: ${v.undefined_actions.map(a => `<code>${a}</code>`).join(", ")}</li>`;
+      if (v.mismatched_lore_entities?.length)
+        html += `<li style="color:darkmagenta;">🔍 Entità nel lore ma non negli oggetti: ${v.mismatched_lore_entities.map(e => `<code>${e}</code>`).join(", ")}</li>`;
+      if (v.semantic_errors?.length)
+        html += `<li style="color:blue;">⚠️ Errori semantici: ${v.semantic_errors.map(e => `<code>${e}</code>`).join(", ")}</li>`;
+      html += `</ul>`;
 
-    html += `<details style="margin-top:1em;">
-               <summary>📋 Visualizza JSON completo</summary>
-               <pre class="code-box">${JSON.stringify(v, null, 2)}</pre>
-             </details>`;
+      html += `<details style="margin-top:1em;">
+                 <summary>📋 Visualizza JSON completo</summary>
+                 <pre class="code-box">${JSON.stringify(v, null, 2)}</pre>
+               </details>`;
+    }
+
+    html += `</div>`;
+    return html;
   }
 
-  html += `</div>`;
-  return html;
+  // ------------------------
+  // CHATBOT INTEGRATION
+  // ------------------------
+ // CHATBOT INTEGRATION
+const chatbotOutput = document.getElementById('chatbot-output');
+const chatbotInput = document.getElementById('chatbot-input');
+const chatbotSend = document.getElementById('chatbot-send');
+
+if (chatbotSend && chatbotInput && chatbotOutput) {
+  chatbotSend.addEventListener('click', async () => {
+    const userMessage = chatbotInput.value.trim();
+    if (!userMessage) return;
+
+    // Mostra messaggio utente
+    chatbotOutput.innerHTML += `<div class="chat-bubble user">${userMessage}</div>`;
+    chatbotInput.value = '';
+    chatbotOutput.scrollTop = chatbotOutput.scrollHeight;
+
+    try {
+      const res = await fetch('/api/chatbot/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage })
+      });
+
+      const data = await res.json();
+      const responses = data.responses || [data.reply] || ["❌ Nessuna risposta ricevuta."];
+
+      responses.forEach(r => {
+        chatbotOutput.innerHTML += `<div class="chat-bubble assistant">${r}</div>`;
+      });
+
+      chatbotOutput.scrollTop = chatbotOutput.scrollHeight;
+    } catch (error) {
+      chatbotOutput.innerHTML += `<div class="chat-bubble error">❌ Errore di comunicazione con il bot.</div>`;
+    }
+  });
+
+  chatbotInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      chatbotSend.click();
+    }
+  });
 }
-
-
 
 })

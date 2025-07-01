@@ -9,7 +9,6 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -60,6 +59,16 @@
         </fieldset>
       </form>
     </section>
+
+
+    <!-- Chatbot Container -->
+<section class="card" id="chatbot-section">
+  <h2 class="card-header">💬 Chatbot</h2>
+  <div id="chatbot-output" class="chat-history-box"></div>
+  <input type="text" id="chatbot-input" aria-label="Scrivi un messaggio" placeholder="Scrivi qui..." />
+  <button id="chatbot-send" class="btn btn-primary">Invia</button>
+</section>
+
 
     <!-- 🧠 Pipeline Automatica -->
     <section class="card">
