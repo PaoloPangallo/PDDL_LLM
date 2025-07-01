@@ -18,13 +18,13 @@ from db.db import retrieve_similar_examples_from_db
 # ---------------------
 # Logging setup
 # ---------------------
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger("pddl_pipeline")
+logging.basicConfig(level=logging.INFO)
 
 # ---------------------
 # Stato del flusso
 # ---------------------
-class PDDLState(TypedDict):
+class PDDLState(TypedDict, total=False):
     """Stato condiviso tra i nodi della pipeline PDDL."""
     lore: dict
     prompt: Optional[str]
@@ -34,33 +34,28 @@ class PDDLState(TypedDict):
     error_message: Optional[str]
     refined_domain: Optional[str]
     refined_problem: Optional[str]
+    refine_count: int
 
+IS_LOCAL_RUN = __name__ == "__main__"
+MAX_REFINES = 2
 
 # ---------------------
 # Nodi della pipeline
 # ---------------------
 def node_build_prompt(state: PDDLState) -> dict:
-    """Costruisce il prompt da lore e include esempi simili dal DB (RAG)."""
-    logger.debug("🧠 [BuildPrompt] Lore ricevuto:\n%s", state["lore"])
-
+    logger.info("🧠 [BuildPrompt] Costruzione del prompt in corso...")
     examples_raw = retrieve_similar_examples_from_db(state["lore"], k=1)
-    examples = [e for e in examples_raw if isinstance(e, str)]  # garantisce che siano stringhe
+    examples = [e for e in examples_raw if isinstance(e, str)]
     prompt, _ = build_prompt_from_lore(state["lore"], examples=examples)
 
-    if examples:
-        logger.debug("📚 [BuildPrompt] Recuperato %d esempio simile.", len(examples))
-    else:
-        logger.debug("📚 [BuildPrompt] Nessun esempio simile trovato.")
-
-    prompt, _ = build_prompt_from_lore(state["lore"], examples=examples)
-    logger.debug("📝 [BuildPrompt] Prompt costruito:\n%s", prompt[:300])
+    logger.info("📚 [BuildPrompt] %d esempio/i recuperati dal DB.", len(examples))
+    logger.debug("📝 Prompt:\n%s", prompt[:300])
     return {"prompt": prompt}
 
 
 def node_generate_pddl(state: PDDLState) -> dict:
-    """Genera dominio e problema PDDL a partire dal prompt."""
+    logger.info("🤖 [GeneratePDDL] Invio prompt al modello...")
     try:
-        logger.debug("🤖 [GeneratePDDL] Invio a Ollama...")
         response = ask_ollama(state["prompt"])
         domain = extract_between(response, "=== DOMAIN START ===", "=== DOMAIN END ===")
         problem = extract_between(response, "=== PROBLEM START ===", "=== PROBLEM END ===")
@@ -68,68 +63,67 @@ def node_generate_pddl(state: PDDLState) -> dict:
         if not domain or not problem:
             raise ValueError("Estrazione dominio o problema fallita")
 
-        os.makedirs("TEMP", exist_ok=True)
-        save_text_file("TEMP/domain.pddl", domain)
-        save_text_file("TEMP/problem.pddl", problem)
+        if IS_LOCAL_RUN:
+            os.makedirs("TEMP", exist_ok=True)
+            save_text_file("TEMP/domain.pddl", domain)
+            save_text_file("TEMP/problem.pddl", problem)
 
-        logger.debug("✅ [GeneratePDDL] Dominio e problema generati con successo.")
+        logger.info("✅ [GeneratePDDL] File generati correttamente.")
         return {"domain": domain, "problem": problem}
     except Exception as err:
-        logger.error("❌ Errore in node_generate_pddl: %s", err, exc_info=True)
+        logger.error("❌ Errore nella generazione: %s", err, exc_info=True)
         return {"domain": None, "problem": None, "error_message": str(err)}
 
 
 def node_validate(state: PDDLState) -> dict:
-    """Valida i file PDDL usando il contenuto della lore."""
-    domain = state.get("domain")
-    problem = state.get("problem")
-    lore_data = state.get("lore", {})
+    logger.info("🧪 [Validate] Validazione in corso...")
+    domain, problem, lore = state.get("domain"), state.get("problem"), state.get("lore", {})
 
     if not domain or not problem:
-        return {
-            "validation": None,
-            "error_message": "Missing domain or problem for validation."
-        }
+        return {"validation": None, "error_message": "Missing domain or problem for validation."}
 
     try:
-        validation = validate_pddl(domain, problem, lore_data)
-        logger.debug("📋 [Validate] Risultato validazione:\n%s", validation)
-
-        if not validation.get("valid_syntax", False):
-            return {"validation": validation, "error_message": "Invalid PDDL syntax."}
-
-        return {"validation": validation, "error_message": None}
+        validation = validate_pddl(domain, problem, lore)
+        logger.info("📋 [Validate] valid_syntax = %s", validation.get("valid_syntax"))
+        return {
+            "validation": validation,
+            "error_message": None if validation.get("valid_syntax") else "Invalid PDDL syntax."
+        }
     except Exception as err:
         logger.error("❌ Errore durante la validazione: %s", err, exc_info=True)
         return {"validation": None, "error_message": f"Errore nella validazione: {str(err)}"}
 
 
 def node_refine(state: PDDLState) -> dict:
-    """Raffina i file PDDL in base all'errore segnalato."""
+    logger.info("🔁 [Refine] Raffinamento in corso...")
     try:
-        lore_data = state.get("lore", {})
-        logger.debug("🔁 [Refine] Avvio raffinamento con messaggio: %s", state.get("error_message"))
+        if IS_LOCAL_RUN:
+            os.makedirs("TEMP", exist_ok=True)
+            save_text_file("TEMP/domain.pddl", state["domain"])
+            save_text_file("TEMP/problem.pddl", state["problem"])
 
         refined = refine_pddl(
             domain_path="TEMP/domain.pddl",
             problem_path="TEMP/problem.pddl",
             error_message=state["error_message"],
-            lore=lore_data
+            lore=state.get("lore", {})
         )
 
         domain = extract_between(refined, "=== DOMAIN START ===", "=== DOMAIN END ===")
         problem = extract_between(refined, "=== PROBLEM START ===", "=== PROBLEM END ===")
 
-        save_text_file("TEMP/domain_refined.pddl", domain)
-        save_text_file("TEMP/problem_refined.pddl", problem)
+        if IS_LOCAL_RUN:
+            save_text_file("TEMP/domain_refined.pddl", domain)
+            save_text_file("TEMP/problem_refined.pddl", problem)
 
-        logger.debug("🛠️ [Refine] Raffinamento completato.")
+        logger.info("🛠️ [Refine] Raffinamento completato.")
         return {
             "refined_domain": domain,
             "refined_problem": problem,
             "domain": domain,
             "problem": problem,
-            "error_message": None
+            "error_message": None,
+            "refine_count": state.get("refine_count", 0) + 1
         }
     except Exception as err:
         logger.error("❌ Errore nel raffinamento: %s", err, exc_info=True)
@@ -141,32 +135,41 @@ def node_refine(state: PDDLState) -> dict:
 
 
 def end_node(state: PDDLState) -> dict:
-    """Nodo terminale: ritorna lo stato finale."""
-    logger.debug("✅ [End] Fine del grafo.")
+    logger.info("✅ [End] Fine della pipeline.")
     return state
-
 
 # ---------------------
 # Costruzione grafo LangGraph
 # ---------------------
 workflow = StateGraph(PDDLState)
+workflow.set_entry_point("BuildPrompt")
+
 workflow.add_node("BuildPrompt", node_build_prompt)
 workflow.add_node("GeneratePDDL", node_generate_pddl)
 workflow.add_node("Validate", node_validate)
 workflow.add_node("Refine", node_refine)
 workflow.add_node("End", end_node)
 
-# Definisce il flusso di esecuzione
-workflow.set_entry_point("BuildPrompt")
 workflow.add_edge("BuildPrompt", "GeneratePDDL")
 workflow.add_edge("GeneratePDDL", "Validate")
+
 workflow.add_conditional_edges(
     "Validate",
-    path=lambda state: "Refine" if state.get("error_message") else "End"
+    path=lambda state: (
+        "Refine"
+        if state.get("error_message") and state.get("refine_count", 0) < MAX_REFINES
+        else "End"
+    )
+)
+
+workflow.add_conditional_edges(
+    "Refine",
+    path=lambda state: (
+        "Validate" if state.get("refined_domain") else "End"
+    )
 )
 
 graph = workflow.compile()
-
 
 # ---------------------
 # Test locale
@@ -178,9 +181,10 @@ if __name__ == "__main__":
 
     result = graph.invoke({"lore": lore_data})
 
-    print("\n✅ DOMINIO:\n", result["domain"][:600])
-    print("\n✅ PROBLEMA:\n", result["problem"][:600])
-    print("\n📋 VALIDAZIONE:\n", json.dumps(result["validation"], indent=2, ensure_ascii=False))
+    print("\n✅ DOMINIO:\n", result.get("domain", "")[:600])
+    print("\n✅ PROBLEMA:\n", result.get("problem", "")[:600])
+    print("\n📋 VALIDAZIONE:\n", json.dumps(result.get("validation", {}), indent=2, ensure_ascii=False))
+
     if result.get("refined_domain"):
-        print("\n🔁 È stato eseguito un raffinamento con successo.")
+        print("\n🔁 Raffinamento eseguito.")
         print("\n🔁 DOMINIO RAFFINATO:\n", result["refined_domain"][:600])

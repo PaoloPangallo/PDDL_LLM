@@ -1,0 +1,433 @@
+@use "sass:color";
+
+// ==========================
+// 🎨 Palette Colori semantica
+// ==========================
+$colors: (
+  bg: (
+    dark: #8f8faf,
+    card: #c05c5c,       // marrone caldo intenso
+    panel: #875d5d,      // marrone più chiaro per panel
+    parchment: url("/static/img/parchment_texture.png")
+  ),
+  border: (
+    default: #444,
+    highlight: #6a0dad
+  ),
+  accent: (
+    gold: #d4a017,
+    violet: #6a0dad,
+    emerald: #00d97e,
+    ruby: #ff6b6b,
+    sapphire: #1e90ff
+  ),
+  text: (
+    light: #f0f0f0,
+    dark: #2d2b2b
+  ),
+  neutral: (
+    stone: #393960,
+    code-bg: #6eab9e
+  )
+);
+
+// ==========================
+// 🛠️ Variabili generali
+// ==========================
+$radius: 0.75rem;
+$spacing: 1.5rem;
+
+$font-title: "MedievalSharp", "Cinzel", serif;
+$font-body: "Inter", "Segoe UI", sans-serif;
+$font-serif: "Spectral", serif;
+$font-mono: "Courier New", monospace;
+
+$font-sizes: (
+  h1: 2.5rem,
+  h2: 2rem,
+  h3: 1.5rem,
+  base: 1rem,
+  small: 0.875rem
+);
+
+// ==========================
+// 🔧 Mixins
+// ==========================
+@mixin card($bg, $border-left: null) {
+  background-color: $bg;
+  border-radius: $radius;
+  padding: $spacing;
+  box-shadow: 0 8px 20px rgba(90, 50, 50, 0.5);
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  @if $border-left {
+    border-left: 6px solid $border-left;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(90, 50, 50, 0.6);
+  }
+}
+
+@mixin button($bg, $color: #fff) {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: $radius;
+  background-color: $bg;
+  color: $color;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: color.adjust($bg, $lightness: -10%);
+  }
+}
+
+@mixin table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 0.75rem;
+    border: 1px solid map-get(map-get($colors, border), default);
+    background-color: color.adjust(map-get(map-get($colors, bg), panel), $lightness: -5%);
+    text-align: left;
+  }
+
+  th {
+    background-color: map-get(map-get($colors, neutral), stone);
+    color: map-get(map-get($colors, accent), gold);
+  }
+}
+
+@mixin scrollable-box {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+// ==========================
+// 📖 Tipografia e utility
+// ==========================
+h1 {
+  font-size: map-get($font-sizes, h1);
+  font-family: $font-title;
+  color: map-get(map-get($colors, accent), gold);
+  margin-bottom: 0.75rem;
+  text-shadow: 0 0 8px rgba(212, 160, 23, 0.4);
+}
+
+h2 {
+  font-size: map-get($font-sizes, h2);
+  font-family: $font-title;
+  color: map-get(map-get($colors, accent), violet);
+  margin-bottom: 0.75rem;
+}
+
+h3 {
+  font-size: map-get($font-sizes, h3);
+  font-family: $font-serif;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+
+// ==========================
+// Base generali
+// ==========================
+html {
+  font-size: 16px;
+}
+
+body {
+  background: map-get(map-get($colors, bg), parchment);
+  background-size: cover;
+  color: map-get(map-get($colors, text), dark);
+  font-family: $font-body;
+  line-height: 1.6;
+  padding: $spacing;
+}
+
+select {
+  background-color: map-get(map-get($colors, bg), card);
+  color: map-get(map-get($colors, text), light);
+  border: 1px solid map-get(map-get($colors, accent), violet);
+  padding: 0.6rem 2rem 0.6rem 1rem;
+  border-radius: $radius;
+  font-family: $font-body;
+  font-weight: 500;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23d4a017' height='16' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: color.adjust(map-get(map-get($colors, bg), card), $lightness: 5%);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(map-get(map-get($colors, accent), emerald), 0.8);
+  }
+}
+
+// ==========================
+// 📦 Componenti
+// ==========================
+
+.card {
+  @include card(map-get(map-get($colors, bg), card), map-get(map-get($colors, accent), violet));
+}
+
+.card-header {
+  font-family: $font-title;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: map-get(map-get($colors, accent), gold);
+  border-bottom: 1px solid map-get(map-get($colors, border), default);
+  padding-bottom: 0.5rem;
+}
+
+.result-card {
+  @include card(map-get(map-get($colors, bg), panel), map-get(map-get($colors, accent), emerald));
+
+  h3 {
+    color: map-get(map-get($colors, accent), emerald);
+    font-family: $font-serif;
+    margin: 1rem 0 0.5rem;
+  }
+
+  p, ul {
+    margin: 0.5rem 0;
+  }
+
+  ul {
+    padding-left: 1.5rem;
+    list-style: disc;
+  }
+
+  code {
+    background-color: color.adjust(map-get(map-get($colors, bg), panel), $lightness: -10%);
+    padding: 0.3rem 0.6rem;
+    border-radius: 5px;
+    color: #fffacd;
+    font-family: $font-mono;
+  }
+
+  details {
+    margin-top: 1.5rem;
+  }
+}
+
+.result-section {
+  @include card(map-get(map-get($colors, bg), panel));
+  margin-top: 2rem;
+
+  &.success { border-left-color: map-get(map-get($colors, accent), emerald); }
+  &.warning { border-left-color: map-get(map-get($colors, accent), ruby); }
+  &.info    { border-left-color: map-get(map-get($colors, accent), sapphire); }
+
+  h4 {
+    margin-top: 1rem;
+    color: color.adjust(map-get(map-get($colors, accent), violet), $lightness: 10%);
+  }
+
+  ul {
+    padding-left: 1.2rem;
+    list-style: square;
+  }
+
+  code {
+    background-color: color.adjust(map-get(map-get($colors, bg), panel), $lightness: 5%);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.95rem;
+  }
+}
+
+.readonly-textarea,
+textarea#userMessage {
+  width: 100%;
+  background-color: map-get(map-get($colors, bg), panel);
+  color: map-get(map-get($colors, text), light);
+  border: 1px solid map-get(map-get($colors, border), default);
+  padding: 1rem;
+  font-family: $font-mono;
+  border-radius: $radius;
+  resize: vertical;
+  margin-top: 0.5rem;
+}
+
+.plan-table {
+  @include table;
+}
+
+a.download {
+  color: color.adjust(map-get(map-get($colors, accent), violet), $lightness: 15%);
+  font-weight: bold;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Bottoni
+button {
+  @include button(map-get(map-get($colors, accent), gold));
+}
+
+button#askPlannerError {
+  @include button(map-get(map-get($colors, accent), violet), #fff);
+  font-weight: bold;
+  box-shadow: 0 0 8px rgba(106, 13, 173, 0.7);
+}
+
+.highlight-btn {
+  @include button(#4CAF50, #fff);
+
+  &:hover {
+    background-color: #45a049;
+  }
+}
+
+a.primary-btn {
+  @include button(#0e639c, #fff);
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+}
+
+// Modale
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  &.hidden {
+    display: none;
+  }
+
+  &[aria-hidden="false"] {
+    display: flex;
+  }
+}
+
+.modal-content {
+  background-color: color.adjust(map-get(map-get($colors, bg), panel), $lightness: 5%);
+  border: 2px solid map-get(map-get($colors, accent), gold);
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(212, 160, 23, 0.15);
+  animation: modalPop 0.4s ease-out;
+  color: map-get(map-get($colors, text), light);
+  font-family: $font-serif;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Spinner
+.spinner-ring {
+  width: 48px;
+  height: 48px;
+  border: 5px solid map-get(map-get($colors, border), default);
+  border-top: 5px solid map-get(map-get($colors, accent), emerald);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.modal-message {
+  font-size: 1.1rem;
+  color: map-get(map-get($colors, accent), gold);
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #2e2e4d;
+  border-radius: 10px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, map-get(map-get($colors, accent), emerald), map-get(map-get($colors, accent), gold));
+  border-radius: 10px;
+  transition: width 0.4s ease-in-out;
+  animation: progressAnim 2s infinite ease-in-out;
+}
+
+@keyframes progressAnim {
+  0% { width: 0; }
+  50% { width: 75%; }
+  100% { width: 100%; }
+}
+
+.progress-steps {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  text-align: left;
+  font-size: 0.95rem;
+
+  li {
+    margin: 0.3rem 0;
+    opacity: 0.7;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    &.active-step {
+      color: map-get(map-get($colors, accent), emerald);
+      font-weight: bold;
+      opacity: 1;
+    }
+  }
+}
+
+// Download link
+.download-link {
+  color: map-get(map-get($colors, accent), emerald);
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 1rem; 
+  display: inline-block;    
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

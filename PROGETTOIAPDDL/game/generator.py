@@ -74,38 +74,45 @@ def build_prompt_from_lore(lore: dict, examples: Optional[list[str]] = None) -> 
 
     initial_state = "\n".join(lore.get("init", []))
     goal_conditions = "\n".join(lore.get("goal", []))
+    object_list = "\n".join(lore.get("objects", []))
 
     prompt = (
-        "You are a professional PDDL generator for classical planners like Fast Downward.\n\n"
-        "Your task is to generate exactly two valid PDDL files: `domain.pddl` and `problem.pddl`.\n"
-        "⚠️ Use ONLY **standard PDDL syntax** — do NOT include any pseudocode, LISP-like constructs, or comments.\n\n"
-        "❌ DO NOT use constructs like: `if`, `eql`, `conjunct`, `let`, `lambda`, `case`, `when`, `either`, `imply`, `cond`.\n"
-        "✅ ALLOWED constructs are:\n"
-        "- `:requirements`, `:types`, `:predicates`, `:action`\n"
-        "- Inside actions: `:parameters`, `:precondition`, `:effect`\n"
-        "- Logical expressions: `and`, `not`\n\n"
-        "📝 Your DOMAIN file must:\n"
-        "- Start with (define (domain ...))\n"
-        "- Include (:requirements), (:types), (:predicates), and at least one (:action)\n"
-        "- Each action must contain :parameters, :precondition, and :effect only.\n\n"
-        "🗂️ Your PROBLEM file must:\n"
-        "- Start with (define (problem ...))\n"
-        "- Include (:domain ...), (:objects ...), (:init ...), and (:goal ...)\n"
-        "- Use flat predicates in (:init ...), not wrapped in (and ...)\n"
-        "- Every object in :init and :goal must be declared in :objects\n\n"
-        "Wrap your output exactly between these markers:\n"
-        "=== DOMAIN START ===\n"
-        "<domain.pddl here>\n"
-        "=== DOMAIN END ===\n"
-        "=== PROBLEM START ===\n"
-        "<problem.pddl here>\n"
-        "=== PROBLEM END ===\n"
-        f"\nRelevant Examples:\n{examples_text}"
-        f"\nQUEST TITLE: {lore.get('quest_title', '')}\n"
-        f"WORLD CONTEXT: {lore.get('world_context', '')}\n"
-        f"QUEST DESCRIPTION:\n{lore.get('description', '')}\n"
-        f"INITIAL STATE:\n{initial_state}\n"
-        f"GOAL CONDITIONS:\n{goal_conditions}\n"
+        "You are an expert in PDDL generation for classical planning.\n\n"
+        "Your task is to generate exactly **two valid PDDL files**:\n"
+        "1. `domain.pddl`\n"
+        "2. `problem.pddl`\n\n"
+        "⚠️ Follow STRICTLY the PDDL standard syntax. Do NOT invent syntax or wrap blocks incorrectly.\n"
+        "⚠️ Every section MUST be included and well-formed.\n\n"
+
+        "🔤 Use exactly the same objects, names and predicates found in the lore.\n"
+        "Do not rename or invent entities. These must appear:\n"
+        f"{object_list}\n\n"
+
+        "🧠 DOMAIN file format:\n"
+        "Must include these required sections:\n"
+        "- `(:requirements ...)`\n"
+        "- `(:types ...)`\n"
+        "- `(:predicates ...)`\n"
+        "- At least one `(:action name ...)` — use this exact syntax\n\n"
+
+        "📦 PROBLEM file format:\n"
+        "Must include these required sections:\n"
+        "- `(:domain ...)`\n"
+        "- `(:objects ...)`\n"
+        "- `(:init ...)` — use FLAT predicates, NO `(and (...))`\n"
+        "- `(:goal ...)`\n\n"
+
+        "🎯 OUTPUT FORMAT:\n"
+        "Wrap your answer between these exact delimiters:\n"
+        "=== DOMAIN START ===\n<insert full domain.pddl here>\n=== DOMAIN END ===\n"
+        "=== PROBLEM START ===\n<insert full problem.pddl here>\n=== PROBLEM END ===\n\n"
+
+        f"📚 Examples (optional):\n{examples_text}"
+        f"\n🗺️ QUEST TITLE: {lore.get('quest_title', '')}\n"
+        f"🌍 WORLD CONTEXT: {lore.get('world_context', '')}\n"
+        f"📜 QUEST DESCRIPTION:\n{lore.get('description', '')}\n"
+        f"📦 INITIAL STATE:\n{initial_state}\n"
+        f"🎯 GOAL CONDITIONS:\n{goal_conditions}\n"
     )
 
     return prompt, [f"Example {i + 1}" for i in range(len(examples))]

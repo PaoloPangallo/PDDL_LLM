@@ -12,6 +12,71 @@ h1, h2 {
     margin-bottom: 0.5em;
 }
 
+
+.card {
+  background-color: #252542;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.08);
+  border-left: 6px solid #6a0dad;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.12);
+}
+
+.card-header {
+  font-family: "Cinzel", serif;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #ffcc00;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.5rem;
+}
+
+
+.result-card {
+  background-color: #1e1e2f;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+  margin-top: 2rem;
+  border-left: 6px solid #00d97e;
+}
+
+.result-card h3 {
+  color: #00d97e;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-family: "Spectral", serif;
+}
+
+.result-card p {
+  margin: 0.5rem 0;
+}
+
+.result-card ul {
+  padding-left: 1.5rem;
+  list-style: disc;
+}
+
+.result-card details {
+  margin-top: 1.5rem;
+}
+
+.result-card code {
+  background-color: #2d2d44;
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  color: #fffacd;
+  font-family: "Courier New", monospace;
+}
+
+
+
 .result-section {
     margin: 2rem 0;
     padding: 1.5rem;
@@ -214,6 +279,60 @@ button#askPlannerError:hover {
   max-width: 90%;
 }
 
+
+.modal-message {
+  font-family: 'Spectral', serif;
+  font-size: 1.1rem;
+  color: #3c2566;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background-color: #e5e3ee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 1rem;
+  position: relative;
+}
+
+.progress-fill {
+  transition: width 0.6s ease-in-out, background-position 1s ease;
+  background-size: 200% auto;
+  background-position: 0% 0;
+  animation: shimmer 2s linear infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 0% 0; }
+  100% { background-position: 100% 0; }
+}
+
+
+.progress-steps {
+  margin-top: 1rem;
+  list-style: none;
+  padding: 0;
+  font-size: 0.95rem;
+  font-family: 'Spectral', serif;
+  text-align: center;
+  color: #777;
+}
+
+.progress-steps li {
+  margin: 0.3rem 0;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.progress-steps .active-step {
+  color: #4b0082;
+  font-weight: 600;
+  opacity: 1;
+}
+
+
 .spinner {
   width: 32px;
   height: 32px;
@@ -255,6 +374,78 @@ a.primary-btn {
   max-width: 100%;
   overflow-x: auto;
 }
+
+.code-box {
+  background-color: #f4f0ff;
+  border-left: 4px solid #6a0dad;
+  padding: 1rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  font-family: 'Courier New', monospace;
+  border-radius: 5px;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.result-section h4 {
+  margin-top: 1rem;
+  color: #5c3d99;
+}
+
+.result-section ul {
+  padding-left: 1.2rem;
+  list-style: square;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: #1e90ff;
+  margin-top: 1rem;
+}
+
+details[open] summary {
+  color: #00d9ff;
+}
+
+details pre {
+  background-color: #0f0f1e;
+  color: #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 220px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 8px;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; 
+  left: 50%;
+  margin-left: -110px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+
 
 
 

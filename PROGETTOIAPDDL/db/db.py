@@ -53,13 +53,18 @@ def save_generation_session(data: dict):
         session.close()
 
 
-def retrieve_similar_examples_from_db(input_lore: dict, k: int = 1) -> List[str]:
-    """
-    Recupera fino a k esempi simili dal database in base alla descrizione del lore.
+from typing import List, Dict
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import json
 
-    :param input_lore: Dizionario contenente la chiave "description"
-    :param k: Numero di esempi da restituire
-    :return: Lista di stringhe con contenuti PDDL simili
+def retrieve_similar_examples_from_db(input_lore: dict, k: int = 5) -> List[Dict]:
+    """
+    Recupera fino a k esempi strutturati simili dal database in base alla descrizione del lore.
+
+    :param input_lore: Lore attuale come dict (richiede chiave "description")
+    :param k: Numero massimo di esempi da restituire
+    :return: Lista di dizionari strutturati con 'lore_description', 'domain', 'problem', 'similarity'
     """
     session = Session()
     try:
@@ -70,24 +75,43 @@ def retrieve_similar_examples_from_db(input_lore: dict, k: int = 1) -> List[str]
         query_text = input_lore.get("description", "")
         corpus = []
         contents = []
+        raw_refs = []
 
         for s in all_sessions:
             try:
                 old_lore = json.loads(s.lore)
-                corpus.append(old_lore.get("description", ""))
+                lore_desc = old_lore.get("description", "")
                 domain = s.domain or ""
                 problem = s.problem or ""
+                
+                if "(:goal" not in problem:
+                    continue  # scarta esempi incompleti
+
+                corpus.append(lore_desc)
                 contents.append(domain.strip() + "\n\n" + problem.strip())
+                raw_refs.append((lore_desc, domain, problem))
             except json.JSONDecodeError:
-                continue  # Ignora entry non valide nel lore
+                continue
+
+        if not corpus:
+            return []
 
         vec = TfidfVectorizer().fit_transform(corpus + [query_text])
         sims = cosine_similarity(vec[-1], vec[:-1]).flatten()
-
         top_k = sims.argsort()[-k:][::-1]
-        return [contents[i] for i in top_k]
+
+        return [
+            {
+                "lore_description": raw_refs[i][0],
+                "domain": raw_refs[i][1],
+                "problem": raw_refs[i][2],
+                "similarity": float(sims[i])
+            }
+            for i in top_k
+        ]
 
     finally:
         session.close()
+
 
 

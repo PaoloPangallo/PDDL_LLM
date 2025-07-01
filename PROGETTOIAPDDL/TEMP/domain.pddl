@@ -1,25 +1,29 @@
-(define (domain dragon-tower)
-     (:requirements :equality :typed :static :quantifiers none)
-     (:types agent dragon item location)
-     (:predicates
-      (at ?a ?l)
-      (on-ground ?i ?l)
-      (carrying ?a ?i)
-      (sleeping ?d)
-      (awake ?d))
-     (:action take-item
-              (:parameters ?a ?i)
-              (:precondition (and (at ?a ?l) (on-ground ?i ?l)))
-              (:effect (not (on-ground ?i ?l)) (and (holding ?a ?i) (not (at ?i ?l)))) )
-     (:action drop-item
-              (:parameters ?a ?i)
-              (:precondition (and (holding ?a ?i)))
-              (:effect (on-ground ?i (location ?a)) (not (holding ?a ?i))) )
-     (:action wake-dragon
-              (:parameters ?d)
-              (:precondition (at ?d tower))
-              (:effect (not (sleeping ?d))))
-     (:action defeat-dragon
-              (:parameters ?h)
-              (:precondition (and (carrying ?h sword-of-fire) (awake dragon)))
-              (:effect (not (alive ?d)))) )
+(define (domain tower-of-varnak)
+      :requirements ((linear))
+      :types agent location monster object
+      :predicates
+        (at ?a ?loc)
+        (on-ground ?o ?loc)
+        (carrying ?a ?o)
+        (sleeping ?m)
+        (awake ?m)
+      :actions
+        (move
+          :parameters (?a ?loc1 ?loc2)
+          :precondition (and (at ?a ?loc1) (not (on-ground ?a ?loc1)))
+          :effect (and (at ?a ?loc2) (not (at ?a ?loc1)) (not (on-ground ?a ?loc1))))
+        (pickup
+          :parameters (?a ?o ?loc)
+          :precondition (and (and (on-ground ?o ?loc) (at ?a ?loc)) (not (carrying ?a ?o)))
+          :effect (and (not (on-ground ?o ?loc)) (carrying ?a ?o))))
+   (:type location (village tower-of-varnak))
+   (:function location-north ?loc -1)
+   (:function location-east ?loc 1)
+   (:function location-west ?loc -1)
+   (:function location-south ?loc 1)
+   (:type monster (sleeping awake))
+   (:function sleeping-awake ?m 0)
+   (:action wake-dragon
+     :parameters (?m)
+     :precondition (and (sleeping ?m))
+     :effect (and (not (sleeping ?m)) (awake ?m)))

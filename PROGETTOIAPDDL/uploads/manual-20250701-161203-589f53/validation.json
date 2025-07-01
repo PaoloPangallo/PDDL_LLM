@@ -1,0 +1,15 @@
+{
+  "valid_syntax": false,
+  "missing_sections": [
+    "(:types",
+    "(:predicates",
+    "(:action",
+    "(:objects",
+    "(:init",
+    "(:goal"
+  ],
+  "undefined_objects_in_goal": [],
+  "undefined_actions": [],
+  "mismatched_lore_entities": [],
+  "semantic_errors": []
+}

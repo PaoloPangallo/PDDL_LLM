@@ -1,0 +1,16 @@
+{
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "at",
+    "hero",
+    "tower-of-varnak",
+    "carrying",
+    "sword-of-fire",
+    "sleeping",
+    "ice-dragon"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": [],
+  "semantic_errors": []
+}

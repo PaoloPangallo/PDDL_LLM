@@ -1,11 +1,23 @@
 <div id="loadingModal" class="modal hidden" role="alert" aria-live="assertive">
   <div class="modal-content enhanced-modal">
     <div class="spinner-container">
+
       <div class="spinner-ring"></div>
-      <p id="loadingMessage" class="modal-message">⌛ Attendere...</p>
-      <div class="progress-bar">
-        <div class="progress-fill"></div>
+
+      <p id="loadingMessage" class="modal-message">
+        ⌛ Inizio processo di pianificazione...
+      </p>
+
+      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
+
+      <ol class="progress-steps" aria-label="Fasi del processo">
+        <li id="step-0" class="active-step">📜 Lettura lore</li>
+        <li id="step-1">⚙️ Generazione PDDL</li>
+        <li id="step-2">🧪 Validazione sintattico-semantica</li>
+        <li id="step-3">🏁 Esecuzione planner</li>
+      </ol>
     </div>
   </div>
 </div>

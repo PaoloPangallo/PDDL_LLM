@@ -1,6 +1,11 @@
+<!-- lore_input.html -->
+
 <div class="form-group">
-  <label>📘 Seleziona storia:</label>
-  <select name="lore_path" class="text-input" required>
-    <option value="">Caricamento storie...</option>
+  <label for="lore_path">📘 Seleziona un file <code>lore.json</code> disponibile:</label>
+  <select name="lore_path" id="lore_path" required aria-describedby="lorePathHelp">
+    <option value="">-- Caricamento lore disponibili... --</option>
   </select>
+  <small id="lorePathHelp" class="form-text">
+    I file sono caricati automaticamente dalla directory <code>/lore</code>.
+  </small>
 </div>
