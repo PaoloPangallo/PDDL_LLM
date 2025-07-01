@@ -18,7 +18,7 @@ from game.utils import (
 )
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
-DEFAULT_MODEL = "mistral"
+DEFAULT_MODEL = "llama3.2-vision"
 HEADERS = {"Content-Type": "application/json"}
 
 logger = logging.getLogger(__name__)

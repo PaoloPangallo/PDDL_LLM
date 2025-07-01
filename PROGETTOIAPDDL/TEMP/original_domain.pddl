@@ -1,27 +1,42 @@
-(define (domain dragon-tower)
-     (:requirements :equality :typing :fluent :duration)
-     (:types agent object dragon fire-dragon sleeping)
-     (:predicates
-       (at ?a ?loc)
-       (on-ground ?o ?l)
-       (carrying ?h ?o)
-       (sleeping ?d))
-     (:action pick-up
-              (:parameters ?h ?o)
-              (:precondition and (at ?h ?loc) (and (on-ground ?o ?loc) (not (carrying ?h ?o))))
-              (:effect (and (not (on-ground ?o ?loc)) (carrying ?h ?o)
-                             (not (at ?h ?loc)))))
-     (:action put-down
-              (:parameters ?h ?o)
-              (:precondition and (carrying ?h ?o))
-              (:effect (and (on-ground ?o ?loc) (not (carrying ?h ?o))
-                             (at ?h ?loc))))
-     (:action move-to
-              (:parameters ?a ?d)
-              (:precondition at ?a ?loc)
-              (:effect (and (not (at ?a ?loc)) (at ?a ?d))))
-     (:action wake-dragon
-              (:parameters ?h)
-              (:precondition and (carrying ?h sword-of-fire) (at ?h tower-of-varnak))
-              (:effect (not (sleeping ice-dragon))))
-   )
+(define (domain world)
+  (:requirements :strips :typing)
+  (:types 
+    location 
+    object 
+    entity 
+    sword 
+    dragon 
+    ground 
+    tower 
+    hero 
+    ice 
+    fire)
+  (:predicates 
+    (at ?x - location) 
+    (on-ground ?x - object) 
+    (sleeping ?x - entity) 
+    (carrying ?x - hero ?y - object))
+  (:action move
+    :parameters (?x - location ?y - location ?z - hero)
+    :precondition (and (at ?z ?x) (not (at ?z ?y)))
+    :effect (and (at ?z ?y) (not (at ?z ?x))))
+  (:action pick-up
+    :parameters (?x - location ?y - object ?z - hero)
+    :precondition (and (at ?z ?x) (on-ground ?y ?x) (not (carrying ?z ?y)))
+    :effect (and (carrying ?z ?y) (not (on-ground ?y ?x))))
+  (:action drop
+    :parameters (?x - location ?y - object ?z - hero)
+    :precondition (and (at ?z ?x) (carrying ?z ?y))
+    :effect (and (not (carrying ?z ?y)) (on-ground ?y ?x)))
+  (:action fight
+    :parameters (?x - location ?y - entity ?z - hero)
+    :precondition (and (at ?z ?x) (sleeping ?y ?x))
+    :effect (and (not (sleeping ?y ?x)) (not (carrying ?z ?y))))
+  (:action go-to
+    :parameters (?x - location ?y - location ?z - hero)
+    :precondition (and (at ?z ?x) (not (at ?z ?y)))
+    :effect (and (at ?z ?y) (not (at ?z ?x))))
+  (:action use-sword
+    :parameters (?x - location ?y - hero ?z - object)
+    :precondition (and (at ?y ?x) (carrying ?y ?z))
+    :effect (and (not (sleeping ?z ?x)) (not (carrying ?y ?z)))))

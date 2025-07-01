@@ -5,7 +5,7 @@ from langchain_community.chat_models.ollama import ChatOllama
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.messages import SystemMessage, HumanMessage
 
-MODEL = os.getenv("OLLAMA_MODEL", "mistral")  # oppure "tinyllama"
+MODEL = os.getenv("OLLAMA_MODEL", "llama3.2-vision")  # oppure "tinyllama"
 
 
 def generate_quest_description(goal: str, obstacle: str) -> str:

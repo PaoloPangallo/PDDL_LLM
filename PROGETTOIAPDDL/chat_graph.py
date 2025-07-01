@@ -55,7 +55,7 @@ def generate_pddl_from_lore(lore: str) -> dict:
     Include esempi rilevanti (RAG) dal database locale.
     """
     lore_dict = json.loads(lore)
-    examples = retrieve_similar_examples_from_db(lore_dict, k=1)
+    examples = retrieve_similar_examples_from_db(lore_dict, k=0)
     prompt, _ = build_prompt_from_lore(lore_dict, examples=examples)
     result = ask_ollama(prompt)
 
@@ -102,7 +102,7 @@ def reflect(domain: str, problem: str, error_message: str, lore: str) -> dict:
 # 3. Setup LLM con Tools
 # ================================
 tools = [generate_pddl_from_lore, validate, reflect]
-llm = ChatOllama(model="mistral")
+llm = ChatOllama(model="llama3.2-vision")
 llm_with_tools = llm.bind_tools(tools)
 
 

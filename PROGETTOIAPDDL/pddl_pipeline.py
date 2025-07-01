@@ -1,8 +1,3 @@
-"""
-Pipeline LangGraph per generare, validare e raffinare file PDDL a partire da una lore.
-Include RAG (Retrieval-Augmented Generation) da database locale.
-"""
-
 import os
 import json
 import logging
@@ -18,14 +13,17 @@ from db.db import retrieve_similar_examples_from_db
 # ---------------------
 # Logging setup
 # ---------------------
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+logger = logging.getLogger("PDDL_Pipeline")
 
 # ---------------------
 # Stato del flusso
 # ---------------------
 class PDDLState(TypedDict):
-    """Stato condiviso tra i nodi della pipeline PDDL."""
     lore: dict
     prompt: Optional[str]
     domain: Optional[str]
@@ -35,47 +33,40 @@ class PDDLState(TypedDict):
     refined_domain: Optional[str]
     refined_problem: Optional[str]
 
-
 # ---------------------
 # Nodi della pipeline
 # ---------------------
 def node_build_prompt(state: PDDLState) -> dict:
     """Costruisce il prompt da lore e include esempi simili dal DB (RAG)."""
-    logger.debug("🧠 [BuildPrompt] Lore ricevuto:\n%s", state["lore"])
-
+    logger.debug("BuildPrompt — lore keys: %s", list(state["lore"].keys()))
     examples_raw = retrieve_similar_examples_from_db(state["lore"], k=1)
-    examples = [e for e in examples_raw if isinstance(e, str)]  # garantisce che siano stringhe
-    prompt, _ = build_prompt_from_lore(state["lore"], examples=examples)
-
+    examples = [e for e in examples_raw if isinstance(e, str)]
     if examples:
-        logger.debug("📚 [BuildPrompt] Recuperato %d esempio simile.", len(examples))
+        logger.debug("BuildPrompt — recuperati %d esempi simili", len(examples))
     else:
-        logger.debug("📚 [BuildPrompt] Nessun esempio simile trovato.")
-
+        logger.debug("BuildPrompt — nessun esempio simile trovato")
     prompt, _ = build_prompt_from_lore(state["lore"], examples=examples)
-    logger.debug("📝 [BuildPrompt] Prompt costruito:\n%s", prompt[:300])
+    logger.debug("BuildPrompt — prompt (troncato): %s", prompt[:200].replace("\n"," "))
     return {"prompt": prompt}
 
 
 def node_generate_pddl(state: PDDLState) -> dict:
     """Genera dominio e problema PDDL a partire dal prompt."""
     try:
-        logger.debug("🤖 [GeneratePDDL] Invio a Ollama...")
+        logger.debug("GeneratePDDL — invio a Ollama")
         response = ask_ollama(state["prompt"])
         domain = extract_between(response, "=== DOMAIN START ===", "=== DOMAIN END ===")
         problem = extract_between(response, "=== PROBLEM START ===", "=== PROBLEM END ===")
-
         if not domain or not problem:
             raise ValueError("Estrazione dominio o problema fallita")
 
         os.makedirs("TEMP", exist_ok=True)
         save_text_file("TEMP/domain.pddl", domain)
         save_text_file("TEMP/problem.pddl", problem)
-
-        logger.debug("✅ [GeneratePDDL] Dominio e problema generati con successo.")
-        return {"domain": domain, "problem": problem}
+        logger.info("GeneratePDDL — dominio e problema generati e salvati in TEMP/")
+        return {"domain": domain, "problem": problem, "error_message": None}
     except Exception as err:
-        logger.error("❌ Errore in node_generate_pddl: %s", err, exc_info=True)
+        logger.error("GeneratePDDL — errore: %s", err, exc_info=True)
         return {"domain": None, "problem": None, "error_message": str(err)}
 
 
@@ -83,47 +74,62 @@ def node_validate(state: PDDLState) -> dict:
     """Valida i file PDDL usando il contenuto della lore."""
     domain = state.get("domain")
     problem = state.get("problem")
-    lore_data = state.get("lore", {})
-
     if not domain or not problem:
-        return {
-            "validation": None,
-            "error_message": "Missing domain or problem for validation."
-        }
+        msg = "Mancano dominio o problema per la validazione"
+        logger.warning("Validate — %s", msg)
+        return {"validation": None, "error_message": msg}
 
     try:
-        validation = validate_pddl(domain, problem, lore_data)
-        logger.debug("📋 [Validate] Risultato validazione:\n%s", validation)
+        validation = validate_pddl(domain, problem, state["lore"])
+        logger.debug("Validate — raw validation: %s", validation)
 
+        # Controllo sintassi
         if not validation.get("valid_syntax", False):
-            return {"validation": validation, "error_message": "Invalid PDDL syntax."}
+            msg = "Sintassi PDDL non valida"
+            logger.warning("Validate — %s", msg)
+            return {"validation": validation, "error_message": msg}
 
+        # Controlli semantici
+        issues = []
+        if validation.get("undefined_objects_in_goal"):
+            count = len(validation["undefined_objects_in_goal"])
+            issues.append(f"{count} oggetti non definiti nel goal")
+        if validation.get("undefined_actions"):
+            count = len(validation["undefined_actions"])
+            issues.append(f"{count} azioni non definite")
+        if validation.get("semantic_errors"):
+            count = len(validation["semantic_errors"])
+            issues.append(f"{count} errori semantici")
+        if issues:
+            msg = "; ".join(issues)
+            logger.warning("Validate — problemi semantici: %s", msg)
+            return {"validation": validation, "error_message": msg}
+
+        logger.info("Validate — PDDL valido sintatticamente e semanticamente")
         return {"validation": validation, "error_message": None}
+
     except Exception as err:
-        logger.error("❌ Errore durante la validazione: %s", err, exc_info=True)
-        return {"validation": None, "error_message": f"Errore nella validazione: {str(err)}"}
+        msg = f"Errore durante la validazione: {err}"
+        logger.error("Validate — %s", msg, exc_info=True)
+        return {"validation": None, "error_message": msg}
 
 
 def node_refine(state: PDDLState) -> dict:
-    """Raffina i file PDDL in base all'errore segnalato."""
+    """Raffina i file PDDL in base agli errori emersi."""
     try:
-        lore_data = state.get("lore", {})
-        logger.debug("🔁 [Refine] Avvio raffinamento con messaggio: %s", state.get("error_message"))
-
+        logger.debug("Refine — avvio con error_message: %s", state.get("error_message"))
         refined = refine_pddl(
             domain_path="TEMP/domain.pddl",
             problem_path="TEMP/problem.pddl",
             error_message=state["error_message"],
-            lore=lore_data
+            lore=state["lore"]
         )
-
         domain = extract_between(refined, "=== DOMAIN START ===", "=== DOMAIN END ===")
         problem = extract_between(refined, "=== PROBLEM START ===", "=== PROBLEM END ===")
 
         save_text_file("TEMP/domain_refined.pddl", domain)
         save_text_file("TEMP/problem_refined.pddl", problem)
-
-        logger.debug("🛠️ [Refine] Raffinamento completato.")
+        logger.info("Refine — raffinamento completato e file salvati")
         return {
             "refined_domain": domain,
             "refined_problem": problem,
@@ -132,22 +138,22 @@ def node_refine(state: PDDLState) -> dict:
             "error_message": None
         }
     except Exception as err:
-        logger.error("❌ Errore nel raffinamento: %s", err, exc_info=True)
+        msg = f"Errore nel raffinamento: {err}"
+        logger.error("Refine — %s", msg, exc_info=True)
         return {
             "refined_domain": None,
             "refined_problem": None,
-            "error_message": f"Errore nel raffinamento: {str(err)}"
+            "error_message": msg
         }
 
 
 def end_node(state: PDDLState) -> dict:
     """Nodo terminale: ritorna lo stato finale."""
-    logger.debug("✅ [End] Fine del grafo.")
+    logger.info("End — fine del workflow")
     return state
 
-
 # ---------------------
-# Costruzione grafo LangGraph
+# Costruzione del grafo LangGraph
 # ---------------------
 workflow = StateGraph(PDDLState)
 workflow.add_node("BuildPrompt", node_build_prompt)
@@ -156,7 +162,6 @@ workflow.add_node("Validate", node_validate)
 workflow.add_node("Refine", node_refine)
 workflow.add_node("End", end_node)
 
-# Definisce il flusso di esecuzione
 workflow.set_entry_point("BuildPrompt")
 workflow.add_edge("BuildPrompt", "GeneratePDDL")
 workflow.add_edge("GeneratePDDL", "Validate")

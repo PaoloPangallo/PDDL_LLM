@@ -1,0 +1,15 @@
+(define (problem blocked-path)
+     (:domain simple-puzzle)
+     (:objects A B C D E F G H I J K L M N O open goal)
+     (:init
+      (and
+       (at A open)
+       (at B open)
+       (at C open)
+       (at D open)
+       (at E open)
+       (at F open)
+       (at G goal)
+       (on I J)
+       (clear L) )
+     (:goal (and (not (on I J)) (at K goal)))) )

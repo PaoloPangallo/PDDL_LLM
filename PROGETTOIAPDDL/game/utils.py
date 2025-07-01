@@ -17,7 +17,7 @@ import requests
 logger = logging.getLogger(__name__)
 
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
-MODEL = "mistral"
+MODEL = "llama3.2-vision"
 
 
 def create_session_dir(upload_folder: str, name_hint: str = None) -> tuple[str, str]:
@@ -89,7 +89,7 @@ def run_planner(session_dir: str, timeout: int = 60) -> Tuple[bool, str]:
         error_path.write_text(f"❌ Errore interno: {e}", encoding="utf-8")
         return False, f"❌ Errore interno: {e}"
 
-def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 2048) -> str:
+def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 10000) -> str:
     """Invia un prompt a Ollama e restituisce la risposta del modello."""
     try:
         logger.info("📤 Invio prompt a Ollama con modello: %s e num_ctx: %d", model, num_ctx)
