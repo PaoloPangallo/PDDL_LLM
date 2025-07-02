@@ -3,10 +3,10 @@
 import os
 import json
 from flask import Blueprint, request, redirect, url_for, current_app
-from agent.reflection_agent import ask_local_llm, build_prompt
-from game.validator import validate_pddl
+from agents.reflection_agent import ask_local_llm, build_prompt
+from core.validator import validate_pddl
 
-from game.utils import (
+from core.utils import (
     read_text_file,
     save_text_file,
     run_planner
@@ -42,7 +42,7 @@ def regenerate_with_refinement():
         prompt = build_prompt(domain, problem, error_message, validation)
         suggestion = ask_local_llm(prompt)
 
-        from game.utils import extract_between
+        from core.utils import extract_between
         domain_suggestion = extract_between(suggestion, "=== DOMAIN START ===", "=== DOMAIN END ===")
         problem_suggestion = extract_between(suggestion, "=== PROBLEM START ===", "=== PROBLEM END ===")
 

@@ -12,8 +12,10 @@ import os
 import json
 
 from flask import Blueprint, request, render_template, current_app
-from game.utils import read_text_file
-from agent.reflection_agent import refine_and_save
+from core.utils import read_text_file
+from agents.reflection_agent import refine_and_save
+
+
 
 result_bp = Blueprint("result", __name__)
 

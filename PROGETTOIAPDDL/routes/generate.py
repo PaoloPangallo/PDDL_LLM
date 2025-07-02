@@ -4,10 +4,10 @@ import os
 import json
 import shutil
 from flask import Blueprint, request, redirect, url_for, current_app, jsonify
-from agent.reflection_agent import refine_and_save
-from game.validator import validate_pddl
-from game.utils import create_session_dir, run_planner, read_text_file, save_text_file
-from game.generator import generate_pddl_from_dict
+from agents.reflection_agent import refine_and_save
+from core.validator import validate_pddl
+from core.utils import create_session_dir, run_planner, read_text_file, save_text_file
+from core.generator import generate_pddl_from_dict
 
 generate_bp = Blueprint("generate", __name__)
 LORE_DIR = "lore"

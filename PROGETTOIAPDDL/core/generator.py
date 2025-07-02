@@ -10,7 +10,7 @@ from typing import Optional
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from game.utils import ask_ollama, extract_between, save_text_file
+from core.utils import ask_ollama, extract_between, save_text_file
 from db.db import retrieve_similar_examples_from_db
 
 logger = logging.getLogger(__name__)

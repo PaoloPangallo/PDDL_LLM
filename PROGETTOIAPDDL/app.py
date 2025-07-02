@@ -6,8 +6,8 @@ import os
 import json
 import logging
 from flask import Flask, request, render_template, jsonify
-from agent.reflection_agent import ask_local_llm
-from game.utils import save_text_file
+from agents.reflection_agent import ask_local_llm
+from core.utils import save_text_file
 from routes import register_routes
 from db.db import init_db
 

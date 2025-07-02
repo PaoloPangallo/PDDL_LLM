@@ -15,10 +15,10 @@ from langchain_core.messages import BaseMessage
 from langchain_ollama import ChatOllama
 from langchain_core.tools import tool
 
-from game.generator import build_prompt_from_lore, ask_ollama, extract_between
-from game.validator import validate_pddl
-from agent.reflection_agent import refine_pddl
-from game.utils import save_text_file
+from core.generator import build_prompt_from_lore, ask_ollama, extract_between
+from core.validator import validate_pddl
+from agents.reflection_agent import refine_pddl
+from core.utils import save_text_file
 from db.db import retrieve_similar_examples_from_db
 
 logger = logging.getLogger(__name__)

@@ -2,8 +2,8 @@
 
 from flask import Blueprint, request, jsonify, current_app
 import os, json
-from agent.reflection_agent import ask_local_llm
-from game.utils import save_text_file
+from agents.reflection_agent import ask_local_llm
+from core.utils import save_text_file
 
 generate_action_bp = Blueprint("generate_action_api", __name__)
 

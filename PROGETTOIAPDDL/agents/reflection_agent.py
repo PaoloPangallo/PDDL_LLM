@@ -10,8 +10,8 @@ from typing import Optional
 
 import requests
 
-from game.validator import validate_pddl
-from game.utils import (
+from core.validator import validate_pddl
+from core.utils import (
     read_text_file,
     save_text_file,
     extract_between,
@@ -152,7 +152,7 @@ def refine_and_save(
     lore: Optional[dict] = None
 ) -> tuple[Optional[str], Optional[str]]:
     """Esegue il raffinamento PDDL e salva i file suggeriti nella directory di output."""
-    from game.utils import get_unique_filename  # import ritardato
+    from core.utils import get_unique_filename  # import ritardato
 
     os.makedirs(output_dir, exist_ok=True)
 
