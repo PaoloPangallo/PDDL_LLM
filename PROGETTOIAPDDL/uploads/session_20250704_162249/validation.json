@@ -1,0 +1,61 @@
+{
+  "valid_syntax": false,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [],
+  "undefined_actions": [],
+  "semantic_errors": [
+    "Init missing: (at robot charging-station)",
+    "Init missing: (on-ground battery charging-station)",
+    "Init missing: (blocked obstacle charging-station)"
+  ],
+  "errors": [
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at hero village)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'carrying' not declared in (:predicates)",
+      "predicate": "carrying",
+      "occurrence": "(carrying hero sword-of-fire)",
+      "suggestion": "Add predicate declaration: (carrying ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'defeated' not declared in (:predicates)",
+      "predicate": "defeated",
+      "occurrence": "(defeated ice-dragon)",
+      "suggestion": "Add predicate declaration: (defeated ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":goal",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at hero tower-of-varnak)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":goal",
+      "detail": "Predicate 'carrying' not declared in (:predicates)",
+      "predicate": "carrying",
+      "occurrence": "(carrying hero sword-of-fire)",
+      "suggestion": "Add predicate declaration: (carrying ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":goal",
+      "detail": "Predicate 'defeated' not declared in (:predicates)",
+      "predicate": "defeated",
+      "occurrence": "(defeated ice-dragon)",
+      "suggestion": "Add predicate declaration: (defeated ...) in (:predicates)"
+    }
+  ]
+}

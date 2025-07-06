@@ -14,23 +14,6 @@
   <h1 class="page-title">🧙 Benvenuto in <strong>QuestMaster</strong></h1>
   <div class="forms-grid">
 
-    <section class="card">
-      <h2 class="card-header">⚡ Genera & Pianifica</h2>
-      <form action="{{ url_for('generate.generate_from_lore') }}" method="post" novalidate>
-        <input type="hidden" name="run" value="true">
-        {% include "partials/lore_input.html" %}
-        <button type="submit" class="btn btn-primary">🧠 Genera + 🏁 Pianifica</button>
-      </form>
-    </section>
-
-    <section class="card">
-      <h2 class="card-header">🛠️ Solo Genera PDDL</h2>
-      <form action="{{ url_for('generate.generate_from_lore') }}" method="post" novalidate>
-        <input type="hidden" name="run" value="false">
-        {% include "partials/lore_input.html" %}
-        <button type="submit" class="btn btn-secondary">⚙️ Solo Genera</button>
-      </form>
-    </section>
 
     <section class="card">
       <h2 class="card-header">📤 Upload Manuale PDDL</h2>
@@ -54,12 +37,7 @@
         </fieldset>
       </form>
     </section>
-
-    <section class="card">
-      <h2 class="card-header">🪄 Estrai Azione PDDL</h2>
-      <a href="{{ url_for('extract.extract_page') }}" class="btn btn-secondary">✨ Vai al modulo</a>
-    </section>
-
+    
     <section class="card">
       <h2 class="card-header">🧠 Pipeline Automatica</h2>
       <form id="pipeline-form" class="pipeline-form" novalidate>

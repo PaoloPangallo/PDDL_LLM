@@ -1,0 +1,13 @@
+{
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "at",
+    "on-ground"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": [],
+  "semantic_errors": [
+    "❌ Init mismatch: expected '(blocked obstacle charging-station)' not found in problem."
+  ]
+}

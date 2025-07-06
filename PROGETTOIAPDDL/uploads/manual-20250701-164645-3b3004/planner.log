@@ -1,0 +1,26 @@
+==> Fast Downward su /home/giova/PDDL_LLM/PROGETTOIAPDDL/uploads/manual-20250701-164645-3b3004/domain.pddl e /home/giova/PDDL_LLM/PROGETTOIAPDDL/uploads/manual-20250701-164645-3b3004/problem.pddl
+       euristica: lazy_greedy([ff()]) (dominio: charging-station)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: None
+INFO     translator memory limit: None
+INFO     translator command line string: /home/giova/PDDL_LLM/venv/bin/python3 /home/giova/PDDL_LLM/PROGETTOIAPDDL/external/downward/builds/release/bin/translate/translate.py /home/giova/PDDL_LLM/PROGETTOIAPDDL/uploads/manual-20250701-164645-3b3004/domain.pddl /home/giova/PDDL_LLM/PROGETTOIAPDDL/uploads/manual-20250701-164645-3b3004/problem.pddl --sas-file output.sas
+Parsing...
+Parsing domain
+	->Parsing axiom/action entry #1
+	->Parsing action #1
+	->Parsing action 'move'
+	->Parsing precondition
+	->Parsing condition
+	->Parsing literal
+Predicate 'at' of arity 1 used with 2 arguments.
+Got: (at ?z ?x)
+translate exit code: 31
+
+Driver aborting after translate
+INFO     Planner time: 0.10s
+
+--- STDERR ---

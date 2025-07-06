@@ -22,32 +22,15 @@ def run_pipeline():
             try:
                 with open(lore_path, encoding="utf-8") as f:
                     lore = json.load(f)
-                logger.info(f"📥 Lore caricata da file: {lore_path}")
+                print("\n")
+                logger.info(f"📥 Lore caricata da file: {lore_path}\n")
             except Exception as e:
-                logger.error(f"❌ Impossibile leggere {lore_path}: {e}")
+                logger.error(f"\n❌ Impossibile leggere {lore_path}: {e}\n")
                 return jsonify({"error": f"Non posso leggere il file lore in {lore_path}"}), 400
         else:
             lore = payload.get("lore")
             if not lore:
                 return jsonify({"error": "❌ Campo 'lore' mancante o vuoto."}), 400
-
-        logger.info("📥 Lore pronta all’uso.")
-#def run_pipeline():
-#    """
-#    Avvia la pipeline LangGraph per generare, validare e raffinare file PDDL da una lore.
-    
-#    Richiede: JSON con campo 'lore' (dict con descrizione, oggetti, init).
-#    Restituisce: JSON con dominio, problema, validazione, raffinamento (se avvenuto) e session ID.
-#    """
-#    try:
-#        lore = request.get_json(force=True)
-#        if not lore:
-#            return jsonify({"error": "❌ Lore JSON mancante o vuoto."}), 400
-
-#        print("\n\nLore ricevuta:\n")
-#        print(lore)
-#        print("\n\n")
-#        logger.info("📥 JSON ricevuto correttamente.")
 
         result = graph.invoke({"lore": lore})
         logger.info("✅ Pipeline completata.")

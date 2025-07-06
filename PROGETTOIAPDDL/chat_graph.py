@@ -83,8 +83,8 @@ def reflect(domain: str, problem: str, error_message: str, lore: str) -> dict:
     Raffina i file PDDL sulla base dell'errore segnalato e del lore.
     """
     os.makedirs("TEMP", exist_ok=True)
-    save_text_file("TEMP/domain.pddl", domain)
-    save_text_file("TEMP/problem.pddl", problem)
+    #save_text_file("TEMP/domain.pddl", domain)
+    #save_text_file("TEMP/problem.pddl", problem)
 
     refined = refine_pddl(
         domain_path="TEMP/domain.pddl",
@@ -103,6 +103,8 @@ def reflect(domain: str, problem: str, error_message: str, lore: str) -> dict:
 # ================================
 tools = [generate_pddl_from_lore, validate, reflect]
 llm = ChatOllama(model="llama3.2-vision")
+#llm = ChatOllama(model="deepseek-r1:8b")
+#llm = ChatOllama(model="codellama:13b")
 llm_with_tools = llm.bind_tools(tools)
 
 

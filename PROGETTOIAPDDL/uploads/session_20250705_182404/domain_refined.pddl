@@ -1,0 +1,21 @@
+(define (domain varnack-problem))
+(:requirements :strips :typing :adl)
+(:types hero location sword dragon)
+(:predicates (at ?x - location)
+             (carrying ?x - hero ?y - sword)
+             (defeated ?x - ice-dragon)
+             (on-ground ?x - sword ?y - location)
+             (sleeping ?x - dragon))
+(:action move-hero 
+         (:parameters (?from - location ?to - location))
+         (:precondition (and (at hero ?from)))
+         (:effect (and (not (at hero ?from))
+                       (at hero ?to))))
+(:action pick-up-sword
+         (:parameters (?x - hero ?y - sword))
+         (:precondition (and (carrying ?x ?y) ))
+         (:effect (not (carrying ?x ?y))))
+(:action defeat-ice-dragon
+         (:parameters (?x - hero ?y - dragon))
+         (:precondition (and (at hero ?y)))
+         (:effect (and (defeated ?y))))

@@ -1,0 +1,39 @@
+{
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [],
+  "undefined_actions": [],
+  "semantic_errors": [],
+  "errors": [
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init/:goal",
+      "detail": "Predicate 'at' not declared in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init/:goal",
+      "detail": "Predicate 'on-ground' not declared in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init/:goal",
+      "detail": "Predicate 'sleeping' not declared in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init/:goal",
+      "detail": "Predicate 'at' not declared in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init/:goal",
+      "detail": "Predicate 'carrying' not declared in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init/:goal",
+      "detail": "Predicate 'defeated' not declared in (:predicates)"
+    }
+  ]
+}

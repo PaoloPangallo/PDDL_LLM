@@ -1,48 +1,71 @@
 #!/bin/bash
 set -e
 
-WORKDIR=$1  # La cartella della run, es. uploads/<session_id>
+# 1) directory di lavoro (uploads/<session_id>)
+WORKDIR=$1
+[ -n "$WORKDIR" ] || { echo "Uso: $0 <uploads/session_id>"; exit 1; }
 DOMAIN="$WORKDIR/domain.pddl"
 PROBLEM="$WORKDIR/problem.pddl"
-PLANNER=/home/paolop/downward/fast-downward.py
-VAL_BIN=$HOME/VAL/build/bin/Validate
 
-# Estrai il nome del dominio dal file domain.pddl
-DOMAIN_NAME=$(grep -i "define (domain" "$DOMAIN" | sed 's/.*(domain[[:space:]]*\([^ )]*\).*/\1/')
-if [ -z "$DOMAIN_NAME" ]; then
-  echo "❌ Impossibile estrarre il nome del dominio da $DOMAIN"
-  exit 1
+# 2) path a Fast Downward
+SCRIPTS_DIR="$(cd "$(dirname "$0")" && pwd)"
+FD_ROOT="$SCRIPTS_DIR/../external/downward"
+BUILD_DIR="$FD_ROOT/builds/release"
+
+#  se manca il translator, ricompila senza argomenti (incluso src/translate)
+if [ ! -f "$FD_ROOT/src/translate/translate.py" ]; then
+  echo "⚙️  Traduttore mancante, ricompilo…"
+  (cd "$FD_ROOT" && python3 build.py)
 fi
 
-# Euristica
+FASTDOWNWARD_PY="$FD_ROOT/fast-downward.py"
+TRANSLATE_PY="$FD_ROOT/src/translate/translate.py"
+
+# 3) validatore VAL (apt oppure build da te)
+if command -v validate >/dev/null 2>&1; then
+  VAL_BIN="validate"
+else
+  VAL_BIN="$HOME/VAL/build/bin/Validate"
+fi
+
+# 4) estrai nome dominio
+DOMAIN_NAME=$(grep -i "define (domain" "$DOMAIN" \
+    | sed -E 's/.*\(domain[[:space:]]*([^ )]*).*/\1/')
+[ -n "$DOMAIN_NAME" ] || { echo "❌ Nome dominio non trovato in $DOMAIN"; exit 1; }
+
+# 5) euristica
 if [ -f "$WORKDIR/heuristic.txt" ]; then
-  HEURISTIC=$(cat "$WORKDIR/heuristic.txt")
+  HEURISTIC=$(<"$WORKDIR/heuristic.txt")
 else
   HEURISTIC="lazy_greedy([ff()])"
 fi
 
-echo "==> Eseguo Fast Downward su $DOMAIN $PROBLEM con $HEURISTIC (dominio: $DOMAIN_NAME)"
+echo "==> Fast Downward su $DOMAIN e $PROBLEM"
+echo "       euristica: $HEURISTIC (dominio: $DOMAIN_NAME)"
 
-# Pulizia dei vecchi file nella cartella della run
-rm -f "$WORKDIR/sas_plan" "$WORKDIR/plan.txt" "$WORKDIR/plan.csv" "$WORKDIR/plan.json" "$WORKDIR/plan.soln" "$WORKDIR/validation.txt"
+# 6) pulisci output precedenti
+rm -f "$WORKDIR"/{sas_plan,plan.txt,plan.csv,plan.json,plan.soln,validation.txt}
 
-# Esegui il planner
-python3 "$PLANNER" "$DOMAIN" "$PROBLEM" --search "$HEURISTIC"
+# 7) esegui planner
+python3 "$FASTDOWNWARD_PY" "$DOMAIN" "$PROBLEM" --search "$HEURISTIC"
 
+# 8) post-process
 if [ -f sas_plan ]; then
   mv sas_plan "$WORKDIR/plan.txt"
-  echo "✅ Piano salvato in $WORKDIR/plan.txt"
+  echo "✅ Piano in $WORKDIR/plan.txt"
 
-  # Formatta ed esporta il piano in JSON e CSV, passando anche il nome del dominio
-  python3 "$(dirname "$0")/format_plan.py" "$WORKDIR/plan.txt" "$WORKDIR" "$DOMAIN_NAME"
+  # formatta in CSV/JSON
+  python3 "$SCRIPTS_DIR/format_plan.py" \
+    "$WORKDIR/plan.txt" "$WORKDIR" "$DOMAIN_NAME"
 
-  # Validazione con VAL (opzionale)
-  if [ -x "$VAL_BIN" ]; then
-    echo "🔍 Validazione..."
+  # validazione se disponibile
+  if command -v validate >/dev/null 2>&1 || [ -x "$VAL_BIN" ]; then
+    echo "🔍 Validazione con VAL…"
     cp "$WORKDIR/plan.txt" "$WORKDIR/plan.soln"
-    "$VAL_BIN" "$DOMAIN" "$PROBLEM" "$WORKDIR/plan.soln" > "$WORKDIR/validation.txt" 2>&1 \
-      && echo "✅ Validazione completata" \
-      || echo "⚠️  Validazione fallita. Controlla $WORKDIR/validation.txt"
+    $VAL_BIN "$DOMAIN" "$PROBLEM" "$WORKDIR/plan.soln" \
+      > "$WORKDIR/validation.txt" 2>&1 \
+      && echo "✅ Validazione OK" \
+      || echo "⚠️ Validazione FALLITA (vedi validation.txt)"
   fi
 else
   echo "❌ Nessun piano trovato."

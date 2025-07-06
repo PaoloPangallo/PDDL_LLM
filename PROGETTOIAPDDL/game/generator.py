@@ -7,6 +7,7 @@ import json
 import logging
 from typing import Optional
 
+from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -54,7 +55,8 @@ def retrieve_best_example(lore_text: str) -> list[tuple[str, str]]:
     names = [ex[0] for ex in examples]
     try:
         vec = TfidfVectorizer().fit_transform(texts + [lore_text])
-        sims = cosine_similarity(vec[-1], vec[:-1]).flatten()
+        vec_dense = csr_matrix(vec).toarray()
+        sims = cosine_similarity(vec_dense[-1:], vec_dense[:-1]).flatten()
         best_index = sims.argmax()
         return [(names[best_index], texts[best_index])]
     except (ValueError, IndexError) as e:
@@ -71,6 +73,12 @@ def build_prompt_from_lore(lore: dict, examples: Optional[list[str]] = None) -> 
     for i, content in enumerate(examples):
         if "(define" in content and "(:action" in content:
             examples_text += f"\n// ---- Example {i + 1} ----\n{content.strip()}\n"
+
+    #print("\n\n")
+    #print("Esempi caricati:")
+    #for i, example in enumerate(examples):
+    #    print(f"Example {i + 1}: {example[0]}\n")
+    #print("\n\n")
 
     initial_state = "\n".join(lore.get("init", []))
     goal_conditions = "\n".join(lore.get("goal", []))
@@ -93,26 +101,50 @@ def build_prompt_from_lore(lore: dict, examples: Optional[list[str]] = None) -> 
         "- Include (:domain ...), (:objects ...), (:init ...), and (:goal ...)\n"
         "- Use flat predicates in (:init ...), not wrapped in (and ...)\n"
         "- Every object in :init and :goal must be declared in :objects\n\n"
-        "Wrap your output exactly between these markers:\n"
+        "For example, you can use this generic structure as a basis to generate the required domain and problem.\n\n"
         "=== DOMAIN START ===\n"
-        "<domain.pddl here>\n"
+        "(define (domain domain_name)\n"
+        "  (:requirements :strips :typing)\n"
+        "  (:types agent object location)\n"
+        "  (:predicates\n"
+        "    (at ?x - object ?loc - location)\n"
+        "    (has ?a - agent ?o - object))\n"
+        "  (:action move\n"
+        "    :parameters (?r - agent ?from - location ?to - location)\n"
+        "    :precondition (at ?r ?from)\n"
+        "    :effect (and (not (at ?r ?from)) (at ?r ?to)))\n"
+        "  (:action pickup\n"
+        "    :parameters (?r - agent ?p - object ?loc - location)\n"
+        "    :precondition (and (at ?r ?loc) (at ?p ?loc))\n"
+        "    :effect (has ?r ?p)))\n"
         "=== DOMAIN END ===\n"
         "=== PROBLEM START ===\n"
-        "<problem.pddl here>\n"
+        "(define (problem problema_name)\n"
+        "  (:domain domain_name)\n"
+        "  (:objects agent1 - agent\n"
+        "            obj1 - object\n"
+        "            loc1 loc2 - location)\n"
+        "  (:init (at agent1 loc1)\n"
+        "         (at obj1 loc1))\n"
+        "  (:goal (and (at agent1 loc2)\n"
+        "              (has agent1 obj1))))\n"
         "=== PROBLEM END ===\n"
-        f"\nRelevant Examples:\n{examples_text}"
-        f"\nQUEST TITLE: {lore.get('quest_title', '')}\n"
-        f"WORLD CONTEXT: {lore.get('world_context', '')}\n"
-        f"QUEST DESCRIPTION:\n{lore.get('description', '')}\n"
+        "\n📘 Lore Constraints:\n"
+        "- Use only the **objects**, **initial conditions**, and **goal facts** provided.\n"
+        "- Do NOT invent new objects, locations, agents, or actions.\n"
+        "- All predicates and logic must be strictly derived from the provided lore.\n"
+        "- The story must be faithfully modeled using only the elements described.\n"    
+        f"\nQUEST DESCRIPTION:\n{lore.get('description', '')}\n"
         f"INITIAL STATE:\n{initial_state}\n"
         f"GOAL CONDITIONS:\n{goal_conditions}\n"
     )
+
 
     return prompt, [f"Example {i + 1}" for i in range(len(examples))]
 
 
 
-def generate_pddl_from_lore(lore_path: str) -> tuple[str, str, list[str]]:
+def generate_pddl_from_lore(lore_path: str) -> tuple[Optional[str], Optional[str], list[str]]:
     """Genera i file PDDL a partire da un file JSON di lore."""
     lore = load_lore(lore_path)
     return generate_pddl_from_dict(lore, lore_path)

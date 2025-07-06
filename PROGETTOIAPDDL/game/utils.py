@@ -10,21 +10,25 @@ import subprocess
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Optional
 
 import requests
 
 logger = logging.getLogger(__name__)
 
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
-MODEL = "llama3.2-vision"
+#MODEL = "llama3.2-vision"
+#MODEL = "deepseek-r1:8b"
+MODEL = "deepseek-coder-v2:16b"
+#MODEL = "codellama:13b"
 
 
-def create_session_dir(upload_folder: str, name_hint: str = None) -> tuple[str, str]:
+def create_session_dir(upload_folder: str, name_hint: Optional[str] = None) -> tuple[str, str]:
     """Crea una directory di sessione con nome univoco basato su timestamp e hint."""
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    base = name_hint.strip().lower().replace(" ", "_") if name_hint else "session"
-    base = re.sub(r"[^\w\-]", "", base)[:30]
+    # qui assicuriamo sempre una str, anche se name_hint è None
+    hint = (name_hint or "").strip().lower().replace(" ", "_")
+    base = re.sub(r"[^\w\-]", "", hint)[:30] if hint else "session"
     session_id = f"{base}-{timestamp}-{uuid.uuid4().hex[:6]}"
     path = os.path.join(upload_folder, session_id)
     os.makedirs(path, exist_ok=True)
@@ -89,7 +93,7 @@ def run_planner(session_dir: str, timeout: int = 60) -> Tuple[bool, str]:
         error_path.write_text(f"❌ Errore interno: {e}", encoding="utf-8")
         return False, f"❌ Errore interno: {e}"
 
-def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 10000) -> str:
+def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 40000) -> str:
     """Invia un prompt a Ollama e restituisce la risposta del modello."""
     try:
         logger.info("📤 Invio prompt a Ollama con modello: %s e num_ctx: %d", model, num_ctx)
@@ -111,17 +115,17 @@ def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 10000) -> str:
 
     except requests.exceptions.HTTPError as e:
         logger.error("❌ HTTP Error da Ollama (%s): %s", e.response.status_code, e.response.text.strip())
-        logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
+        #logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
         raise
 
     except requests.exceptions.RequestException as e:
         logger.error("❌ Errore di rete con Ollama: %s", e)
-        logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
+        #logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
         raise
 
     except Exception as e:
         logger.error("❌ Errore generico durante la richiesta a Ollama: %s", e)
-        logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
+        #logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
         raise
 
 
@@ -148,7 +152,7 @@ def save_text_file(path: str, content: str) -> None:
 
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
-        
+      
 def get_unique_filename(folder: str, base_name: str, ext: str = ".pddl") -> str:
     """Genera un nome file univoco nella cartella specificata."""
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")

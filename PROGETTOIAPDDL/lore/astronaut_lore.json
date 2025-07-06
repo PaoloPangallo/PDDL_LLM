@@ -1,0 +1,19 @@
+{
+  "description": "The astronaut must collect a sample from the alien crater and return to the base.",
+  "objects": [
+    "astronaut - agent",
+    "crater - location",
+    "base - location",
+    "sample - object",
+    "rover - vehicle"
+  ],
+  "init": [
+    "(at astronaut base)",
+    "(at rover base)",
+    "(at sample crater)"
+  ],
+  "goal": [
+    "(at astronaut base)",
+    "(has astronaut sample)"
+  ]
+}

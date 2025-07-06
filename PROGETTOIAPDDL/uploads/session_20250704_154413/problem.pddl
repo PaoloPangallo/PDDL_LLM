@@ -1,0 +1,5 @@
+(define (problem RechargeBattery)
+  (:domain RechargeBattery)
+  (:objects robot battery charging-station obstacle - on-ground battery charging-station)
+  (:init (at robot charging-station) (on-ground battery charging-station) (blocked obstacle charging-station))
+  (:goal (and (at robot charging-station) (not (blocked obstacle charging-station)))))

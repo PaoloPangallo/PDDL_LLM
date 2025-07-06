@@ -1,142 +1,155 @@
-"""Modulo per la validazione sintattico-semantica dei file PDDL rispetto al lore."""
-
-# pylint: disable=missing-docstring,line-too-long,broad-except,unspecified-encoding
-
 import re
 import logging
-from typing import Dict, List
+from typing import Dict, List, TypedDict
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-PDDL_SECTIONS = ["(:types", "(:predicates", "(:action", "(:objects", "(:init", "(:goal)"]
+class ValidationError(TypedDict):
+    kind: str
+    section: str
+    detail: str
+    predicate: str | None
+    occurrence: str | None
+    suggestion: str | None
 
 def validate_pddl(domain: str, problem: str, lore: dict) -> Dict:
-    """Valida la correttezza dei file domain/problem PDDL in base al contenuto del lore."""
+    """
+    Valida dominio e problema PDDL e restituisce un report strutturato.
+    Report contiene:
+      - valid_syntax: bool
+      - missing_sections: List[str]
+      - undefined_objects_in_goal: List[str]
+      - undefined_actions: List[str]
+      - semantic_errors: List[str]
+      - errors: List[ValidationError]
+    """
     report = {
         "valid_syntax": True,
         "missing_sections": [],
         "undefined_objects_in_goal": [],
         "undefined_actions": [],
-        "mismatched_lore_entities": [],
-        "semantic_errors": []
+        "semantic_errors": [],
+        "errors": []
     }
 
-    # 1. Verifica sezioni obbligatorie
-    check_required_sections(domain, problem, report)
+    # Sezioni obbligatorie
+    for sec in ["(:types", "(:predicates", "(:action"]:
+        if sec not in domain:
+            report["missing_sections"].append(sec)
+    for sec in ["(:objects", "(:init", "(:goal"]:
+        if sec not in problem:
+            report["missing_sections"].append(sec)
 
-    # 2. Estrazione oggetti e goal
-    object_list = extract_objects(problem)
-    goal_atoms = extract_goal_atoms(problem)
+    if report["missing_sections"]:
+        report["valid_syntax"] = False
 
-    report["undefined_objects_in_goal"] = [
-        obj for atom in goal_atoms for obj in atom if obj not in object_list
-    ]
+    # Oggetti dichiarati
+    objects = []
+    m_obj = re.search(r"\(:objects(.*?)\)", problem, re.DOTALL)
+    if m_obj:
+        tokens = m_obj.group(1).split()
+        objects = [t for t in tokens if t != "-" and not tokens[tokens.index(t)-1] == "-"]
+    else:
+        report["errors"].append({
+            "kind": "missing_section",
+            "section": ":objects",
+            "detail": "Objects section is missing",
+            "predicate": None,
+            "occurrence": None,
+            "suggestion": "Add (:objects ...) section"
+        })
 
-    # 3. Confronto con entità del lore
-    lore_entities = lore.get("entities", []) + lore.get("inventory", [])
-    object_set = set(object_list)
-    report["mismatched_lore_entities"] = [
-        e for e in lore_entities if e not in object_set
-    ]
+    # Init
+    init_atoms = []
+    m_init = re.search(r"\(:init(.*?)\)\s*(?:\(:goal|\Z)", problem, re.DOTALL)
+    if m_init:
+        init_atoms = re.findall(r"\(([^()]+)\)", m_init.group(1))
+    else:
+        report["errors"].append({
+            "kind": "missing_section",
+            "section": ":init",
+            "detail": "Init section is missing",
+            "predicate": None,
+            "occurrence": None,
+            "suggestion": "Add (:init ...) section"
+        })
 
-    # 4. Controllo coerenza azioni (dummy)
-    defined_actions = extract_action_names(domain)
-    used_actions = extract_plan_actions(problem)
+    # Goal
+    goal_atoms = []
+    m_goal = re.search(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
+    if m_goal:
+        goal_atoms = re.findall(r"\(([^()]+)\)", m_goal.group(1))
+    else:
+        report["errors"].append({
+            "kind": "missing_section",
+            "section": ":goal",
+            "detail": "Goal section is missing",
+            "predicate": None,
+            "occurrence": None,
+            "suggestion": "Add (:goal ...) section"
+        })
+
+    # Confronto semantico con la lore
+    for fact in lore.get("init", []):
+        if fact.strip("()") not in [atom.strip() for atom in init_atoms]:
+            report["semantic_errors"].append(f"Init missing: {fact}")
+    for fact in lore.get("goal", []):
+        if fact.strip("()") not in [atom.strip() for atom in goal_atoms]:
+            report["semantic_errors"].append(f"Goal missing: {fact}")
+
+    # Oggetti usati nei goal
+    for atom in goal_atoms:
+        parts = atom.split()
+        for arg in parts[1:]:
+            if arg not in objects:
+                report["undefined_objects_in_goal"].append(arg)
+
+    # Azioni definite
+    defined_actions = re.findall(r"\(:action\s+([\w-]+)", domain)
+
+    # Azioni usate (se c'è un piano)
+    used_actions = []
+    if "(:plan" in problem:
+        used_actions = re.findall(r"\b(" + "|".join(defined_actions) + r")\b", problem)
     report["undefined_actions"] = [a for a in used_actions if a not in defined_actions]
 
-    # 5. Validazione semantica coerente con init e goal della lore
-    report["semantic_errors"] = semantic_check(problem, lore)
+    # Firme dei predicati
+    preds = {}
+    m_preds = re.search(r"\(:predicates(.*?)\)", domain, re.DOTALL)
+    if m_preds:
+        for decl in re.findall(r"\((\w+)([^)]*)\)", m_preds.group(1)):
+            name, rest = decl
+            preds[name] = len(re.findall(r"\?\w+", rest))
+
+    all_atoms = [(":init", init_atoms), (":goal", goal_atoms)]
+    for section, atoms in all_atoms:
+        for atom in atoms:
+            parts = atom.strip().split()
+            name, args = parts[0], parts[1:]
+            if name not in preds:
+                report["errors"].append({
+                    "kind": "undeclared_predicate",
+                    "section": section,
+                    "detail": f"Predicate '{name}' not declared in (:predicates)",
+                    "predicate": name,
+                    "occurrence": f"({atom})",
+                    "suggestion": f"Add predicate declaration: ({name} ...) in (:predicates)"
+                })
+            elif len(args) != preds[name]:
+                report["errors"].append({
+                    "kind": "arity_mismatch",
+                    "section": section,
+                    "detail": f"{name} expects {preds[name]} args, got {len(args)}",
+                    "predicate": name,
+                    "occurrence": f"({atom})",
+                    "suggestion": f"Update ({atom}) to match predicate arity or fix its definition"
+                })
+
+    if (report["errors"]
+        or report["semantic_errors"]
+        or report["undefined_objects_in_goal"]
+        or report["undefined_actions"]):
+        report["valid_syntax"] = False
 
     return report
-
-# =======================
-# 🔍 Helper Functions
-# =======================
-
-def check_required_sections(domain: str, problem: str, report: Dict):
-    required_domain_sections = ["(:types", "(:predicates", "(:action"]
-    required_problem_sections = ["(:objects", "(:init", "(:goal"]
-
-    for section in required_domain_sections:
-        if section not in domain:
-            report["missing_sections"].append(section)
-            report["valid_syntax"] = False
-
-    for section in required_problem_sections:
-        if section not in problem:
-            report["missing_sections"].append(section)
-            report["valid_syntax"] = False
-
-def extract_objects(problem: str) -> List[str]:
-    """Estrae gli oggetti dichiarati nella sezione :objects del problem."""
-    match = re.search(r"\(:objects(.*?)\)", problem, re.DOTALL)
-    if not match:
-        return []
-    content = match.group(1)
-    tokens = content.split()
-    return [t for t in tokens if not t.startswith("-")]
-
-def extract_goal_atoms(problem: str) -> List[List[str]]:
-    """Estrae gli atomi obiettivo dalla sezione :goal del file problem.pddl."""
-    match = re.search(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
-    if not match:
-        return []
-    atoms = re.findall(r"\(([^()]+)\)", match.group(1))
-    return [atom.split() for atom in atoms]
-
-def extract_action_names(domain: str) -> List[str]:
-    """Estrae i nomi delle azioni definite nel domain."""
-    return re.findall(r"\(:action\s+([\w-]+)", domain)
-
-def extract_plan_actions(problem: str) -> List[str]:
-    """Estrae i nomi delle azioni usate nel piano (dummy per ora)."""
-    return []
-
-def extract_init_facts(problem: str) -> List[str]:
-    match = re.search(r"\(:init(.*?)\)\s*\(:goal", problem, re.DOTALL)
-    if not match:
-        return []
-    atoms = re.findall(r"\(([^()]+)\)", match.group(1))
-    return ["(" + a.strip() + ")" for a in atoms]
-
-def extract_goal_facts(problem: str) -> List[str]:
-    match = re.search(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
-    if not match:
-        return []
-    atoms = re.findall(r"\(([^()]+)\)", match.group(1))
-    return ["(" + a.strip() + ")" for a in atoms]
-
-def semantic_check(problem: str, lore: dict) -> List[str]:
-    errors = []
-    init_expected = lore.get("init", [])
-    goal_expected = lore.get("goal", [])
-
-    init_actual = extract_init_facts(problem)
-    goal_actual = extract_goal_facts(problem)
-
-    for fact in init_expected:
-        if fact not in init_actual:
-            errors.append(f"❌ Init mismatch: expected '{fact}' not found in problem.")
-
-    for fact in goal_expected:
-        if fact not in goal_actual:
-            errors.append(f"❌ Goal mismatch: expected '{fact}' not found in problem.")
-
-    return errors
-
-# =======================
-# ✅ Test locale
-# =======================
-
-if __name__ == "__main__":
-    import json
-    with open("uploads/lore-generated/domain.pddl", "r") as f:
-        domain_content = f.read()
-    with open("uploads/lore-generated/problem.pddl", "r") as f:
-        problem_content = f.read()
-    with open("lore/example_lore.json", "r") as f:
-        lore_data = json.load(f)
-
-    result = validate_pddl(domain_content, problem_content, lore_data)
-    print(json.dumps(result, indent=2, ensure_ascii=False))

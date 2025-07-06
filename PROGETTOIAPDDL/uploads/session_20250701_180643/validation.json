@@ -1,0 +1,16 @@
+{
+  "valid_syntax": true,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [
+    "at",
+    "at",
+    "at"
+  ],
+  "undefined_actions": [],
+  "mismatched_lore_entities": [],
+  "semantic_errors": [
+    "❌ Init mismatch: expected '(at hero village)' not found in problem.",
+    "❌ Init mismatch: expected '(on-ground sword-of-fire tower-of-varnak)' not found in problem.",
+    "❌ Init mismatch: expected '(sleeping ice-dragon)' not found in problem."
+  ]
+}

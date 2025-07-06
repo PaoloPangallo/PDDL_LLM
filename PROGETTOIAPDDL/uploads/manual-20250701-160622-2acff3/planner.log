@@ -1,0 +1,4 @@
+==> Eseguo Fast Downward su /home/giova/PDDL_LLM/PROGETTOIAPDDL/uploads/manual-20250701-160622-2acff3/domain.pddl /home/giova/PDDL_LLM/PROGETTOIAPDDL/uploads/manual-20250701-160622-2acff3/problem.pddl con lazy_greedy([ff()]) (dominio: charging-station)
+
+--- STDERR ---
+python3: can't open file '/home/paolop/downward/fast-downward.py': [Errno 2] No such file or directory

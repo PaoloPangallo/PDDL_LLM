@@ -1,0 +1,8 @@
+==> Fast Downward su /home/giova/PDDL_LLM/PROGETTOIAPDDL/uploads/manual-20250701-162940-fd102a/domain.pddl e /home/giova/PDDL_LLM/PROGETTOIAPDDL/uploads/manual-20250701-162940-fd102a/problem.pddl con lazy_greedy([ff()]) (dominio: charging-station)
+INFO     planner time limit: None
+INFO     planner memory limit: None
+
+INFO     Running translator.
+
+--- STDERR ---
+Could not find 'translate/translate.py' in build 'release'. Please run './build.py release'.

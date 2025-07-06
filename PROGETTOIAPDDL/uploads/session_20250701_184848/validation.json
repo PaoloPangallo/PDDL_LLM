@@ -1,0 +1,31 @@
+{
+  "valid_syntax": false,
+  "missing_sections": [],
+  "errors": [
+    {
+      "kind": "init_missing",
+      "section": ":init",
+      "detail": "Expected fact (at robot charging-station)"
+    },
+    {
+      "kind": "init_missing",
+      "section": ":init",
+      "detail": "Expected fact (on-ground battery charging-station)"
+    },
+    {
+      "kind": "init_missing",
+      "section": ":init",
+      "detail": "Expected fact (blocked obstacle charging-station)"
+    },
+    {
+      "kind": "undefined_predicate",
+      "section": ":goal",
+      "detail": "at robot charging-station"
+    },
+    {
+      "kind": "undefined_predicate",
+      "section": ":goal",
+      "detail": "on-ground obstacle charging-station"
+    }
+  ]
+}

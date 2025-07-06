@@ -11,7 +11,9 @@ from flask import Blueprint, render_template, request
 
 extract_bp = Blueprint("extract", __name__, template_folder="templates")
 
-MODEL = "llama3.2-vision"
+#MODEL = "llama3.2-vision"
+#MODEL = "deepseek-r1:8b"
+MODEL = "codellama:13b"
 logger = logging.getLogger(__name__)
 
 

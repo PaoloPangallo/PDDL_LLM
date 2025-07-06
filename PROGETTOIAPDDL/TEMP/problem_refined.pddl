@@ -1,26 +1,19 @@
-(define (problem warehouse_problem)
-  (:domain warehouse)
+(define (problem robot-problem)
+  (:domain robot-domain)
   (:objects
-    worker1 - worker
-    worker2 - worker
-    box1 - box
-    box2 - box
-    warehouse1 - warehouse
-    warehouse2 - warehouse
-    box3 - box
-    box4 - box
-  )
+    robot - robot
+    charging-station - charging-station
+    obstacle - obstacle
+    battery - battery
+    ground - ground)
   (:init
-    (at worker1 warehouse1)
-    (at worker2 warehouse2)
-    (has_box worker1 box1)
-    (has_box worker2 box2)
-    (in box1 warehouse1)
-    (in box2 warehouse2)
-    (at warehouse1 warehouse2)
-    (at warehouse2 warehouse1)
-  )
+    (at robot charging-station)
+    (on-ground battery charging-station)
+    (blocked obstacle charging-station)
+    (at obstacle charging-station)
+    (on-ground ground charging-station)
+    (blocked ground charging-station))
   (:goal
-    (and (at worker1 warehouse2) (at worker2 warehouse1) (has_box worker1 box1) (has_box worker2 box2))
-  )
+    (and (at robot charging-station)
+         (on-ground battery charging-station))))
 )

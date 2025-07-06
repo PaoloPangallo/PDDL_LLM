@@ -1,0 +1,20 @@
+(define (domain robot-domain)
+  (:requirements :strips :typing)
+  (:types robot charging-station battery obstacle)
+  (:predicates (on-ground ?a ?b)
+               (at ?a ?b)
+               (blocked ?a ?b)
+               (recharged ?a))
+  (:action move
+    :parameters (?a ?b)
+    :precondition (and (at ?a ?b) (on-ground ?b ?b))
+    :effect (and (not (at ?a ?b)) (at ?a ?b)))
+  (:action recharge
+    :parameters (?a ?b)
+    :precondition (and (at ?a ?b) (on-ground ?b ?b) (blocked ?b ?b))
+    :effect (and (recharged ?a) (not (blocked ?b ?b))))
+  (:action go-to-charging-station
+    :parameters (?a)
+    :precondition (at ?a ?a)
+    :effect (at ?a charging-station)))
+)

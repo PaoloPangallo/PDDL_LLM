@@ -1,0 +1,52 @@
+{
+  "valid_syntax": false,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [],
+  "undefined_actions": [],
+  "semantic_errors": [
+    "Init missing: (on-ground battery charging-station)",
+    "Init missing: (blocked obstacle charging-station)"
+  ],
+  "errors": [
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at robot charging-station)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'on-ground' not declared in (:predicates)",
+      "predicate": "on-ground",
+      "occurrence": "(on-ground battery)",
+      "suggestion": "Add predicate declaration: (on-ground ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'blocked' not declared in (:predicates)",
+      "predicate": "blocked",
+      "occurrence": "(blocked obstacle)",
+      "suggestion": "Add predicate declaration: (blocked ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":goal",
+      "detail": "Predicate 'on-ground' not declared in (:predicates)",
+      "predicate": "on-ground",
+      "occurrence": "(on-ground battery)",
+      "suggestion": "Add predicate declaration: (on-ground ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":goal",
+      "detail": "Predicate 'blocked' not declared in (:predicates)",
+      "predicate": "blocked",
+      "occurrence": "(blocked obstacle)",
+      "suggestion": "Add predicate declaration: (blocked ...) in (:predicates)"
+    }
+  ]
+}

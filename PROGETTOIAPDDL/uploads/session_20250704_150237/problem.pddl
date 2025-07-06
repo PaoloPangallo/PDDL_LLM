@@ -1,0 +1,8 @@
+(define (problem bc-recharge)
+  (:domain bc-recharge)
+  (:objects robot - robot battery - battery charging-station - charging-station obstacle - obstacle)
+  (:init (at robot charging-station)
+         (on-ground battery charging-station)
+         (blocked obstacle charging-station))
+  (:goal (and (not (at robot charging-station))
+             (on-ground battery charging-station))))
