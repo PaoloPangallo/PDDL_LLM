@@ -3,44 +3,146 @@ import json
 import logging
 import re
 import tempfile
-from typing import TypedDict, Optional, Union
+from typing import List, TypedDict, Optional
 from langgraph.graph import StateGraph
 from langgraph.checkpoint.sqlite import SqliteSaver
+from langchain_core.messages import BaseMessage
+
+
+from typing import Annotated
+
+from langgraph.graph.message import add_messages
+
 from core.generator import build_prompt_from_lore
 from db.db import retrieve_similar_examples_from_db
 from core.utils import ask_ollama, extract_between, save_text_file
 from core.validator import validate_pddl
 from agents.reflection_agent import refine_pddl
+import operator
 
 logger = logging.getLogger("pddl_pipeline_graph")
 logging.basicConfig(level=logging.DEBUG)
 
 # ============================
-# 🔢 Stato della pipeline
-# ============================
-class InputState(TypedDict):
-    lore: dict
-    tmp_dir: str
-    prompt: Optional[str]
-    status: str  # "ok" o "failed"
+# 🧠 Stato della pipeline (completo e flessibile)
 
-class OutputState(TypedDict, total=False):
-    domain: str
-    problem: str
-    validation: dict
-    error_message: str
-    refined_domain: str
-    refined_problem: str
+# Merge strategy: accetta solo l'ultimo valore
+def last(_, right):
+    return right
+
+
+
+class PipelineState(TypedDict):
+    lore: dict
+    tmp_dir: Annotated[str, last]
+    prompt: Annotated[Optional[str], last]
+    
+    domain: Annotated[Optional[str], last]
+    problem: Annotated[Optional[str], last]
+    
+    validation: Annotated[Optional[dict], last]
+    refined_domain: Annotated[Optional[str], last]
+    refined_problem: Annotated[Optional[str], last]
+
+
+    status: Annotated[str, last]
+    error_message: Annotated[Optional[str], last]
+
+    refine_attempts: Annotated[int, int.__add__]  # oppure operator.add
+    messages: Annotated[list[BaseMessage], add_messages]
+    
+    
+
 
 # ============================
 # 🚀 Nodi della pipeline
 # ============================
 
+from langchain_core.messages import HumanMessage, AIMessage
+
+def node_chat_feedback(state: PipelineState) -> PipelineState:
+    """Gestisce il feedback umano e aggiorna i file PDDL."""
+    if not state.get("messages"):
+        logger.warning("⚠️ Nessun messaggio umano disponibile.")
+        return {**state, "status": "failed", "error_message": "Manca il messaggio umano."}
+
+    # Recupera ultimo messaggio umano
+    user_msgs = [m for m in state["messages"] if isinstance(m, HumanMessage)]
+    if not user_msgs:
+        logger.warning("⚠️ Nessun HumanMessage trovato in messages.")
+        return {**state, "status": "failed", "error_message": "Nessun HumanMessage in stato."}
+
+    last_msg = user_msgs[-1].content
+    domain = state.get("domain", "")
+    problem = state.get("problem", "")
+    validation = state.get("validation", {})
+
+    prompt = f"""You are a PDDL refinement assistant.
+The following feedback was provided by a human:
+
+💬 "{last_msg}"
+
+Here are the current files:
+
+=== DOMAIN START ===
+{domain}
+=== DOMAIN END ===
+
+=== PROBLEM START ===
+{problem}
+=== PROBLEM END ===
+
+Validation Summary:
+{json.dumps(validation, indent=2)}
+
+Now rewrite both files fixing the issues. Output in the format:
+=== DOMAIN START ===
+...domain.pddl...
+=== DOMAIN END ===
+=== PROBLEM START ===
+...problem.pddl...
+=== PROBLEM END ===
+"""
+
+    try:
+        logger.info("🧠 Invio prompt a Ollama per rifinitura con feedback umano...")
+        response = ask_ollama(prompt)
+
+        rd = extract_between(response, "=== DOMAIN START ===", "=== DOMAIN END ===")
+        rp = extract_between(response, "=== PROBLEM START ===", "=== PROBLEM END ===")
+
+        if not rd or not rp:
+            raise ValueError("Estrazione fallita: output non ben formattato")
+
+        save_text_file(os.path.join(state["tmp_dir"], "domain_refined.pddl"), rd)
+        save_text_file(os.path.join(state["tmp_dir"], "problem_refined.pddl"), rp)
+
+        return {
+            **state,
+            "domain": rd,
+            "problem": rp,
+            "refined_domain": rd,
+            "refined_problem": rp,
+
+            "status": "ok",
+            "messages": state["messages"] + [AIMessage(content=response)]
+        }
+
+    except Exception as e:
+        logger.error("❌ [ChatFeedback] %s", e, exc_info=True)
+        return {
+            **state,
+            "status": "failed",
+            "error_message": f"ChatFeedback error: {str(e)}"
+        }
+
+
+
 def clean_code_blocks(text: str) -> str:
     """Rimuove blocchi markdown tipo ```lang\n...``` o ```...``` intorno al codice"""
     return re.sub(r"```(?:[a-zA-Z]+\n)?(.*?)```", r"\1", text, flags=re.DOTALL)
 
-def node_build_prompt(state: InputState) -> dict:
+def node_build_prompt(state: PipelineState) -> PipelineState:
     tmp_dir = tempfile.mkdtemp(prefix="pddl_")
     logger.debug("🧠 [BuildPrompt] tmp_dir creato: %s", tmp_dir)
 
@@ -56,7 +158,7 @@ def node_build_prompt(state: InputState) -> dict:
         "status": "ok"
     }
 
-def node_generate_pddl(state: InputState) -> dict:
+def node_generate_pddl(state: PipelineState) -> PipelineState:
     if state.get("status") != "ok":
         logger.warning("⚠️ Skipping generate due to status != ok")
         return {**state, "status": "failed", "error_message": "Skipped generate (bad status)"}
@@ -65,15 +167,13 @@ def node_generate_pddl(state: InputState) -> dict:
         response = ask_ollama(state["prompt"])
         tmp_dir = state["tmp_dir"]
 
-        # ✅ Salva SEMPRE la risposta grezza per analisi
         raw_path = os.path.join(tmp_dir, "raw_response.txt")
         save_text_file(raw_path, response)
         logger.info(f"📄 Risposta grezza salvata in: {raw_path}")
 
-        logger.debug("🧾 Prompt usato:\n%s", state["prompt"])
+        logger.debug("📟 Prompt usato:\n%s", state["prompt"])
         logger.debug("📨 Risposta grezza (primi 300):\n%s", response[:300])
 
-        # ⛏️ Estrai i blocchi PDDL dal testo grezzo
         domain_raw = extract_between(response, "=== DOMAIN START ===", "=== DOMAIN END ===")
         problem_raw = extract_between(response, "=== PROBLEM START ===", "=== PROBLEM END ===")
 
@@ -82,11 +182,9 @@ def node_generate_pddl(state: InputState) -> dict:
             logger.debug("💬 Output ricevuto:\n%s", response)
             raise ValueError("Dominio o problema non trovati nel formato atteso")
 
-        # 🧼 Pulisci eventuali backtick Markdown
         domain = clean_code_blocks(domain_raw)
         problem = clean_code_blocks(problem_raw)
 
-        # 💾 Salva i file PDDL
         domain_path = os.path.join(tmp_dir, "domain.pddl")
         problem_path = os.path.join(tmp_dir, "problem.pddl")
         save_text_file(domain_path, domain)
@@ -111,8 +209,7 @@ def node_generate_pddl(state: InputState) -> dict:
             "error_message": f"GeneratePDDL error: {str(e)}"
         }
 
-
-def node_validate(state: InputState) -> dict:
+def node_validate(state: PipelineState) -> PipelineState:
     logger.debug("📦 Stato ricevuto da GeneratePDDL:")
     logger.debug(json.dumps(state, indent=2, ensure_ascii=False))
     if state.get("status") != "ok":
@@ -140,7 +237,7 @@ def node_validate(state: InputState) -> dict:
             "error_message": str(e)
         }
 
-def node_refine(state: InputState) -> dict:
+def node_refine(state: PipelineState) -> PipelineState:
     if state.get("status") != "failed":
         return {**state, "status": "ok"}  # skip refine
 
@@ -175,9 +272,9 @@ def node_refine(state: InputState) -> dict:
             "error_message": str(e)
         }
 
-def end_node(state: InputState) -> dict:
+def end_node(state: PipelineState) -> PipelineState:
     logger.debug("✅ [End] state finale: %s", state)
-    out: OutputState = {}
+    out: PipelineState = {}
     for key in ("domain", "problem", "validation", "error_message", "refined_domain", "refined_problem"):
         if key in state:
             out[key] = state[key]
@@ -186,29 +283,59 @@ def end_node(state: InputState) -> dict:
 # ============================
 # 🔄 Controllo branching
 # ============================
-def should_refine(state: InputState) -> str:
-    if state.get("status") == "ok" and state.get("validation", {}).get("valid_syntax", False):
+def should_continue_after_refine(state: PipelineState) -> str | tuple[str, PipelineState]:
+    user_msgs = [m for m in state.get("messages", []) if isinstance(m, HumanMessage)]
+
+    if not user_msgs:
+        msg = input("💬 Inserisci feedback umano ('ok' per terminare): ").strip()
+        if msg.lower() in {"ok", "accetta", "va bene"}:
+            return "End"
+        # ✨ Restituisci una tupla (next_node, updated_state)
+        return "Refine", {
+            **state,
+            "messages": state.get("messages", []) + [HumanMessage(content=msg)]
+        }
+
+    last = user_msgs[-1].content.strip().lower()
+    if last in {"ok", "accetta", "va bene", "accetto"}:
         return "End"
+
     return "Refine"
+
+
+
+
+
 
 # ============================
 # ⚙️ Costruzione grafo
 # ============================
 def build_pipeline():
-    builder = StateGraph(InputState, stateful=False)
+    builder = StateGraph(PipelineState, stateful=False)
+
+    # Nodi
     builder.add_node("BuildPrompt", node_build_prompt)
-    builder.add_node("GeneratePDDL", node_generate_pddl)
+    builder.add_node("Generate", node_generate_pddl)
     builder.add_node("Validate", node_validate)
     builder.add_node("Refine", node_refine)
+    builder.add_node("ChatFeedback", node_chat_feedback)
     builder.add_node("End", end_node)
 
+    # Flusso iniziale sequenziale
     builder.set_entry_point("BuildPrompt")
-    builder.add_edge("BuildPrompt", "GeneratePDDL")
-    builder.add_edge("GeneratePDDL", "Validate")
-    builder.add_conditional_edges("Validate", path=should_refine)
-    builder.add_edge("Refine", "End")
+    builder.add_edge("BuildPrompt", "Generate")
+    builder.add_edge("Generate", "Validate")
+    builder.add_edge("Validate", "Refine")
+    builder.add_edge("Refine", "ChatFeedback")
+
+    # Loop condizionato: feedback utente → Refine → ChatFeedback (finché non dice "ok")
+    builder.add_conditional_edges("ChatFeedback", path=should_continue_after_refine)
 
     return builder.compile()
+
+
+
+
 
 def get_pipeline_with_memory(thread_id: str):
     logger.info(f"🧠 Pipeline persistente per thread: {thread_id}")

@@ -49,7 +49,7 @@ def ask_local_llm(prompt: str, model: str) -> str:
                 OLLAMA_URL,
                 json={"model": model, "prompt": prompt, "stream": False},
                 headers=HEADERS,
-                timeout=(10, 360)
+                timeout=(10, 720)
             )
             if resp.status_code != 200:
                 logger.error("❌ Ollama ha risposto con %d:\n%s", resp.status_code, resp.text)

@@ -29,7 +29,7 @@ if not logger.hasHandlers():
 # Configurazione LLM
 # ----------------------------
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
-MODEL = "mistral"
+MODEL = "llama3:8b"
 
 
 # ----------------------------
@@ -97,7 +97,7 @@ def run_planner(session_dir: str, timeout: int = 60) -> Tuple[bool, str]:
         return False, f"❌ Errore interno: {e}"
 
 
-def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 2048) -> str:
+def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 20480) -> str:
     try:
         logger.info("📤 Invio prompt a Ollama con modello: %s", model)
         response = requests.post(

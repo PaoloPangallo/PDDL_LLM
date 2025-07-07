@@ -105,7 +105,7 @@ def build_prompt_from_lore(lore: dict, examples: Optional[List[str]] = None) -> 
     intro = (
         "You are a PDDL generation assistant. Your task is to produce two complete and logically consistent PDDL files "
         "(`domain.pddl` and `problem.pddl`) for classical planning, based on the given narrative quest.\n\n"
-        "🧠 Follow these constraints carefully:\n"
+        " Follow these constraints carefully:\n"
         "1. Use ONLY the objects and predicates found in the quest description.\n"
         "2. Each line of PDDL must include a brief comment starting with `;` explaining its purpose.\n"
         "3. Use valid PDDL syntax according to classical planning standards.\n"
