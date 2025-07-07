@@ -9,7 +9,10 @@ Your job is to revise both files to ensure:
 - All referenced objects and predicates are declared appropriately.
 - The domain includes all types, predicates, and actions used in the problem.
 - The problem contains a complete :objects, :init, and :goal section.
-- Any undefined entity (e.g., sword, dragon) should be invented if not present in lore.
+- The :init and :goal sections must match the facts and objectives described in the lore.
+- Do NOT invent new entities. Only reuse or adjust what is declared in the original lore.
+- Each line of PDDL must include a short comment (starting with `;`) explaining its purpose.
+- Preserve as much of the original structure, action names, and types as possible. Only change what is required to resolve the errors.
 
 Always return the corrected domain and problem as two distinct blocks.
 The result MUST strictly begin and end with the following delimiters:

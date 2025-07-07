@@ -1,6 +1,0 @@
-(define (problem dragon-tower)
-     (:domain dragon-tower)
-     (:objects ?h hero village tower-of-varnak sword-of-fire ice-dragon)
-     (:init and (at hero village) (on-ground sword-of-fire tower-of-varnak) (sleeping ice-dragon))
-     (:goal and (not (sleeping ice-dragon)))
-   )

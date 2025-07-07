@@ -1,4 +1,0 @@
-step,action,step_cost,cumulative_cost
-1,move hero1 cave forest,0.0,0.0
-2,take-sword hero1 forest,0.0,0.0
-3,slay-dragon hero1 smaug forest,0.0,0.0

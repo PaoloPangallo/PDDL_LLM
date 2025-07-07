@@ -1,5 +1,0 @@
-(define (problem quest)
-       (:domain quest)
-       (:objects hero village sword ice-dragon tower-of-varnak)
-       (:init (at hero village) (on-ground sword-of-fire tower-of-varnak) (sleeping ice-dragon))
-       (:goal (and (awake ice-dragon) (defeated ice-dragon)))

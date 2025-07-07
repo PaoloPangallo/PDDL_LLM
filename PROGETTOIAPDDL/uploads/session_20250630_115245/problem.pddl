@@ -1,5 +1,0 @@
-(define (problem simple_puzzle)
-          (:domain simple_puzzle)
-          (:objects hero goal_object start_location end_location)
-          (:init (at hero start_location) (on-ground goal_object end_location) (not (has_goal hero goal_object)))
-          (:goal (and (at hero end_location) (has_goal hero goal_object)))

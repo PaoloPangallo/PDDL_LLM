@@ -1,27 +1,41 @@
-"""Modulo di utilità per la generazione, esecuzione e interazione con planner e LLM."""
-
-# pylint: disable=missing-docstring,line-too-long,broad-except,unspecified-encoding
-
 import os
 import re
 import uuid
 import time
 import subprocess
 import logging
+import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple
+from typing import Optional, Tuple
 
 import requests
 
+# ----------------------------
+# Setup Logging globale
+# ----------------------------
 logger = logging.getLogger(__name__)
+if not logger.hasHandlers():
+    handler = logging.StreamHandler()
+    file_handler = logging.FileHandler("questmaster.log", encoding="utf-8")
+    formatter = logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s")
+    handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.addHandler(file_handler)
+    logger.setLevel(logging.INFO)
 
+# ----------------------------
+# Configurazione LLM
+# ----------------------------
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 MODEL = "mistral"
 
 
+# ----------------------------
+# Funzioni principali
+# ----------------------------
 def create_session_dir(upload_folder: str, name_hint: str = None) -> tuple[str, str]:
-    """Crea una directory di sessione con nome univoco basato su timestamp e hint."""
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     base = name_hint.strip().lower().replace(" ", "_") if name_hint else "session"
     base = re.sub(r"[^\w\-]", "", base)[:30]
@@ -31,17 +45,14 @@ def create_session_dir(upload_folder: str, name_hint: str = None) -> tuple[str, 
     return session_id, path
 
 
+def clear_directory(folder: str) -> None:
+    """Cancella e ricrea una cartella."""
+    if os.path.exists(folder):
+        shutil.rmtree(folder)
+    os.makedirs(folder, exist_ok=True)
+
+
 def run_planner(session_dir: str, timeout: int = 60) -> Tuple[bool, str]:
-    """
-    Esegue lo script del planner Fast Downward su una directory di sessione.
-
-    Args:
-        session_dir (str): Directory contenente i file PDDL.
-        timeout (int): Timeout massimo in secondi per il planner.
-
-    Returns:
-        Tuple[bool, str]: True se il planner ha avuto successo, False altrimenti, con messaggio di errore o stderr.
-    """
     planner_script = Path("planner/run-planner.sh")
     session_path = Path(session_dir)
     log_path = session_path / "planner.log"
@@ -54,26 +65,22 @@ def run_planner(session_dir: str, timeout: int = 60) -> Tuple[bool, str]:
         return False, error_msg
 
     try:
-        start = time.time()  # ⬅️ AGGIUNTO
+        start = time.time()
         result = subprocess.run(
             ["bash", str(planner_script), str(session_path)],
             capture_output=True,
             text=True,
             timeout=timeout,
             check=False
-    )
-
+        )
 
         elapsed = time.time() - start
         logger.info("⏱️ Planner terminato in %.2fs (exit code: %d)", elapsed, result.returncode)
         logger.debug("STDOUT:\n%s", result.stdout)
         logger.debug("STDERR:\n%s", result.stderr)
 
-        # Salva log completo
         log_content = result.stdout + "\n--- STDERR ---\n" + result.stderr
         log_path.write_text(log_content, encoding="utf-8")
-
-        # Salva errore se presente
         error_path.write_text(result.stderr.strip(), encoding="utf-8")
 
         success = result.returncode == 0 and "found legal plan" in result.stdout.lower()
@@ -89,19 +96,17 @@ def run_planner(session_dir: str, timeout: int = 60) -> Tuple[bool, str]:
         error_path.write_text(f"❌ Errore interno: {e}", encoding="utf-8")
         return False, f"❌ Errore interno: {e}"
 
-def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int =2048) -> str:
-    """Invia un prompt a Ollama e restituisce la risposta del modello."""
+
+def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 2048) -> str:
     try:
-        logger.info("📤 Invio prompt a Ollama con modello: %s e num_ctx: %d", model, num_ctx)
+        logger.info("📤 Invio prompt a Ollama con modello: %s", model)
         response = requests.post(
             OLLAMA_URL,
             json={
                 "model": model,
                 "prompt": prompt,
                 "stream": False,
-                "options": {
-                    "num_ctx": num_ctx
-                }
+                "options": {"num_ctx": num_ctx}
             },
             timeout=(10, 360)
         )
@@ -111,46 +116,59 @@ def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int =2048) -> str:
 
     except requests.exceptions.HTTPError as e:
         logger.error("❌ HTTP Error da Ollama (%s): %s", e.response.status_code, e.response.text.strip())
-        logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
+        _save_failed_prompt(prompt)
         raise
 
     except requests.exceptions.RequestException as e:
         logger.error("❌ Errore di rete con Ollama: %s", e)
-        logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
+        _save_failed_prompt(prompt)
         raise
 
     except Exception as e:
         logger.error("❌ Errore generico durante la richiesta a Ollama: %s", e)
-        logger.debug("📄 Prompt (primi 500 caratteri):\n%s", prompt[:500])
+        _save_failed_prompt(prompt)
         raise
 
 
-def extract_between(text: str, start_marker: str, end_marker: str) -> str | None:
-    """Estrae la porzione di testo tra due marcatori se presenti."""
-    try:
-        start_idx = text.index(start_marker) + len(start_marker)
-        end_idx = text.index(end_marker, start_idx)
-        return text[start_idx:end_idx].strip()
-    except ValueError:
-        logger.warning("⚠️ Delimitatori non trovati: %s / %s", start_marker, end_marker)
-        return None
+def _save_failed_prompt(prompt: str):
+    Path("llm_debug").mkdir(exist_ok=True)
+    Path("llm_debug/last_failed_prompt.txt").write_text(prompt, encoding="utf-8")
+
+
+import re
+import logging
+
+logger = logging.getLogger(__name__)
+
+def extract_between(text: str, start: str, end: str) -> Optional[str]:
+    """Estrae testo tra due marker, anche se racchiuso da ``` o linguaggi."""
+    pattern = re.compile(
+        rf"{re.escape(start)}\s*```(?:pddl|lisp)?\s*(.*?)\s*```?\s*{re.escape(end)}",
+        re.DOTALL | re.IGNORECASE,
+    )
+    match = pattern.search(text)
+    if match:
+        return match.group(1).strip()
+    
+    # fallback semplice se non ci sono backtick
+    fallback = re.search(rf"{re.escape(start)}(.*?){re.escape(end)}", text, re.DOTALL | re.IGNORECASE)
+    return fallback.group(1).strip() if fallback else None
+
+
 
 
 def read_text_file(path: str) -> str | None:
-    """Legge un file di testo se esiste e ne restituisce il contenuto."""
     return open(path, encoding="utf-8").read() if os.path.isfile(path) else None
 
 
 def save_text_file(path: str, content: str) -> None:
-    """Salva una stringa in un file, sollevando eccezione se il path è una directory."""
     if os.path.isdir(path):
         raise IsADirectoryError(f"❌ Il path {path} è una directory, impossibile salvarci un file.")
-
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
-        
+
+
 def get_unique_filename(folder: str, base_name: str, ext: str = ".pddl") -> str:
-    """Genera un nome file univoco nella cartella specificata."""
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     base_path = Path(folder) / f"{base_name}-{timestamp}{ext}"
     counter = 1

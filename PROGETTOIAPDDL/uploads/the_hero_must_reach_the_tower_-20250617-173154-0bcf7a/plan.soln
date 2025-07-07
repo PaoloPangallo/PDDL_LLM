@@ -1,4 +1,0 @@
-(move hero1 cave forest)
-(take-sword hero1 forest)
-(slay-dragon hero1 smaug forest)
-; cost = 3 (unit cost)

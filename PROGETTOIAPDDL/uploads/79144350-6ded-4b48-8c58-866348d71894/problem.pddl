@@ -1,5 +1,0 @@
-(define (problem varnak-quest)
-  (:objects hero cave dragon)
-  (:init (and (at hero village) (hidden sword cave) (sleeping dragon)))
-  (:goal (and (has-sword hero) (defeated dragon)))
-)

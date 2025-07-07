@@ -1,34 +1,66 @@
 """
-Modulo per generare i file PDDL da un lore JSON, utilizzando esempi simili e un LLM locale.
+Modulo per generare i file PDDL da un lore, gestendo sia dict strutturati che plain text.
 """
 
 import os
 import json
 import logging
-from typing import Optional
+from typing import Optional, Tuple, List
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from core.utils import ask_ollama, extract_between, save_text_file
-from db.db import retrieve_similar_examples_from_db
+from core.validator import validate_pddl
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
+
+
+from langchain_core.tools import tool
+
+@tool
+def generate_pddl_tool(data: dict) -> dict:
+    """
+    Tool compatibile LangChain: genera PDDL da un lore dict o da path.
+    """
+    lore = data.get("lore") or data.get("description")
+    lore_path = data.get("lore_path")
+
+    if isinstance(lore, dict):
+        domain, problem, examples = generate_pddl_from_dict(lore, lore_path)
+    elif isinstance(lore, str):
+        try:
+            lore_obj = json.loads(lore)
+            domain, problem, examples = generate_pddl_from_dict(lore_obj, lore_path)
+        except Exception as e:
+            return {"error": f"Invalid lore JSON: {str(e)}"}
+    else:
+        return {"error": "No valid lore provided"}
+
+    return {
+        "domain": domain,
+        "problem": problem,
+        "examples_used": examples
+    }
+
+
+
+
 
 
 def load_lore(lore_path: str) -> dict:
-    """Carica il file di lore JSON dal percorso fornito."""
     with open(lore_path, encoding="utf-8") as f:
         return json.load(f)
 
 
-def load_pddl_examples(max_examples: int = 0) -> list[tuple[str, str]]:
-    """Carica esempi PDDL da sottocartelle di 'pddl_examples'."""
+def load_pddl_examples(max_examples: int = 5) -> List[Tuple[str, str]]:
     examples_dir = os.path.join(os.path.dirname(__file__), "..", "pddl_examples")
-    results = []
-
+    results: List[Tuple[str, str]] = []
     for i, folder in enumerate(os.listdir(examples_dir)):
-        if i >= max_examples:
+        if max_examples > 0 and i >= max_examples:
             break
         folder_path = os.path.join(examples_dir, folder)
         if not os.path.isdir(folder_path):
@@ -39,15 +71,13 @@ def load_pddl_examples(max_examples: int = 0) -> list[tuple[str, str]]:
                 content = f_dom.read().strip() + "\n\n" + f_prob.read().strip()
                 results.append((folder, content))
         except (FileNotFoundError, OSError) as e:
-            logger.warning("Errore nel caricamento dell'esempio '%s': %s", folder, e)
+            logger.warning("⚠️ Errore caricamento esempio '%s': %s", folder, e)
             continue
-
     return results
 
 
-def retrieve_best_example(lore_text: str) -> list[tuple[str, str]]:
-    """Recupera l'esempio PDDL più simile al testo del lore."""
-    examples = load_pddl_examples(max_examples=0)
+def retrieve_best_example(lore_text: str) -> List[Tuple[str, str]]:
+    examples = load_pddl_examples(max_examples=5)
     if not examples:
         return []
     texts = [ex[1] for ex in examples]
@@ -58,85 +88,90 @@ def retrieve_best_example(lore_text: str) -> list[tuple[str, str]]:
         best_index = sims.argmax()
         return [(names[best_index], texts[best_index])]
     except (ValueError, IndexError) as e:
-        logger.warning("Errore durante la similarità: %s", e)
+        logger.warning("⚠️ Errore similarità: %s", e)
         return []
 
 
-def build_prompt_from_lore(lore: dict, examples: Optional[list[str]] = None) -> tuple[str, list[str]]:
-    """Costruisce il prompt da inviare al modello LLM a partire dal lore ed esempi opzionali RAG."""
-    lore_text = json.dumps(lore, indent=2)
+def build_prompt_from_lore(lore: dict, examples: Optional[List[str]] = None) -> Tuple[str, List[str]]:
     examples = examples or []
     examples_text = ""
-
     for i, content in enumerate(examples):
         if "(define" in content and "(:action" in content:
-            examples_text += f"\n// ---- Example {i + 1} ----\n{content.strip()}\n"
+            examples_text += f"\n// ---- Example {i+1} ----\n{content.strip()}\n"
 
-    initial_state = "\n".join(lore.get("init", []))
-    goal_conditions = "\n".join(lore.get("goal", []))
-    object_list = "\n".join(lore.get("objects", []))
+    is_plain = set(lore.keys()) <= {"description"}
 
-    prompt = (
-        "You are an expert in PDDL generation for classical planning.\n\n"
-        "Your task is to generate exactly **two valid PDDL files**:\n"
-        "1. `domain.pddl`\n"
-        "2. `problem.pddl`\n\n"
-        "⚠️ Follow STRICTLY the PDDL standard syntax. Do NOT invent syntax or wrap blocks incorrectly.\n"
-        "⚠️ Every section MUST be included and well-formed.\n\n"
-
-        "🔤 Use exactly the same objects, names and predicates found in the lore.\n"
-        "Do not rename or invent entities. These must appear:\n"
-        f"{object_list}\n\n"
-
-        "🧠 DOMAIN file format:\n"
-        "Must include these required sections:\n"
-        "- `(:requirements ...)`\n"
-        "- `(:types ...)`\n"
-        "- `(:predicates ...)`\n"
-        "- At least one `(:action name ...)` — use this exact syntax\n\n"
-
-        "📦 PROBLEM file format:\n"
-        "Must include these required sections:\n"
-        "- `(:domain ...)`\n"
-        "- `(:objects ...)`\n"
-        "- `(:init ...)` — use FLAT predicates, NO `(and (...))`\n"
-        "- `(:goal ...)`\n\n"
-
-        "🎯 OUTPUT FORMAT:\n"
-        "Wrap your answer between these exact delimiters:\n"
-        "=== DOMAIN START ===\n<insert full domain.pddl here>\n=== DOMAIN END ===\n"
-        "=== PROBLEM START ===\n<insert full problem.pddl here>\n=== PROBLEM END ===\n\n"
-
-        f"📚 Examples (optional):\n{examples_text}"
-        f"\n🗺️ QUEST TITLE: {lore.get('quest_title', '')}\n"
-        f"🌍 WORLD CONTEXT: {lore.get('world_context', '')}\n"
-        f"📜 QUEST DESCRIPTION:\n{lore.get('description', '')}\n"
-        f"📦 INITIAL STATE:\n{initial_state}\n"
-        f"🎯 GOAL CONDITIONS:\n{goal_conditions}\n"
+    # 📌 Prompt base per LLM
+    intro = (
+        "You are a PDDL generation assistant. Your task is to produce two complete and logically consistent PDDL files "
+        "(`domain.pddl` and `problem.pddl`) for classical planning, based on the given narrative quest.\n\n"
+        "🧠 Follow these constraints carefully:\n"
+        "1. Use ONLY the objects and predicates found in the quest description.\n"
+        "2. Each line of PDDL must include a brief comment starting with `;` explaining its purpose.\n"
+        "3. Use valid PDDL syntax according to classical planning standards.\n"
+        "4. The domain must include types, predicates, and actions.\n"
+        "5. The problem must include object declarations, initial state, and goal conditions.\n"
+        "6. Keep everything readable and modular.\n\n"
     )
 
-    return prompt, [f"Example {i + 1}" for i in range(len(examples))]
+    # Prompt per lore plain-text
+    if is_plain:
+        lore_text = lore.get("description", "")
+        prompt = (
+            intro +
+            f"🔍 QUEST DESCRIPTION:\n{lore_text}\n\n" +
+            "🎯 Your output must follow this format:\n"
+            "=== DOMAIN START ===\n<insert domain.pddl here>\n=== DOMAIN END ===\n"
+            "=== PROBLEM START ===\n<insert problem.pddl here>\n=== PROBLEM END ===\n"
+            "\n📚 Reference examples:\n" + examples_text
+        )
+        return prompt, [f"Example {i+1}" for i in range(len(examples))]
 
+    # Prompt per lore strutturato
+    required_keys = ["init", "goal", "objects"]
+    for key in required_keys:
+        if key not in lore or not lore[key]:
+            raise ValueError(f"❌ Lore incompleto: manca '{key}'")
 
+    initial_state = "\n".join(lore["init"])
+    goal_conditions = "\n".join(lore["goal"])
+    object_list = "\n".join(lore["objects"])
 
-def generate_pddl_from_lore(lore_path: str) -> tuple[str, str, list[str]]:
-    """Genera i file PDDL a partire da un file JSON di lore."""
-    lore = load_lore(lore_path)
-    return generate_pddl_from_dict(lore, lore_path)
+    branching = lore.get("branching_factor", {"min": 1, "max": 4})
+    depth = lore.get("depth_constraints", {"min": 3, "max": 10})
+
+    prompt = (
+        intro +
+        "📦 OBJECTS:\n" + object_list + "\n\n" +
+        "🔋 INITIAL STATE:\n" + initial_state + "\n\n" +
+        "🎯 GOAL CONDITIONS:\n" + goal_conditions + "\n\n" +
+        f"🔀 BRANCHING FACTOR: min {branching['min']}, max {branching['max']}\n" +
+        f"🧭 DEPTH CONSTRAINTS: min {depth['min']}, max {depth['max']}\n\n" +
+        f"🗺️ QUEST TITLE: {lore.get('quest_title','(not provided)')}\n" +
+        f"🌍 WORLD CONTEXT: {lore.get('world_context','(not provided)')}\n" +
+        f"📜 NARRATIVE DESCRIPTION:\n{lore.get('description','')}\n\n" +
+        "🎯 Your output must follow this format:\n"
+        "=== DOMAIN START ===\n<insert domain.pddl here>\n=== DOMAIN END ===\n"
+        "=== PROBLEM START ===\n<insert problem.pddl here>\n=== PROBLEM END ===\n"
+        "\n📚 Reference examples to imitate:\n" + examples_text
+    )
+
+    return prompt, [f"Example {i+1}" for i in range(len(examples))]
+
 
 
 def generate_pddl_from_dict(
     lore: dict,
     lore_path: Optional[str] = None
-) -> tuple[Optional[str], Optional[str], list[str]]:
-    """Genera i file PDDL a partire da un dizionario di lore."""
+) -> Tuple[Optional[str], Optional[str], List[str]]:
     prompt, used_examples = build_prompt_from_lore(lore)
     raw = ask_ollama(prompt)
 
-    if lore_path:
-        session_dir = os.path.join("uploads", os.path.basename(lore_path).split(".")[0])
-        os.makedirs(session_dir, exist_ok=True)
-        save_text_file(os.path.join(session_dir, "raw_llm_response.txt"), raw)
+    session_dir = os.path.join(
+        "uploads", "tmp" if not lore_path else os.path.basename(lore_path).split(".")[0]
+    )
+    os.makedirs(session_dir, exist_ok=True)
+    save_text_file(os.path.join(session_dir, "raw_llm_response.txt"), raw)
 
     domain = extract_between(raw, "=== DOMAIN START ===", "=== DOMAIN END ===")
     problem = extract_between(raw, "=== PROBLEM START ===", "=== PROBLEM END ===")
@@ -145,4 +180,18 @@ def generate_pddl_from_dict(
         logger.warning("⚠️ Generazione fallita: PDDL non valido.")
         return None, None, used_examples
 
+    validation = validate_pddl(domain, problem, lore)
+    if not validation["valid_syntax"]:
+        logger.warning("⚠️ Validazione fallita: %s", json.dumps(validation, indent=2))
+        save_text_file(
+            os.path.join(session_dir, "validation_failed.json"),
+            json.dumps(validation, indent=2)
+        )
+        return None, None, used_examples
+
     return domain, problem, used_examples
+
+
+def generate_pddl_from_lore(lore_path: str) -> Tuple[Optional[str], Optional[str], List[str]]:
+    lore = load_lore(lore_path)
+    return generate_pddl_from_dict(lore, lore_path)

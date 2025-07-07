@@ -1,32 +1,43 @@
-"""Modulo per la validazione sintattico-semantica dei file PDDL rispetto al lore."""
-
-# pylint: disable=missing-docstring,line-too-long,broad-except,unspecified-encoding
-
 import re
+import json
 import logging
-from typing import Dict, List
+from typing import Dict, List, Any
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-PDDL_SECTIONS = ["(:types", "(:predicates", "(:action", "(:objects", "(:init", "(:goal"]
+PDDL_SECTIONS = ["(:types", "(:predicates", "(:action", "(:objects", "(:init", "(:goal)"]
 
 
-def validate_pddl(domain: str, problem: str, lore: dict) -> Dict:
-    """Valida la correttezza dei file domain/problem PDDL in base al contenuto del lore."""
+def validate_pddl(domain: str, problem: str, lore: Any) -> Dict:
+    # Gestione lore che può essere dict o plain text
+    if isinstance(lore, str):
+        try:
+            lore_dict = json.loads(lore)
+        except json.JSONDecodeError:
+            lore_dict = {}
+    elif isinstance(lore, dict):
+        lore_dict = lore
+    else:
+        lore_dict = {}
+
     report = {
         "valid_syntax": True,
         "missing_sections": [],
         "undefined_objects_in_goal": [],
         "undefined_actions": [],
         "mismatched_lore_entities": [],
+        "domain_mismatch": None,
         "semantic_errors": []
     }
 
     # 1. Verifica sezioni obbligatorie
     check_required_sections(domain, problem, report)
 
-    # 2. Estrazione oggetti e goal
+    # 2. Check nome dominio dichiarato
+    check_domain_name_match(domain, problem, report)
+
+    # 3. Estrai oggetti e goal
     object_list = extract_objects(problem)
     goal_atoms = extract_goal_atoms(problem)
 
@@ -36,64 +47,90 @@ def validate_pddl(domain: str, problem: str, lore: dict) -> Dict:
         obj for atom in goal_atoms for obj in atom if obj not in object_list
     ]
 
-    # 3. Confronto con entità del lore
-    lore_entities = lore.get("entities", []) + lore.get("inventory", [])
-    object_set = set(object_list)
-    report["mismatched_lore_entities"] = [
-        e for e in lore_entities if e not in object_set
-    ]
+    # 4. Confronto con entità nel lore (solo se lore_dict contiene chiavi)
+    lore_entities = []
+    if "entities" in lore_dict or "inventory" in lore_dict:
+        lore_entities = lore_dict.get("entities", []) + lore_dict.get("inventory", [])
+        object_set = set(object_list)
+        report["mismatched_lore_entities"] = [
+            e for e in lore_entities if e not in object_set
+        ]
 
-    # 4. Controllo coerenza azioni
+    # 5. Azioni
     defined_actions = extract_action_names(domain)
-    used_actions = extract_plan_actions(problem)  # Dummy for ora
+    used_actions = extract_plan_actions(problem)
     report["undefined_actions"] = [a for a in used_actions if a not in defined_actions]
 
-    # 5. Validazione semantica coerente con init e goal della lore
-    report["semantic_errors"] = semantic_check(problem, lore)
+    # 6. Errori semantici (solo se lore contiene init/goal come liste)
+    if isinstance(lore_dict.get("init"), list) and isinstance(lore_dict.get("goal"), list):
+        report["semantic_errors"].extend(semantic_check(problem, lore_dict))
 
-    # 6. Validazione struttura azioni
+    # 7. Struttura azioni
     report["semantic_errors"].extend(validate_action_structure(domain))
+
+    if report["missing_sections"] or report["semantic_errors"]:
+        report["valid_syntax"] = False
 
     return report
 
 
 # =======================
-# 🔍 Helper Functions
+# 🔍 Helper functions
 # =======================
 
 def check_required_sections(domain: str, problem: str, report: Dict):
-    required_domain_sections = ["(:types", "(:predicates", "(:action"]
-    required_problem_sections = ["(:objects", "(:init", "(:goal"]
+    required_domain = ["(:types", "(:predicates", "(:action"]
+    required_problem = ["(:objects", "(:init", "(:goal"]
 
-    for section in required_domain_sections:
+    for section in required_domain:
         if section not in domain:
             report["missing_sections"].append(section)
-            report["valid_syntax"] = False
-
-    for section in required_problem_sections:
+    for section in required_problem:
         if section not in problem:
             report["missing_sections"].append(section)
+
+
+def check_domain_name_match(domain: str, problem: str, report: Dict):
+    domain_decl = re.search(r"\(define\s*\(domain\s+(\w+)\)", domain)
+    problem_decl = re.search(r"\(:domain\s+(\w+)\)", problem)
+
+    if domain_decl and problem_decl:
+        dom_name = domain_decl.group(1).strip()
+        prob_name = problem_decl.group(1).strip()
+        if dom_name != prob_name:
+            report["domain_mismatch"] = f"Domain name mismatch: '{dom_name}' vs '{prob_name}'"
             report["valid_syntax"] = False
 
 
 def extract_objects(problem: str) -> List[str]:
-    """Estrae gli oggetti dichiarati nella sezione :objects del problem."""
+    """Estrae gli oggetti dalla sezione :objects (con o senza tipo)."""
     match = re.search(r"\(:objects(.*?)\)", problem, re.DOTALL)
     if not match:
         return []
+
     content = match.group(1)
     tokens = content.split()
     result = []
-    for i, token in enumerate(tokens):
+    current_obj_group = []
+
+    for token in tokens:
         if token == "-":
+            # Aggiunge oggetti raccolti prima del tipo
+            result.extend(current_obj_group)
+            current_obj_group = []
+        elif token.startswith("-"):
+            # Tipo malformato, salta
             continue
-        if i + 1 < len(tokens) and tokens[i + 1] == "-":
-            result.append(token)
+        else:
+            current_obj_group.append(token)
+
+    # Se ci sono oggetti non tipizzati alla fine
+    result.extend(current_obj_group)
+
     return result
 
 
 def extract_goal_atoms(problem: str) -> List[List[str]]:
-    """Estrae gli atomi obiettivo dalla sezione :goal del file problem.pddl."""
     match = re.search(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
     if not match:
         return []
@@ -102,13 +139,21 @@ def extract_goal_atoms(problem: str) -> List[List[str]]:
 
 
 def extract_action_names(domain: str) -> List[str]:
-    """Estrae i nomi delle azioni definite nel domain."""
     return re.findall(r"\(:action\s+([\w-]+)", domain)
 
 
 def extract_plan_actions(problem: str) -> List[str]:
-    """Estrae i nomi delle azioni usate nel piano (dummy per ora)."""
-    return []
+    """
+    Dummy estrattore: estrae parole che sembrano azioni dentro :goal (solo per hint).
+    """
+    actions = set()
+    matches = re.findall(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
+    for body in matches:
+        for match in re.findall(r"\(([\w-]+)", body):
+            if match not in {"and", "or", "not"}:
+                actions.add(match)
+    return list(actions)
+
 
 
 def extract_init_facts(problem: str) -> List[str]:
@@ -137,19 +182,17 @@ def semantic_check(problem: str, lore: dict) -> List[str]:
 
     for fact in init_expected:
         if fact not in init_actual:
-            errors.append(f"❌ Init mismatch: expected '{fact}' not found in problem.")
+            errors.append(f"❌ Init mismatch: '{fact}' not found in problem.")
 
     for fact in goal_expected:
         if fact not in goal_actual:
-            errors.append(f"❌ Goal mismatch: expected '{fact}' not found in problem.")
+            errors.append(f"❌ Goal mismatch: '{fact}' not found in problem.")
 
     return errors
 
 
 def validate_action_structure(domain: str) -> List[str]:
-    """Verifica che ogni azione contenga parametri, precondizioni ed effetti."""
     problems = []
-    # Trova tutte le azioni nel dominio, anche se su più righe
     actions = re.findall(r"\(:action\s+([\w-]+)(.*?)(?=\(:action|\Z)", domain, re.DOTALL)
     for name, block in actions:
         if ":parameters" not in block:
@@ -159,20 +202,3 @@ def validate_action_structure(domain: str) -> List[str]:
         if ":effect" not in block:
             problems.append(f"❌ Action '{name}' is missing ':effect'.")
     return problems
-
-
-# =======================
-# ✅ Test locale
-# =======================
-
-if __name__ == "__main__":
-    import json
-    with open("uploads/lore-generated/domain.pddl", "r") as f:
-        domain_content = f.read()
-    with open("uploads/lore-generated/problem.pddl", "r") as f:
-        problem_content = f.read()
-    with open("lore/example_lore.json", "r") as f:
-        lore_data = json.load(f)
-
-    result = validate_pddl(domain_content, problem_content, lore_data)
-    print(json.dumps(result, indent=2, ensure_ascii=False))

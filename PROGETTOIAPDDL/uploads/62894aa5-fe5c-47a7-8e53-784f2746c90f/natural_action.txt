@@ -1,4 +1,0 @@
-(:action attacco
-    :parameters (?a - agente) (?b - oggetto)
-    :precondition (and (e (vivo ?a)) (e (interattabile ?b)))
-    :effect (when (nemico ?b) (not (vivo ?b))))

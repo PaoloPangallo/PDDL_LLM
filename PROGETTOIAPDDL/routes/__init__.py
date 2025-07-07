@@ -1,24 +1,27 @@
 # routes/__init__.py
 
-# ✅ Importa tutti i blueprint dai moduli
-from .core import core_bp
-from .generate import generate_bp
-from .result import result_bp
-from .chat import chat_bp
-from .refine import refine_bp
-from .generate_action_api import generate_action_bp
-from .extractor import extract_bp
-from .pipeline import pipeline_bp
-from .chat_bot import chatbot_bp  # blueprint chatbot con LangGraph
+import pkgutil
+import importlib
+from flask import Blueprint, Flask
 
-def register_routes(app):
-    """Registra tutti i blueprint dell'applicazione Flask."""
-    app.register_blueprint(core_bp)
-    app.register_blueprint(generate_bp)
-    app.register_blueprint(result_bp)
-    app.register_blueprint(chat_bp)
-    app.register_blueprint(refine_bp)
-    app.register_blueprint(generate_action_bp)
-    app.register_blueprint(extract_bp)
-    app.register_blueprint(pipeline_bp)
-    app.register_blueprint(chatbot_bp, url_prefix="/api/chatbot")
+def register_routes(app: Flask) -> None:
+    """
+    Scansiona i moduli in routes/ (non pkg) e registra ogni Blueprint
+    trovato come <nome_attr>_bp. Se nel modulo c'è URL_PREFIX, lo usa.
+    """
+    package_name = __name__  # "routes"
+    for _finder, module_name, is_pkg in pkgutil.iter_modules(__path__):
+        if is_pkg:
+            continue
+        full_name = f"{package_name}.{module_name}"
+        module = importlib.import_module(full_name)
+        for attr in dir(module):
+            if not attr.endswith("_bp"):
+                continue
+            bp = getattr(module, attr)
+            if isinstance(bp, Blueprint):
+                prefix = getattr(module, "URL_PREFIX", None)
+                if prefix:
+                    app.register_blueprint(bp, url_prefix=prefix)
+                else:
+                    app.register_blueprint(bp)

@@ -1,6 +1,0 @@
-(define (problem my-initial-state)
-  (:domain my-planning)
-  (:objects A B C D)
-  (:init (and (at A 1) (clear 1)))
-  (:goal (and (at B 2) (at C 3) (at D 4)))
-)

@@ -1,6 +1,0 @@
-(define (problem simple-housekeeping)
-    (:domain simple-world)
-    (:objects table chair vase broom closet - location)
-    (:init (and (at agent1 table) (on vase table) (clear closet)) )
-    (:goal (and (clear table) (on broom table)))
-  )
