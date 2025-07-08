@@ -101,62 +101,67 @@ def build_prompt_from_lore(lore: dict, examples: Optional[List[str]] = None) -> 
 
     is_plain = set(lore.keys()) <= {"description"}
 
-    # 📌 Prompt base per LLM
     intro = (
-        "You are a PDDL generation assistant. Your task is to produce two complete and logically consistent PDDL files "
-        "(`domain.pddl` and `problem.pddl`) for classical planning, based on the given narrative quest.\n\n"
-        " Follow these constraints carefully:\n"
-        "1. Use ONLY the objects and predicates found in the quest description.\n"
-        "2. Each line of PDDL must include a brief comment starting with `;` explaining its purpose.\n"
-        "3. Use valid PDDL syntax according to classical planning standards.\n"
-        "4. The domain must include types, predicates, and actions.\n"
-        "5. The problem must include object declarations, initial state, and goal conditions.\n"
-        "6. Keep everything readable and modular.\n\n"
+        "You are a professional PDDL generation assistant.\n"
+        "Your task is to produce two complete, valid and logically consistent PDDL files:\n"
+        "- `domain.pddl`\n"
+        "- `problem.pddl`\n\n"
+        "💡 These files will be automatically validated for:\n"
+        "• Syntactic correctness (PDDL standards)\n"
+        "• Object/predicate coherence across domain/problem/init/goal\n"
+        "• Full consistency with the lore provided\n\n"
+        "📏 Please follow these STRICT constraints:\n"
+        "1. Use ONLY objects, types and predicates from the lore.\n"
+        "2. Each predicate in the goal must be declared and used.\n"
+        "3. Init and goal must match exactly the lore.\n"
+        "4. Use valid and modular PDDL syntax, with correct parentheses.\n"
+        "5. Comment each line with a `;` explaining its purpose.\n"
+        "6. Do NOT invent anything beyond the description.\n"
+        "7. Keep the output clean, readable, and logically structured.\n"
     )
 
-    # Prompt per lore plain-text
     if is_plain:
         lore_text = lore.get("description", "")
         prompt = (
             intro +
-            f"🔍 QUEST DESCRIPTION:\n{lore_text}\n\n" +
-            "🎯 Your output must follow this format:\n"
+            f"\n🔍 QUEST DESCRIPTION:\n{lore_text}\n\n" +
+            "🎯 Your output must follow this exact format:\n"
             "=== DOMAIN START ===\n<insert domain.pddl here>\n=== DOMAIN END ===\n"
             "=== PROBLEM START ===\n<insert problem.pddl here>\n=== PROBLEM END ===\n"
-            "\n📚 Reference examples:\n" + examples_text
         )
-        return prompt, [f"Example {i+1}" for i in range(len(examples))]
+    else:
+        required_keys = ["init", "goal", "objects"]
+        for key in required_keys:
+            if key not in lore or not lore[key]:
+                raise ValueError(f"❌ Lore incompleto: manca '{key}'")
 
-    # Prompt per lore strutturato
-    required_keys = ["init", "goal", "objects"]
-    for key in required_keys:
-        if key not in lore or not lore[key]:
-            raise ValueError(f"❌ Lore incompleto: manca '{key}'")
+        initial_state = "\n".join(lore["init"])
+        goal_conditions = "\n".join(lore["goal"])
+        object_list = "\n".join(lore["objects"])
 
-    initial_state = "\n".join(lore["init"])
-    goal_conditions = "\n".join(lore["goal"])
-    object_list = "\n".join(lore["objects"])
+        branching = lore.get("branching_factor", {"min": 1, "max": 4})
+        depth = lore.get("depth_constraints", {"min": 3, "max": 10})
 
-    branching = lore.get("branching_factor", {"min": 1, "max": 4})
-    depth = lore.get("depth_constraints", {"min": 3, "max": 10})
+        prompt = (
+            intro +
+            "\n📦 OBJECTS:\n" + object_list + "\n\n" +
+            "🔋 INITIAL STATE:\n" + initial_state + "\n\n" +
+            "🎯 GOAL CONDITIONS:\n" + goal_conditions + "\n\n" +
+            f"🔀 BRANCHING FACTOR: min {branching['min']}, max {branching['max']}\n" +
+            f"🧭 DEPTH CONSTRAINTS: min {depth['min']}, max {depth['max']}\n\n" +
+            f"🗺️ QUEST TITLE: {lore.get('quest_title', '(not provided)')}\n" +
+            f"🌍 WORLD CONTEXT: {lore.get('world_context', '(not provided)')}\n" +
+            f"📜 NARRATIVE DESCRIPTION:\n{lore.get('description', '')}\n\n" +
+            "🎯 Your output MUST follow this format:\n"
+            "=== DOMAIN START ===\n<insert domain.pddl here>\n=== DOMAIN END ===\n"
+            "=== PROBLEM START ===\n<insert problem.pddl here>\n=== PROBLEM END ===\n"
+        )
 
-    prompt = (
-        intro +
-        "📦 OBJECTS:\n" + object_list + "\n\n" +
-        "🔋 INITIAL STATE:\n" + initial_state + "\n\n" +
-        "🎯 GOAL CONDITIONS:\n" + goal_conditions + "\n\n" +
-        f"🔀 BRANCHING FACTOR: min {branching['min']}, max {branching['max']}\n" +
-        f"🧭 DEPTH CONSTRAINTS: min {depth['min']}, max {depth['max']}\n\n" +
-        f"🗺️ QUEST TITLE: {lore.get('quest_title','(not provided)')}\n" +
-        f"🌍 WORLD CONTEXT: {lore.get('world_context','(not provided)')}\n" +
-        f"📜 NARRATIVE DESCRIPTION:\n{lore.get('description','')}\n\n" +
-        "🎯 Your output must follow this format:\n"
-        "=== DOMAIN START ===\n<insert domain.pddl here>\n=== DOMAIN END ===\n"
-        "=== PROBLEM START ===\n<insert problem.pddl here>\n=== PROBLEM END ===\n"
-        "\n📚 Reference examples to imitate:\n" + examples_text
-    )
+    if examples_text:
+        prompt += "\n📚 REFERENCE EXAMPLES:\n" + examples_text
 
     return prompt, [f"Example {i+1}" for i in range(len(examples))]
+
 
 
 

@@ -3,10 +3,11 @@ import json
 import logging
 import re
 import tempfile
-from typing import List, TypedDict, Optional
+from typing import Any, List, TypedDict, Optional
 from langgraph.graph import StateGraph
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langchain_core.messages import BaseMessage
+
 
 
 from typing import Annotated
@@ -18,7 +19,6 @@ from db.db import retrieve_similar_examples_from_db
 from core.utils import ask_ollama, extract_between, save_text_file
 from core.validator import validate_pddl
 from agents.reflection_agent import refine_pddl
-import operator
 
 logger = logging.getLogger("pddl_pipeline_graph")
 logging.basicConfig(level=logging.DEBUG)
@@ -283,24 +283,28 @@ def end_node(state: PipelineState) -> PipelineState:
 # ============================
 # 🔄 Controllo branching
 # ============================
-def should_continue_after_refine(state: PipelineState) -> str | tuple[str, PipelineState]:
+from langchain_core.messages import HumanMessage
+
+def should_continue_after_refine(state: PipelineState) -> dict[str, Any]:
     user_msgs = [m for m in state.get("messages", []) if isinstance(m, HumanMessage)]
 
+    # Se non ci sono messaggi umani (prima interazione dopo refine)
     if not user_msgs:
         msg = input("💬 Inserisci feedback umano ('ok' per terminare): ").strip()
-        if msg.lower() in {"ok", "accetta", "va bene"}:
-            return "End"
-        # ✨ Restituisci una tupla (next_node, updated_state)
-        return "Refine", {
-            **state,
-            "messages": state.get("messages", []) + [HumanMessage(content=msg)]
-        }
+        new_msg = HumanMessage(content=msg)
+        state["messages"].append(new_msg)
 
+        if msg.lower() in {"ok", "accetta", "va bene"}:
+            return {"next": "End", "state": state}
+        return {"next": "Refine", "state": state}
+
+    # Se esiste già un messaggio, valuta l’ultimo
     last = user_msgs[-1].content.strip().lower()
     if last in {"ok", "accetta", "va bene", "accetto"}:
-        return "End"
+        return {"next": "End", "state": state}
 
-    return "Refine"
+    return {"next": "Refine", "state": state}
+
 
 
 
@@ -310,8 +314,8 @@ def should_continue_after_refine(state: PipelineState) -> str | tuple[str, Pipel
 # ============================
 # ⚙️ Costruzione grafo
 # ============================
-def build_pipeline():
-    builder = StateGraph(PipelineState, stateful=False)
+def build_pipeline(checkpointer=None):
+    builder = StateGraph(PipelineState, stateful=True)
 
     # Nodi
     builder.add_node("BuildPrompt", node_build_prompt)
@@ -321,28 +325,46 @@ def build_pipeline():
     builder.add_node("ChatFeedback", node_chat_feedback)
     builder.add_node("End", end_node)
 
-    # Flusso iniziale sequenziale
+    # Flusso base
     builder.set_entry_point("BuildPrompt")
     builder.add_edge("BuildPrompt", "Generate")
     builder.add_edge("Generate", "Validate")
     builder.add_edge("Validate", "Refine")
     builder.add_edge("Refine", "ChatFeedback")
 
-    # Loop condizionato: feedback utente → Refine → ChatFeedback (finché non dice "ok")
+    # Rami condizionali da ChatFeedback
+    builder.add_edge("ChatFeedback", "Refine")  # richiesto da LangGraph anche se condizionale
+    builder.add_edge("ChatFeedback", "End")     # richiesto da LangGraph anche se condizionale
     builder.add_conditional_edges("ChatFeedback", path=should_continue_after_refine)
 
-    return builder.compile()
+    # Compilazione finale
+    return builder.compile(checkpointer=checkpointer) if checkpointer else builder.compile()
 
 
 
 
+
+from langgraph.checkpoint.sqlite import SqliteSaver
 
 def get_pipeline_with_memory(thread_id: str):
     logger.info(f"🧠 Pipeline persistente per thread: {thread_id}")
     logger.info(f"📍 Salvataggio in: memory/{thread_id}.sqlite")
 
     os.makedirs("memory", exist_ok=True)
+
+    # ✅ Usa l'istanza direttamente, SENZA context manager
     saver = SqliteSaver.from_conn_string(f"sqlite:///memory/{thread_id}.sqlite")
-    return build_pipeline().with_config(checkpointer=saver)
+
+    # ✅ Passalo dentro build_pipeline
+    pipeline = build_pipeline(checkpointer=saver)
+
+    # ✅ Aggiungi configurazione
+    return pipeline.with_config(configurable={"thread_id": thread_id})
+
+
+
+
+
+
 
 __all__ = ["get_pipeline_with_memory"]
