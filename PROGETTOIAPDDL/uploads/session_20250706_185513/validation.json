@@ -1,0 +1,89 @@
+{
+  "valid_syntax": false,
+  "missing_sections": [],
+  "undefined_objects_in_goal": [],
+  "undefined_actions": [],
+  "semantic_errors": [],
+  "errors": [
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at astronaut base)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at rover base)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at sample crater)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at astronaut base)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at ?obj - object ?loc - location)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at ?obj - object base)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at astronaut base)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":init",
+      "detail": "Predicate 'has' not declared in (:predicates)",
+      "predicate": "has",
+      "occurrence": "(has astronaut sample)",
+      "suggestion": "Add predicate declaration: (has ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":goal",
+      "detail": "Predicate 'at' not declared in (:predicates)",
+      "predicate": "at",
+      "occurrence": "(at astronaut base)",
+      "suggestion": "Add predicate declaration: (at ...) in (:predicates)"
+    },
+    {
+      "kind": "undeclared_predicate",
+      "section": ":goal",
+      "detail": "Predicate 'has' not declared in (:predicates)",
+      "predicate": "has",
+      "occurrence": "(has astronaut sample)",
+      "suggestion": "Add predicate declaration: (has ...) in (:predicates)"
+    }
+  ]
+}

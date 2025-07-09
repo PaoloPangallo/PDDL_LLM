@@ -1,0 +1,22 @@
+{
+  "syntax_errors": [],
+  "missing_sections": [],
+  "undefined_objects_in_goal": [],
+  "semantic_errors": [
+    "Goal missing: (at astronaut base)",
+    "Goal missing: (has astronaut sample)"
+  ],
+  "errors": [
+    {
+      "kind": "type_mismatch",
+      "section": ":init",
+      "detail": "Argument 'astronaut' has type 'agent', expected 'object'",
+      "occurrence": "(at astronaut base)",
+      "suggestion": "Adjust object type or predicate",
+      "line": 4
+    }
+  ],
+  "valid_syntax": true,
+  "valid_semantics": false,
+  "valid_pddl": false
+}

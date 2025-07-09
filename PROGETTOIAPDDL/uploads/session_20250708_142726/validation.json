@@ -1,0 +1,4 @@
+{
+  "valid_syntax": false,
+  "validation_summary": "Reason: Atom at(pkg1, loc1) is true and false.\ntranslate exit code: 31\n\nDriver aborting after translate\nINFO     Planner time: 0.05s"
+}

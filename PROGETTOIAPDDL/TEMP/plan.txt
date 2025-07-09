@@ -1,0 +1,3 @@
+(carry-and-move hero sword_of_fire village tower)
+(defeat hero ice_dragon tower sword_of_fire)
+; cost = 2 (unit cost)

@@ -1,0 +1,4 @@
+(load-truck pkg1 truck1 loc1)
+(drive-truck truck1 loc1 loc2)
+(load-truck pkg2 truck1 loc2)
+; cost = 3 (unit cost)

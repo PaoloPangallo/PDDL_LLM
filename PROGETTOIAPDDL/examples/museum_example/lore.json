@@ -1,0 +1,50 @@
+{
+  "description": "A security robot must patrol three exhibit rooms in any order, scan each room with its sensor, and return to the charging station.",
+  "objects": [
+    "robot - agent",
+    "station - location",
+    "room1 - location",
+    "room2 - location",
+    "room3 - location",
+    "sensor - tool"
+  ],
+  "init": [
+    "(at robot station)",
+    "(charged robot)",
+    "(available sensor)"
+  ],
+  "goal": [
+    "(scanned room1)",
+    "(scanned room2)",
+    "(scanned room3)",
+    "(at robot station)",
+    "(charged robot)"
+  ],
+  "branching": { "min": 2, "max": 3 },
+  "actions": [
+    {
+      "name": "move",
+      "parameters": ["?r - agent", "?from - location", "?to - location"],
+      "precondition": ["(at ?r ?from)", "(charged ?r)"],
+      "effect": ["(not (at ?r ?from))", "(at ?r ?to)", "(not (charged ?r))"]
+    },
+    {
+      "name": "scan-room",
+      "parameters": ["?r - agent", "?s - tool", "?l - location"],
+      "precondition": ["(at ?r ?l)", "(available ?s)", "(not (scanned ?l))"],
+      "effect": ["(scanned ?l)", "(not (available ?s))"]
+    },
+    {
+      "name": "recharge",
+      "parameters": ["?r - agent", "?l - location"],
+      "precondition": ["(at ?r station)", "(not (charged ?r))"],
+      "effect": ["(charged ?r)"]
+    },
+    {
+      "name": "reset-sensor",
+      "parameters": ["?s - tool", "?l - location"],
+      "precondition": ["(at robot station)", "(not (available ?s))"],
+      "effect": ["(available ?s)"]
+    }
+  ]
+}

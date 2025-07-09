@@ -1,0 +1,6 @@
+(define (problem sample-collection)
+  (:domain collect-sample)
+  (:objects rover1 astronaut1 sample1 base1 crater1)
+  (:init (at rover1 base1) (at sample1 crater) (at astronaut1 base1) (at astronaut1 base))
+  (:goal (and (at astronaut1 base1) (has astronaut1 sample1)))
+)

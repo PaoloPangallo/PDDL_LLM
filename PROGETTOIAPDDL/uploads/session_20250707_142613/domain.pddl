@@ -1,0 +1,26 @@
+(define (domain robot_charging)
+  (:requirements :strips :typing)
+  (:types agent location object charging_station)
+  (:predicates
+    (at ?a - agent ?l - location)
+    (on_ground ?b - object ?l - location)
+    (blocked ?o - obstacle ?l - location)
+    (carrying ?a - agent ?b - object)
+    (charged ?b - object)
+  )
+  (:action move
+    :parameters (?r - agent ?from - location ?to - location)
+    :precondition (and (at ?r ?from) (not (blocked obstacle ?to)))
+    :effect (and (not (at ?r ?from)) (at ?r ?to))
+  )
+  (:action pickup-battery
+    :parameters (?r - agent ?b - object ?l - location)
+    :precondition (and (at ?r ?l) (on_ground ?b ?l))
+    :effect (and (carrying ?r ?b) (not (on_ground ?b ?l)))
+  )
+  (:action insert-battery
+    :parameters (?r - agent ?b - object ?l - location)
+    :precondition (and (carrying ?r ?b) (at ?r ?l) (= ?l charging_station))
+    :effect (charged ?b)
+  )
+)

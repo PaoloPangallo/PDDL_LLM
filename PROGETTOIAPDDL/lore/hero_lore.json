@@ -1,0 +1,169 @@
+{
+  "description": "The hero must reach the Tower of Varnak and defeat the Ice Dragon, but only after exploring either the Enchanted Forest or the Dark Cave.",
+  "trama": "The Sword of Fire lies in the Village. The hero starts there and must pick it up before embarking on his journey. To reach the Tower of Varnak, he can go through the Enchanted Forest—home to bandits—or enter the Dark Cave, where goblins lurk. In each location he may choose to explore or rest, which will mark the place as visited, before continuing his journey. Finally, at the tower he must defeat the Ice Dragon, having first visited either the forest or the cave.",
+  "objects": [
+    "hero          - agent",
+    "village       - location",
+    "forest        - location",
+    "dark_cave     - location",
+    "tower         - location",
+    "sword_of_fire - object",
+    "ice_dragon    - monster",
+    "bandit        - monster",
+    "goblin        - monster"
+  ],
+  "constants": [
+    "sword_of_fire - object",
+    "ice_dragon    - monster",
+    "bandit        - monster",
+    "goblin        - monster",
+    "village       - location",
+    "forest        - location",
+    "dark_cave     - location",
+    "tower         - location"
+  ],
+  "init": [
+    "(at hero village)",
+    "(on_ground sword_of_fire village)",
+    "(sleeping ice_dragon)"
+  ],
+  "goal": [
+    "(at hero tower)",
+    "(on_ground sword_of_fire tower)",
+    "(defeated ice_dragon)"
+  ],
+  "branching": {
+    "min": 2,
+    "max": 3
+  },
+  "actions": [
+    {
+      "name": "move",
+      "parameters": [
+        "?h    - agent",
+        "?from - location",
+        "?to   - location"
+      ],
+      "precondition": [
+        "(at ?h ?from)"
+      ],
+      "effect": [
+        "(not (at ?h ?from))",
+        "(at ?h ?to)"
+      ]
+    },
+    {
+      "name": "carry-and-move",
+      "parameters": [
+        "?h    - agent",
+        "?o    - object",
+        "?from - location",
+        "?to   - location"
+      ],
+      "precondition": [
+        "(at ?h ?from)",
+        "(on_ground ?o ?from)"
+      ],
+      "effect": [
+        "(not (at ?h ?from))",
+        "(at ?h ?to)",
+        "(not (on_ground ?o ?from))",
+        "(on_ground ?o ?to)"
+      ]
+    },
+    {
+      "name": "explore",
+      "parameters": [
+        "?h - agent",
+        "?l - location"
+      ],
+      "precondition": [
+        "(at ?h ?l)"
+      ],
+      "effect": [
+        "(explored ?l)",
+        "(when (and (at ?h forest) (explored forest)) (visited-forest))",
+        "(when (and (at ?h dark_cave) (explored dark_cave)) (visited-cave))"
+      ]
+    },
+    {
+      "name": "rest",
+      "parameters": [
+        "?h - agent",
+        "?l - location"
+      ],
+      "precondition": [
+        "(at ?h ?l)"
+      ],
+      "effect": [
+        "(rested ?h)"
+      ]
+    },
+    {
+      "name": "defeat-forest",
+      "parameters": [
+        "?h - agent",
+        "?b - monster",
+        "?l - location"
+      ],
+      "precondition": [
+        "(at ?h ?l)",
+        "(member ?b (bandit))"
+      ],
+      "effect": [
+        "(defeated ?b)"
+      ]
+    },
+    {
+      "name": "defeat-cave",
+      "parameters": [
+        "?h - agent",
+        "?g - monster",
+        "?l - location"
+      ],
+      "precondition": [
+        "(at ?h ?l)",
+        "(member ?g (goblin))"
+      ],
+      "effect": [
+        "(defeated ?g)"
+      ]
+    },
+    {
+      "name": "defeat-dragon-via-forest",
+      "parameters": [
+        "?h - agent",
+        "?d - monster",
+        "?l - location"
+      ],
+      "precondition": [
+        "(at ?h ?l)",
+        "(on_ground sword_of_fire ?l)",
+        "(sleeping ?d)",
+        "(visited-forest)"
+      ],
+      "effect": [
+        "(defeated ?d)",
+        "(not (sleeping ?d))"
+      ]
+    },
+    {
+      "name": "defeat-dragon-via-cave",
+      "parameters": [
+        "?h - agent",
+        "?d - monster",
+        "?l - location"
+      ],
+      "precondition": [
+        "(at ?h ?l)",
+        "(on_ground sword_of_fire ?l)",
+        "(sleeping ?d)",
+        "(visited-cave)"
+      ],
+      "effect": [
+        "(defeated ?d)",
+        "(not (sleeping ?d))"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "description": "The robot must reach the Charging Station and recharge its battery.",
+  "objects": [
+    "robot             - agent",
+    "charging_station  - location",
+    "battery           - object",
+    "obstacle          - object",
+    "some_location     - location"
+  ],
+  "constants": [
+    "charging_station  - location",
+    "battery           - object",
+    "obstacle          - object",
+    "some_location     - location"
+  ],
+  "init": [
+    "(at robot some_location)",
+    "(on_ground battery charging_station)",
+    "(blocked obstacle charging_station)"
+  ],
+  "goal": [
+    "(at robot charging_station)",
+    "(charged battery)"
+  ],
+  "branching": {
+    "min": 1,
+    "max": 2
+  },
+  "actions": [
+    {
+      "name": "move",
+      "parameters": [
+        "?r - agent",
+        "?from - location",
+        "?to - location"
+      ],
+      "precondition": [
+        "(at ?r ?from)",
+        "(not (blocked obstacle ?to))"
+      ],
+      "effect": [
+        "(not (at ?r ?from))",
+        "(at ?r ?to)"
+      ]
+    },
+    {
+      "name": "pickup-battery",
+      "parameters": [
+        "?r - agent",
+        "?b - object",
+        "?l - location"
+      ],
+      "precondition": [
+        "(at ?r ?l)",
+        "(on_ground ?b ?l)"
+      ],
+      "effect": [
+        "(carrying ?r ?b)",
+        "(not (on_ground ?b ?l))"
+      ]
+    },
+    {
+      "name": "insert-battery",
+      "parameters": [
+        "?r - agent",
+        "?b - object",
+        "?l - location"
+      ],
+      "precondition": [
+        "(carrying ?r ?b)",
+        "(at ?r ?l)",
+        "(= ?l charging_station)"
+      ],
+      "effect": [
+        "(charged ?b)"
+      ]
+    }
+  ]
+}

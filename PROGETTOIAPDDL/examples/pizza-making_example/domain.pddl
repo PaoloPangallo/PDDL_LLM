@@ -1,0 +1,32 @@
+(define (domain pizza-making)
+  (:requirements :strips :typing)
+  (:types agent ingredient dough sauce food machine place)
+  (:predicates
+    (at        ?x - agent ?l - place)
+    (at        ?x - ingredient ?l - place)
+    (empty     ?x - (either dough sauce food))
+    (mixed     ?x - (either dough sauce))
+    (prepared  ?x - food)
+    (cooked    ?x - food)
+  )
+  (:action mix-dough
+    :parameters (?r - agent ?f - ingredient ?d - dough ?m - machine ?l - place)
+    :precondition (and (at ?r ?l) (at ?f ?l) (empty ?d))
+    :effect (and (mixed ?d) (not (empty ?d)))
+  )
+  (:action make-sauce
+    :parameters (?r - agent ?t - ingredient ?s - sauce ?m - machine ?l - place)
+    :precondition (and (at ?r ?l) (at ?t ?l) (empty ?s))
+    :effect (and (mixed ?s) (not (empty ?s)))
+  )
+  (:action assemble-pizza
+    :parameters (?r - agent ?d - dough ?s - sauce ?p - food ?l - place)
+    :precondition (and (at ?r ?l) (mixed ?d) (mixed ?s) (empty ?p))
+    :effect (and (prepared ?p) (not (empty ?p)))
+  )
+  (:action bake
+    :parameters (?r - agent ?p - food ?o - machine ?l - place)
+    :precondition (and (at ?r ?l) (prepared ?p))
+    :effect (cooked ?p)
+  )
+)

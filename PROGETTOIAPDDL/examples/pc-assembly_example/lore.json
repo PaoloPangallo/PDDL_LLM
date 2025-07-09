@@ -1,0 +1,45 @@
+{
+  "description": "A robot operator must mount the CPU and RAM onto the motherboard and close the computer case",
+  "objects": [
+    "bot - agent",
+    "cpu - component",
+    "ram - component",
+    "motherboard - board",
+    "case - casing",
+    "workbench - place"
+  ],
+  "init": [
+    "(at bot workbench)",
+    "(at cpu workbench)",
+    "(at ram workbench)",
+    "(at motherboard workbench)",
+    "(empty case)"
+  ],
+  "goal": [
+    "(assembled motherboard)",
+    "(installed cpu motherboard)",
+    "(installed ram motherboard)",
+    "(closed case)"
+  ],
+  "branching": { "min": 1, "max": 3 },
+  "actions": [
+    {
+      "name": "mount",
+      "parameters": ["?bot - agent", "?c - component", "?b - board"],
+      "precondition": ["(at ?bot workbench)", "(at ?c workbench)"],
+      "effect": ["(installed ?c ?b)", "(not (at ?c workbench))"]
+    },
+    {
+      "name": "assemble-board",
+      "parameters": ["?bot - agent", "?b - board"],
+      "precondition": ["(installed cpu motherboard)", "(installed ram motherboard)"],
+      "effect": ["(assembled ?b)"]
+    },
+    {
+      "name": "close-case",
+      "parameters": ["?bot - agent", "?c - casing"],
+      "precondition": ["(at ?bot workbench)", "(assembled motherboard)", "(empty ?c)"],
+      "effect": ["(closed ?c)", "(not (empty ?c))"]
+    }
+  ]
+}

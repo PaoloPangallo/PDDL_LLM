@@ -1,0 +1,4 @@
+{
+  "valid_syntax": false,
+  "validation_summary": "\t->Parsing literal\nUndefined object\nGot: obstacle\ntranslate exit code: 31\n"
+}

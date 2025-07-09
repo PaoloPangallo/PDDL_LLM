@@ -1,0 +1,13 @@
+(define (problem hero-to-tower)
+  (:domain hero-journey)
+  (:objects hero - agent sword_of_fire - object tower_of_varnak - location ice_dragon - monster village - location)
+  (:init
+    (at hero village)
+    (on_ground sword_of_fire tower_of_varnak)
+    (sleeping ice_dragon))
+  (:goal
+    (and
+      (at hero tower_of_varnak)
+      (carrying hero sword_of_fire)
+      (defeated ice_dragon)))
+)

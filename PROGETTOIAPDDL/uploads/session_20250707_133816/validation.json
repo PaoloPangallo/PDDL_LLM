@@ -1,0 +1,4 @@
+{
+  "valid_syntax": false,
+  "validation_summary": "INFO     translator command line string: /home/giova/PDDL_LLM/venv/bin/python3 /home/giova/PDDL_LLM/PROGETTOIAPDDL/external/downward/builds/release/bin/translate/translate.py /tmp/tmpo7z8if0d/domain.pddl /tmp/tmpo7z8if0d/problem.pddl --sas-file output.sas\nParsing...\nError: Could not parse domain file: /tmp/tmpo7z8if0d/domain.pddl\nReason: Expected '(', got '\\n\",'.\ntranslate exit code: 31"
+}

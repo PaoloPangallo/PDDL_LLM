@@ -1,0 +1,31 @@
+(define (domain heroic-mission)
+  (:requirements :strips :typing)
+  (:types agent location object monster)
+  (:predicates
+    (at ?h - agent ?l - location)
+    (on_ground ?o - object ?l - location)
+    (sleeping ?m - monster)
+    (carrying ?a - agent ?o - object)
+    (defeated ?m - monster)
+  )
+  (:action move
+    :parameters (?h - agent ?from - location ?to - location)
+    :precondition (and (at ?h ?from))
+    :effect (and (not (at ?h ?from)) (at ?h ?to))
+  )
+  (:action carrying
+    :parameters (?h - agent ?o - object ?l - location)
+    :precondition (and (at ?h ?l) (on_ground ?o ?l))
+    :effect (and (carrying ?h ?o) (not (on_ground ?o ?l)))
+  )
+  (:action move-with-object
+    :parameters (?h - agent ?o - object ?from - location ?to - location)
+    :precondition (and (at ?h ?from) (carrying ?h ?o))
+    :effect (and (not (at ?h ?from)) (at ?h ?to) (not (on_ground ?o ?from)) (on_ground ?o ?to))
+  )
+  (:action defeat
+    :parameters (?h - agent ?m - monster ?l - location)
+    :precondition (and (at ?h ?l) (carrying ?h sword_of_fire) (sleeping ?m))
+    :effect (and (defeated ?m) (not (sleeping ?m)) (not (carrying ?h sword_of_fire)))
+  )
+)

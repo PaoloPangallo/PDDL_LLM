@@ -1,0 +1,4 @@
+{
+  "valid_syntax": false,
+  "validation_summary": "INFO     planner time limit: None\nINFO     planner memory limit: None\n\nINFO     Running translator.\nINFO     translator stdin: None\nINFO     translator time limit: None\nINFO     translator memory limit: None\nINFO     translator command line string: /home/giova/PDDL_LLM/venv/bin/python3 /home/giova/PDDL_LLM/PROGETTOIAPDDL/external/downward/builds/release/bin/translate/translate.py /tmp/tmpw6661tv5/domain.pddl /tmp/tmpw6661tv5/problem.pddl --sas-file output.sas\nParsing...\nParsing domain\n\t->Parsing axiom/action entry #2\n\t->Parsing action #2\n\t->Parsing action 'charge'\n\t->Parsing effect\n\t->Parsing effect\n\t->Parsing literal\nUndefined predicate\nGot: charged\ntranslate exit code: 31\n\nDriver aborting after translate\nINFO     Planner time: 0.06s"
+}

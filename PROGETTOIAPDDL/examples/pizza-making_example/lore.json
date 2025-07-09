@@ -1,0 +1,54 @@
+{
+  "description": "Un robot da cucina deve prendere farina e pomodoro, mescolare gli ingredienti e cuocere la pizza nel forno.",
+  "objects": [
+    "robot - agent",
+    "flour - ingredient",
+    "tomato - ingredient",
+    "dough - dough",
+    "sauce - sauce",
+    "pizza - food",
+    "mixer - machine",
+    "oven - machine",
+    "table - place",
+    "kitchen - place"
+  ],
+  "init": [
+    "(at robot kitchen)",
+    "(at flour table)",
+    "(at tomato table)",
+    "(empty dough)",
+    "(empty sauce)",
+    "(empty pizza)"
+  ],
+  "goal": [
+    "(cooked pizza)",
+    "(at robot kitchen)"
+  ],
+  "branching": { "min": 1, "max": 2 },
+  "actions": [
+    {
+      "name": "mix-dough",
+      "parameters": ["?r - agent", "?f - ingredient", "?d - dough", "?m - machine", "?l - place"],
+      "precondition": ["(at ?r ?l)", "(at ?f ?l)", "(empty ?d)"],
+      "effect": ["(mixed ?d)", "(not (empty ?d))"]
+    },
+    {
+      "name": "make-sauce",
+      "parameters": ["?r - agent", "?t - ingredient", "?s - sauce", "?m - machine", "?l - place"],
+      "precondition": ["(at ?r ?l)", "(at ?t ?l)", "(empty ?s)"],
+      "effect": ["(mixed ?s)", "(not (empty ?s))"]
+    },
+    {
+      "name": "assemble-pizza",
+      "parameters": ["?r - agent", "?d - dough", "?s - sauce", "?p - food", "?l - place"],
+      "precondition": ["(at ?r ?l)", "(mixed ?d)", "(mixed ?s)", "(empty ?p)"],
+      "effect": ["(prepared ?p)", "(not (empty ?p))"]
+    },
+    {
+      "name": "bake",
+      "parameters": ["?r - agent", "?p - food", "?o - machine", "?l - place"],
+      "precondition": ["(at ?r ?l)", "(prepared ?p)"],
+      "effect": ["(cooked ?p)"]
+    }
+  ]
+}

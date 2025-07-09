@@ -32,7 +32,7 @@
     :parameters (?x - location ?y - entity ?z - hero)
     :precondition (and (at ?z ?x) (sleeping ?y ?x))
     :effect (and (not (sleeping ?y ?x)) (not (carrying ?z ?y))))
-  (:action go-to
+  (:action go_to
     :parameters (?x - location ?y - location ?z - hero)
     :precondition (and (at ?z ?x) (not (at ?z ?y)))
     :effect (and (at ?z ?y) (not (at ?z ?x))))
@@ -40,3 +40,27 @@
     :parameters (?x - location ?y - hero ?z - object)
     :precondition (and (at ?y ?x) (carrying ?y ?z))
     :effect (and (not (sleeping ?z ?x)) (not (carrying ?y ?z)))))
+
+
+(define (domain example-domain)
+  (:requirements :strips :typing)
+  (:types agent object location monster sleeping defeated)
+  (:predicates
+    (at ?x - agent ?y - location)
+    (on_ground ?x - object ?y - location)
+    (carrying ?x - agent ?y - object)
+    (sleeping ?x - monster)
+    (defeated ?x - monster))
+  (:action move
+    :parameters (?h - agent ?from - location ?to - location)
+    :precondition (and (at ?h ?from))
+    :effect (and (not (at ?h ?from)) (at ?h ?to)))
+  (:action pickup
+    :parameters (?h - agent ?s - object ?l - location)
+    :precondition (and (at ?h ?l) (on_ground ?s ?l))
+    :effect (and (carrying ?h ?s) (not (on_ground ?s ?l))))
+  (:action defeat
+    :parameters (?h - agent ?d - monster ?l - location)
+    :precondition (and (at ?h ?l) (carrying ?h sword_of_fire) (sleeping ?d))
+    :effect (and (defeated ?d) (not (sleeping ?d))))
+)

@@ -1,0 +1,4 @@
+{
+  "valid_syntax": false,
+  "validation_summary": "Effect tag is expected to be ':effect'\nSyntax: (:action NAME [:parameters PARAMETERS]? [:precondition PRECONDITION]? :effect EFFECT)\nGot: (:parameters (?obj - object ?from - location ?to - location))\ntranslate exit code: 31\n"
+}

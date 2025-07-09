@@ -1,0 +1,8 @@
+(define (problem robot_recharge_problem)
+  (:domain robot_recharge)
+  (:objects robot - agent battery charging_station obstacle - object)
+  (:init (at robot some_location)
+         (on_ground battery charging_station)
+         (blocked obstacle charging_station))
+  (:goal (and (at robot charging_station)
+              (charged battery))))

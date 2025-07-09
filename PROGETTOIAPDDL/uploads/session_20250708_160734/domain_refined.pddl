@@ -1,0 +1,30 @@
+(define (domain hero-quest)
+  (:requirements :strips)
+  (:predicates
+    (at ?x - object ?y - location)
+    (on_ground ?o - object ?l - location)
+    (sleeping ?m - monster)
+    (defeated ?m - monster)
+    (carrying ?a - agent ?o - object)
+  )
+  (:action move
+    :parameters (?h - agent ?from - location ?to - location)
+    :precondition (and (at ?h ?from) (not (at ?h ?to)))
+    :effect (and (not (at ?h ?from)) (at ?h ?to))
+  )
+  (:action pickup
+    :parameters (?h - agent ?o - object ?l - location)
+    :precondition (and (at ?h ?l) (on_ground ?o ?l))
+    :effect (and (carrying ?h ?o) (not (on_ground ?o ?l)))
+  )
+  (:action move-with-object
+    :parameters (?h - agent ?o - object ?from - location ?to - location)
+    :precondition (and (at ?h ?from) (carrying ?h ?o))
+    :effect (and (not (at ?h ?from)) (at ?h ?to) (not (at ?o ?from)) (at ?o ?to))
+  )
+  (:action defeat
+    :parameters (?h - agent ?d - monster ?l - location)
+    :precondition (and (at ?h ?l) (carrying ?h sword) (sleeping ?d))
+    :effect (and (defeated ?d) (not (sleeping ?d)))
+  )
+)

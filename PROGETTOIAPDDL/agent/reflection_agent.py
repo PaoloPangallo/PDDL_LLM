@@ -22,6 +22,7 @@ OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 #DEFAULT_MODEL = "deepseek-r1:8b"
 #DEFAULT_MODEL = "codellama:13b"
 DEFAULT_MODEL = "deepseek-coder-v2:16b"
+#DEFAULT_MODEL = "starcoder:15b"
 
 HEADERS = {"Content-Type": "application/json"}
 
@@ -34,9 +35,9 @@ logger = logging.getLogger(__name__)
 #    logger.setLevel(logging.INFO)
 
 
-def ask_local_llm(prompt: str, model: str = DEFAULT_MODEL) -> str:
+def ask_local_llm(prompt: str, model: str = DEFAULT_MODEL, num_ctx: int = 40000) -> str:
     """Invia un prompt a Ollama e restituisce la risposta testuale."""
-    logger.info("🤖 Invio richiesta a Ollama...")
+    logger.info("📤 Invio prompt a Ollama con modello: %s e num_ctx: %d", model, num_ctx)
     logger.debug(f"📤 Prompt Refiner inviato:\n{prompt[:700]}...\n")
 
     response = requests.post(
@@ -46,7 +47,8 @@ def ask_local_llm(prompt: str, model: str = DEFAULT_MODEL) -> str:
             "prompt": prompt,
             "stream": False,
             "options": {
-                "num_keep": 0  # <-- Questo resetta il contesto nei modelli compatibili
+                "num_keep": 0,  # <-- Questo resetta il contesto nei modelli compatibili
+                "num_ctx": num_ctx
         }
         },
         headers=HEADERS
@@ -61,53 +63,70 @@ def ask_local_llm(prompt: str, model: str = DEFAULT_MODEL) -> str:
 
 def build_prompt(domain_text: str, problem_text: str, error_message: str, validation: Optional[dict] = None, lore: Optional[dict] = None) -> str:
     """Costruisce un prompt dettagliato e resiliente da dominio, problema e messaggio d'errore."""
-    template_path = Path("prompts/reflection_prompt.txt")
+    template_path = Path("prompts/reflection_prompt_v2.txt")
     if not template_path.exists():
         raise FileNotFoundError("Prompt template mancante: prompts/reflection_prompt.txt")
     prompt_template = template_path.read_text(encoding="utf-8")
 
+    validation_summary = ""
+    valid_syntax = True
+    if isinstance(validation, dict):
+        validation_summary = validation.get("validation_summary", "")
+        valid_syntax = validation.get("valid_syntax", "")
+
+    lines = [line.lstrip("\t") for line in validation_summary.splitlines() if line.strip()]
+    clean_summary = "\n".join(lines)
     # Prepara la lista di errori di sintassi (missing_sections)
-    syntax_list = []
-    if isinstance(validation, dict) and not validation.get("valid_syntax", True):
-        for sec in validation.get("missing_sections", []):
-            syntax_list.append(f"- Missing section `{sec}`")
-    syntax_txt = "\n".join(syntax_list) if syntax_list else "No syntax errors found."
+    # syntax_list = []
+    # if isinstance(validation, dict) and not validation.get("valid_syntax", True):
+    #     for sec in validation.get("missing_sections", []):
+    #         syntax_list.append(f"- Missing section `{sec}`")
+    # syntax_txt = "\n".join(syntax_list) if syntax_list else "No syntax errors found."
 
     # Prepara il report strutturato e dettagliato
-    report_lines = []
-    if isinstance(validation, dict) and validation.get("errors"):
-        for e in validation["errors"]:
-            kind = e.get("kind", "unknown")
-            sec = e.get("section", "?")
-            detail = e.get("detail", "")
-            pred = e.get("predicate", "")
-            occurrence = e.get("occurrence", "")
-            suggestion = e.get("suggestion", "")
-            report_lines.append(
-                f"- Kind: {kind}\n"
-                f"  Section: {sec}\n"
-                f"  Predicate: {pred}\n"
-                f"  Occurrence: {occurrence}\n"
-                f"  Detail: {detail}\n"
-                f"  Suggestion: {suggestion}\n"
-            )
-    report_txt = "\n".join(report_lines) if report_lines else "No structural errors found."
+    # report_lines = []
+    # if isinstance(validation, dict) and validation.get("errors"):
+    #     for e in validation["errors"]:
+    #         kind = e.get("kind", "unknown")
+    #         sec = e.get("section", "?")
+    #         detail = e.get("detail", "")
+    #         pred = e.get("predicate", "")
+    #         occurrence = e.get("occurrence", "")
+    #         suggestion = e.get("suggestion", "")
+    #         report_lines.append(
+    #             f"- Kind: {kind}\n"
+    #             f"  Section: {sec}\n"
+    #             f"  Predicate: {pred}\n"
+    #             f"  Occurrence: {occurrence}\n"
+    #             f"  Detail: {detail}\n"
+    #             f"  Suggestion: {suggestion}\n"
+    #         )
+    # report_txt = "\n".join(report_lines) if report_lines else "No structural errors found."
 
     # Aggiungi errori semantici se presenti
-    if isinstance(validation, dict) and validation.get("semantic_errors"):
-        sem_lines = "\n".join(f"- {e}" for e in validation["semantic_errors"])
-        report_txt += f"\n\nSemantic Errors:\n{sem_lines}"
+    # if isinstance(validation, dict) and validation.get("semantic_errors"):
+    #     sem_lines = "\n".join(f"- {e}" for e in validation["semantic_errors"])
+    #     report_txt += f"\n\nSemantic Errors:\n{sem_lines}"
 
     lore_txt = json.dumps(lore, indent=2) if lore else "No lore provided."
 
-    return prompt_template.format(
-        syntax_errors=syntax_txt,
-        validation_report=report_txt,
-        error_message=error_message,
-        domain=domain_text.strip(),
-        problem=problem_text.strip(),
-        lore=lore_txt
-    )
+    # return prompt_template.format(
+    #     syntax_errors=syntax_txt,
+    #     validation_report=report_txt,
+    #     error_message=error_message,
+    #     domain=domain_text.strip(),
+    #     problem=problem_text.strip(),
+    #     lore=lore_txt
+    # )
+    return prompt_template.format_map({
+        #"syntax_errors": syntax_txt,
+        "validation_summary": clean_summary,
+        "valid_syntax": valid_syntax,
+        "error_message": error_message,
+        "domain": domain_text.strip(),
+        "problem": problem_text.strip(),
+        "lore": lore_txt
+    })
 
 
 
@@ -119,6 +138,7 @@ def refine_pddl(domain: str, problem: str, error_message: str, lore: Optional[di
         raise ValueError("❌ I file domain o problem sono vuoti o mancanti.")
 
     validation = validate_pddl(domain, problem, lore) if lore else None
+
     prompt = build_prompt(
         domain_text=domain,
         problem_text=problem,

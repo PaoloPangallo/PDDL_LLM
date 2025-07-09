@@ -1,0 +1,30 @@
+(define (domain museum-security)
+  (:requirements :strips :typing)
+  (:types agent location tool)
+  (:predicates
+    (at         ?r - agent ?l - location)
+    (charged    ?r - agent)
+    (available  ?s - tool)
+    (scanned    ?l - location)
+  )
+  (:action move
+    :parameters (?r - agent ?from - location ?to - location)
+    :precondition (and (at ?r ?from) (charged ?r))
+    :effect (and (not (at ?r ?from)) (at ?r ?to) (not (charged ?r)))
+  )
+  (:action scan-room
+    :parameters (?r - agent ?s - tool ?l - location)
+    :precondition (and (at ?r ?l) (available ?s) (not (scanned ?l)))
+    :effect (and (scanned ?l) (not (available ?s)))
+  )
+  (:action recharge
+    :parameters (?r - agent ?l - location)
+    :precondition (and (at ?r ?l) (not (charged ?r)))
+    :effect (charged ?r)
+  )
+  (:action reset-sensor
+    :parameters (?r - agent ?s - tool ?l - location)
+    :precondition (and (at ?r ?l) (not (available ?s)))
+    :effect (available ?s)
+  )
+)

@@ -1,0 +1,39 @@
+SYSTEM: You are an expert PDDL repair agent.
+
+USER:
+Inputs (already provided by the pipeline):
+- validation_summary
+- original DOMAIN PDDL (as text)
+- original PROBLEM PDDL (as text)
+
+Your task:
+Perform at most one detect→fix→verify pass on the given files. Do not regenerate them from scratch or invent new actions/objects: correct only the errors indicated in validation_summary.
+
+Your only output must be exactly:
+
+=== DOMAIN START ===
+<here paste the corrected DOMAIN PDDL, starting from “(define…” through closing “)” with fixes applied in place>
+=== DOMAIN END ===
+
+=== PROBLEM START ===
+<here paste the corrected PROBLEM PDDL, starting from “(define…” through closing “)” with fixes applied in place>
+=== PROBLEM END ===
+
+Requirements:
+- Variables in DOMAIN actions must be prefixed with “?”.
+- Do not add or remove actions, types, predicates, or objects that are not directly related to the fix.
+- Do not output any placeholder text—replace everything between the markers with the actual corrected PDDL.
+- No JSON, no explanations, no logs, nothing else.
+- If your output deviates from this exact structure, retry until it matches exactly.
+
+### Original Lore JSON:
+{lore}
+
+### Validation Summary:
+{validation_summary}
+
+### Original domain.pddl:
+{domain}
+
+### Original problem.pddl:
+{problem}

@@ -1,0 +1,33 @@
+{
+  "valid_syntax": false,
+  "missing_sections": [
+    ":action"
+  ],
+  "undefined_objects_in_goal": [],
+  "undefined_actions": [],
+  "semantic_errors": [
+    "Init missing: (at astronaut base)",
+    "Init missing: (at rover base)",
+    "Init missing: (at sample crater)",
+    "Goal missing: (at astronaut base)",
+    "Goal missing: (has astronaut sample)"
+  ],
+  "errors": [
+    {
+      "kind": "type_mismatch",
+      "section": ":init",
+      "detail": "Argument 'astronaut' has type 'agent', expected 'object'",
+      "occurrence": "['at', 'astronaut', 'base']",
+      "suggestion": "Use correct object type or adjust predicate",
+      "line": null
+    },
+    {
+      "kind": "type_mismatch",
+      "section": ":goal",
+      "detail": "Argument 'astronaut' has type 'agent', expected 'object'",
+      "occurrence": "['at', 'astronaut', 'base']",
+      "suggestion": "Use correct object type or adjust predicate",
+      "line": null
+    }
+  ]
+}

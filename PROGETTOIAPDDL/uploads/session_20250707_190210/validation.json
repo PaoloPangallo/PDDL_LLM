@@ -1,0 +1,4 @@
+{
+  "valid_syntax": false,
+  "validation_summary": "\t->Parsing literal\nUndefined variable\nGot: ?a\ntranslate exit code: 31\n"
+}

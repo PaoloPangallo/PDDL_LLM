@@ -1,155 +1,124 @@
-import re
-import logging
-from typing import Dict, List, TypedDict
+#!/usr/bin/env python3
+# validator.py
+# Sostituisce la validazione interna con Fast Downward
+# Mantiene la stessa signature: validate_pddl(domain: str, problem: str, lore: dict) -> dict
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+import os
+import subprocess
+import tempfile
+import sys
+from typing import Dict
 
-class ValidationError(TypedDict):
-    kind: str
-    section: str
-    detail: str
-    predicate: str | None
-    occurrence: str | None
-    suggestion: str | None
+def find_fast_downward() -> str:
+    """Restituisce il path a fast-downward.py, relativo a questo file."""
+    here = os.path.dirname(__file__)            # .../PROGETTOIAPDDL/game
+    project_root = os.path.dirname(here)        # .../PROGETTOIAPDDL
+    return os.path.join(project_root, "external", "downward", "fast-downward.py")
 
 def validate_pddl(domain: str, problem: str, lore: dict) -> Dict:
     """
-    Valida dominio e problema PDDL e restituisce un report strutturato.
-    Report contiene:
-      - valid_syntax: bool
-      - missing_sections: List[str]
-      - undefined_objects_in_goal: List[str]
-      - undefined_actions: List[str]
-      - semantic_errors: List[str]
-      - errors: List[ValidationError]
+    Valida domain/problem usando Fast Downward:
+      --translate ... --check-syntax
+
+    Ritorna un report dict con:
+      - 'valid_syntax': bool
+      - 'validation_summary': stringa con stdout+stderr di Fast Downward
     """
-    report = {
-        "valid_syntax": True,
-        "missing_sections": [],
-        "undefined_objects_in_goal": [],
-        "undefined_actions": [],
-        "semantic_errors": [],
-        "errors": []
+    fd = find_fast_downward()
+
+    # Scriviamo i contenuti passati a disco in file temporanei
+    with tempfile.TemporaryDirectory() as tmp:
+        dom_path = os.path.join(tmp, "domain.pddl")
+        prob_path = os.path.join(tmp, "problem.pddl")
+        with open(dom_path, "w", encoding="utf-8") as f:
+            f.write(domain)
+        with open(prob_path, "w", encoding="utf-8") as f:
+            f.write(problem)
+
+        cmd = [
+            fd,
+            "--translate", dom_path, prob_path,
+            "--check-syntax"
+        ]
+        proc = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
+
+    full_log = proc.stdout.splitlines()
+    valid   = (proc.returncode == 0)
+
+    # Se c'è un errore, cerchiamo l'indice della prima riga significativa
+    if not valid:
+        error_idx = None
+        for i, line in enumerate(full_log):
+            if line.startswith("Error:") or "Expected" in line or "Got:" in line:
+                error_idx = i
+                break
+
+        if error_idx is not None:
+            # prendi un paio di righe di contesto attorno all'errore
+            start = max(0, error_idx - 2)
+            end   = min(len(full_log), error_idx + 3)
+            summary_lines = full_log[start:end]
+        else:
+            # fallback: ultime 5 righe se non trovi "Error:" o simili
+            summary_lines = full_log[-5:]
+        summary = "\n".join(summary_lines)
+    else:
+        summary = "✓ Sintassi valida."
+
+    return {
+        "valid_syntax": valid,
+        "validation_summary": summary
     }
 
-    # Sezioni obbligatorie
-    for sec in ["(:types", "(:predicates", "(:action"]:
-        if sec not in domain:
-            report["missing_sections"].append(sec)
-    for sec in ["(:objects", "(:init", "(:goal"]:
-        if sec not in problem:
-            report["missing_sections"].append(sec)
+def generate_plan_with_fd(domain_str: str, problem_str: str) -> Dict:
+    """
+    Invoca Fast Downward per cercare un piano.
+    Ritorna un dict con:
+      - 'found_plan': bool
+      - 'plan': str  (testo del piano, o empty se non trovato)
+      - 'log': str   (stdout completo di FD)
+    """
+    fd = find_fast_downward()  # stessa funzione che già usi
 
-    if report["missing_sections"]:
-        report["valid_syntax"] = False
+    with tempfile.TemporaryDirectory() as tmp:
+        dom = os.path.join(tmp, "domain.pddl")
+        prob = os.path.join(tmp, "problem.pddl")
+        plan = os.path.join(tmp, "plan.txt")
 
-    # Oggetti dichiarati
-    objects = []
-    m_obj = re.search(r"\(:objects(.*?)\)", problem, re.DOTALL)
-    if m_obj:
-        tokens = m_obj.group(1).split()
-        objects = [t for t in tokens if t != "-" and not tokens[tokens.index(t)-1] == "-"]
-    else:
-        report["errors"].append({
-            "kind": "missing_section",
-            "section": ":objects",
-            "detail": "Objects section is missing",
-            "predicate": None,
-            "occurrence": None,
-            "suggestion": "Add (:objects ...) section"
-        })
+        with open(dom, "w", encoding="utf-8") as f: f.write(domain_str)
+        with open(prob, "w", encoding="utf-8") as f: f.write(problem_str)
 
-    # Init
-    init_atoms = []
-    m_init = re.search(r"\(:init(.*?)\)\s*(?:\(:goal|\Z)", problem, re.DOTALL)
-    if m_init:
-        init_atoms = re.findall(r"\(([^()]+)\)", m_init.group(1))
-    else:
-        report["errors"].append({
-            "kind": "missing_section",
-            "section": ":init",
-            "detail": "Init section is missing",
-            "predicate": None,
-            "occurrence": None,
-            "suggestion": "Add (:init ...) section"
-        })
+        cmd = [
+            fd,
+            "--alias", "lama-first",
+            "--plan-file", plan,
+            dom, prob
+        ]
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        log = proc.stdout
 
-    # Goal
-    goal_atoms = []
-    m_goal = re.search(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
-    if m_goal:
-        goal_atoms = re.findall(r"\(([^()]+)\)", m_goal.group(1))
-    else:
-        report["errors"].append({
-            "kind": "missing_section",
-            "section": ":goal",
-            "detail": "Goal section is missing",
-            "predicate": None,
-            "occurrence": None,
-            "suggestion": "Add (:goal ...) section"
-        })
+        if proc.returncode == 0 and os.path.exists(plan):
+            with open(plan, encoding="utf-8") as f:
+                plan_txt = f.read()
+            return {"found_plan": True, "plan": plan_txt, "log": log}
+        else:
+            return {"found_plan": False, "plan": "", "log": log}
 
-    # Confronto semantico con la lore
-    for fact in lore.get("init", []):
-        if fact.strip("()") not in [atom.strip() for atom in init_atoms]:
-            report["semantic_errors"].append(f"Init missing: {fact}")
-    for fact in lore.get("goal", []):
-        if fact.strip("()") not in [atom.strip() for atom in goal_atoms]:
-            report["semantic_errors"].append(f"Goal missing: {fact}")
+# Se eseguito da riga di comando, esempio di summary JSON
+if __name__ == "__main__":
+    import json
+    # Carica i file di test usati finora
+    with open("uploads/lore-generated/domain.pddl", "r", encoding="utf-8") as f:
+        domain_content = f.read()
+    with open("uploads/lore-generated/problem.pddl", "r", encoding="utf-8") as f:
+        problem_content = f.read()
+    with open("lore/example_lore.json", "r", encoding="utf-8") as f:
+        lore_data = json.load(f)
 
-    # Oggetti usati nei goal
-    for atom in goal_atoms:
-        parts = atom.split()
-        for arg in parts[1:]:
-            if arg not in objects:
-                report["undefined_objects_in_goal"].append(arg)
-
-    # Azioni definite
-    defined_actions = re.findall(r"\(:action\s+([\w-]+)", domain)
-
-    # Azioni usate (se c'è un piano)
-    used_actions = []
-    if "(:plan" in problem:
-        used_actions = re.findall(r"\b(" + "|".join(defined_actions) + r")\b", problem)
-    report["undefined_actions"] = [a for a in used_actions if a not in defined_actions]
-
-    # Firme dei predicati
-    preds = {}
-    m_preds = re.search(r"\(:predicates(.*?)\)", domain, re.DOTALL)
-    if m_preds:
-        for decl in re.findall(r"\((\w+)([^)]*)\)", m_preds.group(1)):
-            name, rest = decl
-            preds[name] = len(re.findall(r"\?\w+", rest))
-
-    all_atoms = [(":init", init_atoms), (":goal", goal_atoms)]
-    for section, atoms in all_atoms:
-        for atom in atoms:
-            parts = atom.strip().split()
-            name, args = parts[0], parts[1:]
-            if name not in preds:
-                report["errors"].append({
-                    "kind": "undeclared_predicate",
-                    "section": section,
-                    "detail": f"Predicate '{name}' not declared in (:predicates)",
-                    "predicate": name,
-                    "occurrence": f"({atom})",
-                    "suggestion": f"Add predicate declaration: ({name} ...) in (:predicates)"
-                })
-            elif len(args) != preds[name]:
-                report["errors"].append({
-                    "kind": "arity_mismatch",
-                    "section": section,
-                    "detail": f"{name} expects {preds[name]} args, got {len(args)}",
-                    "predicate": name,
-                    "occurrence": f"({atom})",
-                    "suggestion": f"Update ({atom}) to match predicate arity or fix its definition"
-                })
-
-    if (report["errors"]
-        or report["semantic_errors"]
-        or report["undefined_objects_in_goal"]
-        or report["undefined_actions"]):
-        report["valid_syntax"] = False
-
-    return report
+    report = validate_pddl(domain_content, problem_content, lore_data)
+    print(json.dumps(report, indent=2, ensure_ascii=False))

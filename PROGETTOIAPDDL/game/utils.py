@@ -10,8 +10,9 @@ import subprocess
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple, Optional
-
+from typing import Tuple, Optional, List
+from tavily import TavilyClient
+from pathlib import Path
 import requests
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,10 @@ OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 #MODEL = "deepseek-r1:8b"
 MODEL = "deepseek-coder-v2:16b"
 #MODEL = "codellama:13b"
+#MODEL = "starcoder:15b"
 
+TAVILY_KEY = "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"
+tavily = TavilyClient(api_key=TAVILY_KEY)
 
 def create_session_dir(upload_folder: str, name_hint: Optional[str] = None) -> tuple[str, str]:
     """Crea una directory di sessione con nome univoco basato su timestamp e hint."""
@@ -139,6 +143,45 @@ def extract_between(text: str, start_marker: str, end_marker: str) -> str | None
         logger.warning("⚠️ Delimitatori non trovati: %s / %s", start_marker, end_marker)
         return None
 
+def extract_section(text: str, section: str) -> Optional[str]:
+    """
+    Estrae la sezione `section` da un testo PDDL cercando:
+      1) '#### SECTION FILE' + code-block
+      2) i vari marker === … === o #### … #### come prima
+    """
+    # 1) Caso specifico: #### SECTION FILE + ```…```
+    file_pattern = (
+        rf"####\s*{re.escape(section)}\s*FILE\s*"   # '#### DOMAIN FILE' o '#### PROBLEM FILE'
+        r"\n```[^\n]*\n"                            # apertura del code‐block (```lang)
+        r"(?P<body>[\s\S]*?)"                      # contenuto non‐greedy
+        r"\n```"                                   # chiusura del code‐block
+    )
+    m = re.search(file_pattern, text, flags=re.IGNORECASE)
+    if m:
+        return m.group("body").strip()
+
+    variants = [
+        (r"^===\s*{sec}\s*START\s*===$",   r"^===\s*{sec}\s*END\s*===$"),
+        (r"^===\s*{sec}\s*START\s*===$",   r"^===\s*END\s*{sec}\s*===$"),
+        (r"^####\s*{sec}\s*START\s*####$", r"^####\s*{sec}\s*END\s*####$"),
+        (r"^####\s*{sec}\s*START\s*$",     r"^####\s*{sec}\s*END\s*$"),
+    ]
+    for start_pat, end_pat in variants:
+        sp = start_pat.format(sec=re.escape(section))
+        ep = end_pat.format(sec=re.escape(section))
+        pattern = (
+            rf"{sp}\s*\n"                          # marker di inizio
+            rf"(?:```[^\n]*\n)?"                   # optional opening fence
+            rf"(?P<body>[\s\S]*?)"                 # capture everything
+            rf"(?:\n```[^\n]*\n)?"                 # optional closing fence
+            rf"\s*{ep}"                            # marker di fine
+        )
+        match = re.search(pattern, text, flags=re.DOTALL | re.IGNORECASE | re.MULTILINE)
+        if match:
+            return match.group("body").strip()
+
+    return None
+
 
 def read_text_file(path: str) -> str | None:
     """Legge un file di testo se esiste e ne restituisce il contenuto."""
@@ -162,3 +205,87 @@ def get_unique_filename(folder: str, base_name: str, ext: str = ".pddl") -> str:
         base_path = Path(folder) / f"{base_name}-{timestamp}-{counter}{ext}"
         counter += 1
     return str(base_path)
+
+def strip_pddl_artifacts(text: str) -> str:
+    lines = text.splitlines()
+    cleaned_lines = []
+    in_fence = False
+    for line in lines:
+        if re.match(r"^```(?:lisp)?", line.strip()):
+            in_fence = not in_fence
+            continue        
+        if line.lstrip().startswith(";"):
+            continue
+        cleaned_lines.append(line)
+    return "\n".join(cleaned_lines).strip()
+
+
+def load_few_shot_examples(examples_root: str, max_examples: int = 3) -> List[str]:
+    """
+    Scorre examples_root, per ogni sottocartella che somiglia a un esempio:
+      - legge domain.pddl e problem.pddl (e, se esiste, plan.txt)
+      - costruisce una stringa formattata === DOMAIN START === ... === PROBLEM END ===
+    Ritorna al più max_examples esempi.
+    """
+    examples = []
+    root = Path(examples_root)
+    for ex_dir in sorted(root.iterdir()):
+        if not ex_dir.is_dir():
+            continue
+
+        dom = ex_dir / "domain.pddl"
+        prob = ex_dir / "problem.pddl"
+        plan = ex_dir / "plan.txt"
+
+        if not (dom.exists() and prob.exists()):
+            continue
+
+        dom_txt  = dom.read_text(encoding="utf-8")
+        prob_txt = prob.read_text(encoding="utf-8")
+        plan_txt = plan.read_text(encoding="utf-8") if plan.exists() else None
+
+        chunk = []
+        chunk.append(f"--- EXAMPLE ({ex_dir.name}) ---")
+        chunk.append("=== DOMAIN START ===")
+        chunk.append(dom_txt.rstrip())
+        chunk.append("=== DOMAIN END ===\n")
+        chunk.append("=== PROBLEM START ===")
+        chunk.append(prob_txt.rstrip())
+        chunk.append("=== PROBLEM END ===")
+        if plan_txt:
+            chunk.append("\n=== PLAN ===")
+            chunk.append(plan_txt.rstrip())
+        examples.append("\n".join(chunk))
+
+        if len(examples) >= max_examples:
+            break
+
+    return examples
+
+
+def fetch_pddl_refs(query: str, top_k: int = 3) -> List[str]:
+    """
+    Interroga Tavily e ritorna una lista di stringhe '- Title — URL'.
+    """
+    # es: search_depth="basic" o "advanced"
+    resp = tavily.search(query=query, search_depth="basic", max_results=top_k)
+    results = resp.get("results", [])  # lista di DocumentSummary
+    formatted = [f"- {doc['title']} — {doc['url']}" for doc in results]
+    return formatted
+
+
+def fetch_pddl_snippet(url: str, max_tokens: int = 500, top_k_sentences: int = 3) -> str:
+    """
+    Usa get_search_context per recuperare un estratto del documento URL.
+    Poi tronca alle prime top_k_sentences.
+    """
+    # chiedi a Tavily un contesto limitato a max_tokens
+    full_text = tavily.get_search_context(
+        query=url,
+        search_depth="basic",
+        max_tokens=max_tokens,
+    )
+    # ora estrai le prime frasi
+    sentences = full_text.split(". ")
+    snippet = ". ".join(sentences[:top_k_sentences])
+    return snippet + (" …" if len(sentences) > top_k_sentences else "")

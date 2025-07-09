@@ -1,0 +1,4 @@
+{
+  "valid_syntax": false,
+  "validation_summary": "\t->Parsing precondition\n\t->Parsing condition\nExpected logical operator or predicate name\nGot: location\ntranslate exit code: 31"
+}
