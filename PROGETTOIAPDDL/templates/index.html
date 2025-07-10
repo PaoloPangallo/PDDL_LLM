@@ -1,107 +1,131 @@
 {% extends "base.html" %}
-
-{% block title %}QuestMaster &ndash; Upload{% endblock %}
-
-{% block extra_head %}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=MedievalSharp&family=Cinzel:wght@400;700&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-  <!-- ✅ Fix: DOMPurify da CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.2/dist/purify.min.js"></script>
-{% endblock %}
+{% block title %}QuestMaster – Pipeline PDDL (Streaming){% endblock %}
 
 {% block content %}
-<main class="container" role="main">
-  <h1 class="page-title">🧙 Benvenuto in <strong>QuestMaster</strong></h1>
-  <div class="forms-grid">
+<main class="container my-5">
+  <h1 class="mb-4">⚙️ Pipeline Automatica PDDL (Streaming)</h1>
 
-    <!-- 📤 Upload Manuale -->
-    <section class="card">
-      <h2 class="card-header">📤 Upload Manuale PDDL</h2>
-      <form action="{{ url_for('generate.manual_upload') }}" method="post" enctype="multipart/form-data">
-        {{ csrf_token() }}
-        <fieldset>
-          <legend class="sr-only">Caricamento File PDDL</legend>
+  <div class="row mb-3 align-items-end">
+    <div class="col-md-6">
+      <label for="lore-select" class="form-label">📘 Seleziona Lore</label>
+      <select id="lore-select" class="form-select" aria-label="Seleziona il file di lore">
+        <option disabled selected>— Scegli una lore —</option>
+        {% for file in lore_files %}
+          <option value="{{ file }}">{{ file }}</option>
+        {% endfor %}
+      </select>
+    </div>
+   <div class="col-md-6 text-md-end">
+  <div class="form-check mb-2 text-start text-md-end">
+    <input class="form-check-input" type="checkbox" value="" id="reset-checkbox">
+    <label class="form-check-label" for="reset-checkbox">
+      🧹 Reset memoria (nuova run)
+    </label>
+  </div>
+  <button id="run-from-scratch" class="btn btn-primary w-100 w-md-auto" aria-label="Avvia la pipeline">
+    ⚡ Avvia Pipeline
+  </button>
+</div>
 
-          <div class="form-group">
-            <label for="domain">📄 Domain PDDL</label>
-            <input type="file" id="domain" name="domain" accept=".pddl" required>
-            <small id="domainHelp" class="form-text">Seleziona il file .pddl del dominio.</small>
-          </div>
-
-          <div class="form-group">
-            <label for="problem">🧩 Problem PDDL</label>
-            <input type="file" id="problem" name="problem" accept=".pddl" required>
-            <small id="problemHelp" class="form-text">Seleziona il file .pddl del problema.</small>
-          </div>
-
-          <button type="submit" class="btn btn-primary">🚀 Avvia Pianificazione</button>
-        </fieldset>
-      </form>
-    </section>
-
-    <!-- 💬 Chatbot -->
-    <section class="card" id="chatbot-section">
-      <h2 class="card-header">💬 Chatbot PDDL – Assistente Intelligente</h2>
-      <div class="card-body">
-        <p class="chatbot-description">
-          Interagisci con il sistema per <strong>generare, validare o correggere</strong> file PDDL a partire da una lore narrativa.
-        </p>
-        <div id="chat-log" class="chat-log" role="log" aria-live="polite"></div>
-        <form id="chatbot-form">
-          <div class="chat-input-group">
-            <input type="text" id="chatbot-input" name="message" placeholder="Scrivi una lore, un comando o una richiesta..." autocomplete="off" required>
-            <button type="submit" class="btn btn-secondary">📤 Invia</button>
-          </div>
-        </form>
-        <div id="chatbot-loading" class="chatbot-loading" hidden>
-          <span class="loader" aria-hidden="true"></span> <span>Elaborazione in corso...</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 🧠 Pipeline -->
-    <section class="card">
-      <h2 class="card-header">🧠 Pipeline Automatica</h2>
-      <form id="pipeline-form" class="pipeline-form" data-js="pipelineForm" novalidate>
-        <label for="lore_path_select" class="input-label">📂 Seleziona Lore JSON:</label>
-        <select id="lore_path_select" name="lore_path" data-js="lorePathSelect" required>
-          <option value="">-- Caricamento lore... --</option>
-        </select>
-        <div class="input-feedback" id="json-feedback" role="alert" aria-live="assertive" data-js="jsonFeedback"></div>
-        <button type="submit" class="btn btn-primary">🚀 Esegui Pipeline</button>
-      </form>
-
-      <div id="pipeline-result" class="result-section hidden" role="region" aria-live="polite" data-js="pipelineResult"></div>
-    </section>
+  <!-- Log della chat / pipeline -->
+  <div id="chat-log"
+       class="border rounded p-3 mb-4 bg-white"
+       style="height:300px;overflow-y:auto"
+       aria-label="Log della conversazione">
+    <div class="text-muted">💬 Pronto per eseguire la pipeline…</div>
   </div>
 
-  <!-- Modal caricamento -->
-  <div id="loadingModal" class="modal hidden" role="alertdialog" aria-modal="true" data-js="loadingModal">
-    <div class="modal-content" role="document">
-      <div class="spinner-container">
-        <div class="spinner-ring" aria-hidden="true"></div>
-        <p id="loadingMessage" class="modal-message" data-js="loadingMessage">⌛ Inizio processo di pianificazione...</p>
-        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-          <div class="progress-fill" id="progressFill" data-js="progressFill"></div>
+  <!-- Qui potrai inserire eventuali link per il download dei file generati -->
+  <div id="download-links" class="mb-4"></div>
+
+  <!-- Dettagli a fisarmonica -->
+  <div class="accordion" id="pipeline-details">
+    <!-- Prompt -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingPrompt">
+        <button class="accordion-button" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapsePrompt"
+                aria-expanded="true" aria-controls="collapsePrompt">
+          📝 Prompt generato
+        </button>
+      </h2>
+      <div id="collapsePrompt" class="accordion-collapse collapse show"
+           aria-labelledby="headingPrompt" data-bs-parent="#pipeline-details">
+        <div class="accordion-body p-0">
+          <pre id="prompt-content" class="m-3"></pre>
         </div>
-        <ol class="progress-steps" aria-label="Fasi del processo">
-          <li data-js="stepItem">📜 Lettura lore</li>
-          <li data-js="stepItem">⚙️ Generazione PDDL</li>
-          <li data-js="stepItem">🧪 Validazione sintattico-semantica</li>
-          <li data-js="stepItem">🏁 Esecuzione planner</li>
-        </ol>
+      </div>
+    </div>
+    <!-- Raw -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingRaw">
+        <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapseRaw"
+                aria-expanded="false" aria-controls="collapseRaw">
+          📥 Raw response
+        </button>
+      </h2>
+      <div id="collapseRaw" class="accordion-collapse collapse"
+           aria-labelledby="headingRaw" data-bs-parent="#pipeline-details">
+        <div class="accordion-body p-0">
+          <pre id="raw-content" class="m-3"></pre>
+        </div>
+      </div>
+    </div>
+    <!-- Validation -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingValidation">
+        <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapseValidation"
+                aria-expanded="false" aria-controls="collapseValidation">
+          📋 Validation
+        </button>
+      </h2>
+      <div id="collapseValidation" class="accordion-collapse collapse"
+           aria-labelledby="headingValidation" data-bs-parent="#pipeline-details">
+        <div class="accordion-body p-0">
+          <pre id="validation-content" class="m-3"></pre>
+        </div>
+      </div>
+    </div>
+    <!-- Refine -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingRefine">
+        <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapseRefine"
+                aria-expanded="false" aria-controls="collapseRefine">
+          🔧 Refine feedback
+        </button>
+      </h2>
+      <div id="collapseRefine" class="accordion-collapse collapse"
+           aria-labelledby="headingRefine" data-bs-parent="#pipeline-details">
+        <div class="accordion-body p-0">
+          <pre id="refine-content" class="m-3"></pre>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Form di feedback umano -->
+  <form id="chatbot-form" class="mt-4 d-none" autocomplete="off" aria-label="Invia un feedback umano">
+    <div class="input-group">
+      <input
+        type="text"
+        id="user-input"
+        class="form-control"
+        placeholder="Scrivi un feedback per raffinare..."
+        autocomplete="off"
+        aria-label="Campo di input feedback"
+      />
+      <button type="submit" class="btn btn-secondary" id="feedback-submit" aria-label="Invia feedback">
+        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="feedback-spinner"></span>
+        <span id="feedback-text">Invia feedback</span>
+      </button>
+    </div>
+  </form>
 </main>
 {% endblock %}
 
-{% block scripts %}
-  <script defer type="module" src="{{ url_for('static', filename='js/utils.js') }}"></script>
-  <script defer type="module" src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
-  <script defer type="module" src="{{ url_for('static', filename='js/pipeline.js') }}"></script>
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/pipeline.js') }}" defer></script>
 {% endblock %}

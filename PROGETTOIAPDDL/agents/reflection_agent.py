@@ -20,7 +20,7 @@ from core.utils import (
 # ⚙️ Configurazione
 # ===============================
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
-DEFAULT_MODEL = "llama3:8b"
+DEFAULT_MODEL = "llama3:8b-instruct-q5_K_M"
 FALLBACK_MODEL = "mistral"
 HEADERS = {"Content-Type": "application/json"}
 DEBUG_LLM = True  # Attiva salvataggio completo per debug
@@ -38,8 +38,8 @@ if not logger.hasHandlers():
 # 🔁 Invio prompt al LLM locale
 # ===============================
 def ask_local_llm(prompt: str, model: str) -> str:
-    logger.info(f"🤖 Invio richiesta a Ollama ({model})...")
-    logger.debug("📤 Prompt inviato (primi 500 char):\n%s", prompt[:500])
+    logger.info(" Invio richiesta a Ollama (%s)...", model)
+    logger.debug(" Prompt inviato (primi 500 char):\n%s", prompt[:500])
     if len(prompt) > 4000:
         logger.warning("⚠️ Prompt molto lungo: %d caratteri", len(prompt))
 
@@ -52,17 +52,17 @@ def ask_local_llm(prompt: str, model: str) -> str:
                 timeout=(10, 720)
             )
             if resp.status_code != 200:
-                logger.error("❌ Ollama ha risposto con %d:\n%s", resp.status_code, resp.text)
+                logger.error(" Ollama ha risposto con %d:\n%s", resp.status_code, resp.text)
             resp.raise_for_status()
             try:
                 data = resp.json()
             except json.JSONDecodeError:
-                logger.error("⚠️ Risposta non in formato JSON valido:\n%s", resp.text)
+                logger.error(" Risposta non in formato JSON valido:\n%s", resp.text)
                 raise RuntimeError("Risposta Ollama non è in formato JSON valido.")
             return data.get("response", "").strip()
 
         except requests.RequestException as err:
-            logger.error("❌ Tentativo %d fallito con %s (%s)", attempt + 1, model, err, exc_info=True)
+            logger.error(" Tentativo %d fallito con %s (%s)", attempt + 1, model, err, exc_info=True)
 
     return None
 
@@ -72,7 +72,7 @@ def ask_llm_with_fallback(prompt: str) -> str:
     if response:
         return response
 
-    logger.warning(f"💡 Fallback attivato: riprovo con modello '{FALLBACK_MODEL}'")
+    logger.warning("💡 Fallback attivato: riprovo con modello '%s'", FALLBACK_MODEL)
     response = ask_local_llm(prompt, model=FALLBACK_MODEL)
     if response:
         return response
@@ -83,7 +83,7 @@ def ask_llm_with_fallback(prompt: str) -> str:
 
 
 # ===============================
-# 🧠 Costruzione del prompt
+#  Costruzione del prompt
 # ===============================
 def build_prompt(domain_text: str, problem_text: str, error_message: str, validation: Optional[dict] = None, lore: Optional[dict] = None) -> str:
     prompt_path = Path("prompts/reflection_prompt.txt")
@@ -100,8 +100,8 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
             "\n=== PROBLEM START ===\n<...>\n=== PROBLEM END ==="
         )
 
-    # 📌 Note generali per l’LLM
-    notes = "\n\n🎯 OBIETTIVO:\n"
+    #  Note generali per l’LLM
+    notes = "\n\n OBIETTIVO:\n"
     notes += "- Correggi i file PDDL affinché siano validi, completi e coerenti con la pianificazione classica.\n"
     notes += "- NON inventare nuovi predicati, oggetti o tipi non presenti nei file originali.\n"
     notes += "- Mantieni la struttura delle azioni esistenti (nomi, parametri, logica) dove possibile.\n"
@@ -118,23 +118,23 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
         if validation.get("undefined_objects_in_goal"):
             notes += "\n🔹 Oggetti mancanti nel goal: " + ", ".join(validation["undefined_objects_in_goal"])
         if validation.get("semantic_errors"):
-            notes += "\n⚠️ Errori semantici rilevati:\n" + "\n".join(validation["semantic_errors"])
+            notes += "\n Errori semantici rilevati:\n" + "\n".join(validation["semantic_errors"])
         if validation.get("missing_sections"):
-            notes += "\n🚫 Sezioni mancanti: " + ", ".join(validation["missing_sections"])
+            notes += "\n Sezioni mancanti: " + ", ".join(validation["missing_sections"])
         if validation.get("domain_mismatch"):
-            notes += "\n🚨 Domain mismatch: " + validation["domain_mismatch"]
+            notes += "\n Domain mismatch: " + validation["domain_mismatch"]
 
     # 🧠 Lore originale (se disponibile)
     if lore:
         try:
             lore_json = json.dumps(lore, indent=2, ensure_ascii=False)
-            notes += f"\n📘 LORE ORIGINALE:\n{lore_json}"
+            notes += f"\n LORE ORIGINALE:\n{lore_json}"
         except Exception:
             pass
 
     # 🔧 Errori noti
     if "unhashable type: 'list'" in error_message:
-        notes += "\n⚠️ Evita liste annidate nella sezione :init."
+        notes += "\n Evita liste annidate nella sezione :init."
 
     # Costruzione prompt finale
     return template.format(
@@ -147,7 +147,7 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
 
 
 # ===============================
-# 🔧 Raffinamento dei file
+#  Raffinamento dei file
 # ===============================
 def refine_pddl(
     domain_path: str,

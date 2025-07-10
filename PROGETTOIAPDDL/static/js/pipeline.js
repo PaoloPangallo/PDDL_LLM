@@ -1,233 +1,191 @@
-import { showModal, hideModal, playSuccessSound, playErrorSound } from "./utils.js";
+// static/js/pipeline.js
+document.addEventListener("DOMContentLoaded", () => {
+  const loreSelect = document.getElementById("lore-select");
+  const runBtn     = document.getElementById("run-from-scratch");
+  const chatLog    = document.getElementById("chat-log");
+  const promptEl   = document.getElementById("prompt-content");
+  const rawEl      = document.getElementById("raw-content");
+  const valEl      = document.getElementById("validation-content");
+  const refineEl   = document.getElementById("refine-content");
+  const form       = document.getElementById("chatbot-form");
+  const input      = document.getElementById("user-input");
+  const resetCheckbox = document.getElementById("reset-checkbox");
 
-const API_ENDPOINT = "/api/pipeline/run";
-const MAX_PREVIEW_LENGTH = 3000;
-const PROGRESS_INTERVAL_MS = 2000;
-const STEPS = [
-  "📜 Lettura lore...",
-  "⚙️ Generazione PDDL...",
-  "🧪 Validazione sintattico-semantica...",
-  "🏁 Esecuzione planner..."
-];
 
-export default class PipelineRunner {
-  constructor() {
-    this.form         = document.querySelector("[data-js=pipelineForm]");
-    this.resultBox    = document.querySelector("[data-js=pipelineResult]");
-    this.feedbackBox  = document.querySelector("[data-js=jsonFeedback]");
-    this.stepItems    = Array.from(document.querySelectorAll("[data-js=stepItem]"));
-    this.progressFill = document.querySelector("[data-js=progressFill]");
-    this.loadingMsg   = document.querySelector("[data-js=loadingMessage]");
+  let source = null;
+  const threadId = "session-1";
 
-    this.timerId = null;
-    this.currentStep = 0;
-
-    this._bindEvents();
+  function append(text, cls = "system") {
+    const d = document.createElement("div");
+    d.className = `chat-message ${cls}`;
+    d.innerHTML = text;
+    chatLog.appendChild(d);
+    chatLog.scrollTop = chatLog.scrollHeight;
   }
 
-  _bindEvents() {
-    if (!this.form) return;
-    this.form.addEventListener("submit", this._onSubmit.bind(this));
+  function resetAll() {
+    chatLog.innerHTML    = "";
+    promptEl.textContent = "";
+    rawEl.textContent    = "";
+    valEl.textContent    = "";
+    refineEl.textContent = "";
+    append("💬 Pronto per eseguire la pipeline…", "system");
+    form.classList.add("d-none");
   }
 
-  _onSubmit(evt) {
-    evt.preventDefault();
-    const select = this.form.querySelector("[data-js=lorePathSelect]");
-    const path   = select?.value;
+  form.classList.add("d-none");
 
-    if (!path) {
-      this._showFeedback("❌ Seleziona un file lore valido.");
-      playErrorSound();
-      select.classList.add("input-error");
-      return;
-    }
+  loreSelect.addEventListener("change", () => {
+    resetAll();
+    append(`📘 Lore selezionata: <strong>${loreSelect.value}</strong>`, "system");
+  });
 
-    select.classList.remove("input-error");
-    this._clearFeedback();
-    this._disableForm();
-    showModal();
-    this._startProgress();
+  function attachPipelineListeners(source) {
+    source.addEventListener("BuildPrompt", e => {
+      const { prompt } = JSON.parse(e.data);
+      console.debug("[BuildPrompt]", prompt);
+      promptEl.textContent = prompt;
+      append("📝 Prompt generato", "bot");
+    });
 
-    this._runPipeline({ lore_path: path })
-      .then(data => this._handleResponse(data))
-      .catch(err => this._handleNetworkError(err))
-      .finally(() => this._cleanupUI());
+    source.addEventListener("Generate", e => {
+      const { domain, problem } = JSON.parse(e.data);
+      console.debug("[Generate]", domain, problem);
+      rawEl.textContent = `=== DOMAIN ===\n${domain}\n\n=== PROBLEM ===\n${problem}`;
+      append("🧠 Generazione completata", "bot");
+    });
+
+    source.addEventListener("Validate", e => {
+      const { validation } = JSON.parse(e.data);
+      console.debug("[Validate]", validation);
+      valEl.textContent = JSON.stringify(validation, null, 2);
+      append("✅ Validazione completata", "bot");
+    });
+
+    source.addEventListener("Refine", e => {
+      const { refined_domain, refined_problem } = JSON.parse(e.data);
+      console.debug("[Refine]", refined_domain, refined_problem);
+      refineEl.textContent = 
+        `=== DOMAIN REFINED ===\n${refined_domain}\n\n=== PROBLEM REFINED ===\n${refined_problem}`;
+      append("🔧 Raffinamento completato", "bot");
+    });
+
+    source.addEventListener("messages", e => {
+      const msgs = JSON.parse(e.data);
+      console.debug("[messages]", msgs);
+      if (Array.isArray(msgs)) {
+        msgs.forEach(m => {
+          if (m.type === "ai" && m.content) {
+            append(m.content, "bot");
+          }
+        });
+      }
+    });
+
+    source.addEventListener("status", e => {
+      const status = e.data;
+      console.debug("[status]", status);
+      if (status === "awaiting_feedback") {
+        append("🙋 La pipeline è in attesa di un tuo feedback.", "system");
+        form.classList.remove("d-none");
+        source.close();
+      }
+    });
+
+    source.addEventListener("done", () => {
+      console.debug("[DONE]");
+      append("🏁 Pipeline terminata. Ora puoi inviare un feedback.", "system");
+      form.classList.remove("d-none");
+      source.close();
+    });
+
+    source.onerror = err => {
+      console.error("❌ SSE ERROR", err);
+      append("❌ Errore nello streaming", "bot");
+      source.close();
+    };
   }
 
-  async _runPipeline(body) {
-    const res = await fetch(API_ENDPOINT, {
+function startStreaming() {
+  const lore = loreSelect.value;
+  const reset = resetCheckbox.checked;
+
+  if (!lore) {
+    append("❗ Devi prima selezionare una lore.", "bot");
+    return;
+  }
+
+  resetAll();
+  append("💬 Inizio pipeline (streaming)…", "system");
+
+  // Invio reset (opzionale): fai una chiamata POST a /message
+  if (reset) {
+    fetch("/message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      body: JSON.stringify({ lore, thread_id: threadId, reset: true })
+    }).then(() => {
+      if (source) source.close();
+      source = new EventSource(`/stream?lore=${encodeURIComponent(lore)}&thread_id=${threadId}`);
+      attachPipelineListeners(source);
     });
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Server responded ${res.status}: ${text}`);
-    }
-    return res.json();
-  }
-
-  _handleResponse(data) {
-    if (data.error) {
-      this.resultBox.textContent = data.error;
-      playErrorSound();
-    } else {
-      this.resultBox.innerHTML = "";
-      this._renderResult(data);
-      playSuccessSound();
-    }
-  }
-
-  _handleNetworkError(err) {
-    this.resultBox.textContent = `❌ Errore di rete: ${err.message}`;
-    playErrorSound();
-  }
-
-  _cleanupUI() {
-    clearInterval(this.timerId);
-    this._enableForm();
-    hideModal();
-    this.resultBox.classList.remove("hidden");
-  }
-
-  _disableForm() {
-    this.form.querySelector("button").disabled = true;
-  }
-
-  _enableForm() {
-    this.form.querySelector("button").disabled = false;
-  }
-
-  _showFeedback(msg) {
-    this.feedbackBox.textContent = msg;
-  }
-
-  _clearFeedback() {
-    this.feedbackBox.textContent = "";
-  }
-
-  _startProgress() {
-    this.currentStep = 0;
-    this._updateStep(0);
-
-    this.timerId = setInterval(() => {
-      this.currentStep++;
-      if (this.currentStep >= STEPS.length) {
-        clearInterval(this.timerId);
-      } else {
-        this._updateStep(this.currentStep);
-      }
-    }, PROGRESS_INTERVAL_MS);
-  }
-
-  _updateStep(idx) {
-    this.loadingMsg.textContent = STEPS[idx];
-    this.progressFill.style.width = `${((idx + 1) / STEPS.length) * 100}%`;
-    this.stepItems.forEach((li, i) => {
-      li.classList.toggle("active-step", i === idx);
-    });
-  }
-
-  _renderResult(data) {
-    const card = document.createElement("div");
-    card.classList.add("result-card");
-
-    const domTitle = document.createElement("h3");
-    domTitle.textContent = "✅ Dominio";
-    const domPre = document.createElement("pre");
-    domPre.textContent = data.domain?.slice(0, MAX_PREVIEW_LENGTH) || "(vuoto)";
-    card.append(domTitle, domPre);
-
-    if (data.session_id && data.domain) {
-      const dlLink = document.createElement("a");
-      dlLink.href = `/uploads/${data.session_id}/domain.pddl`;
-      dlLink.textContent = "Scarica dominio completo";
-      dlLink.setAttribute("download", "");
-      card.appendChild(dlLink);
-    }
-
-    const probTitle = document.createElement("h3");
-    probTitle.textContent = "✅ Problema";
-    const probPre = document.createElement("pre");
-    probPre.textContent = data.problem?.slice(0, MAX_PREVIEW_LENGTH) || "(vuoto)";
-    card.append(probTitle, probPre);
-
-    if (data.session_id && data.problem) {
-      const dlLinkP = document.createElement("a");
-      dlLinkP.href = `/uploads/${data.session_id}/problem.pddl`;
-      dlLinkP.textContent = "Scarica problema completo";
-      dlLinkP.setAttribute("download", "");
-      card.appendChild(dlLinkP);
-    }
-
-    if (data.validation) {
-      const report = this._renderValidationReport(data.validation);
-      card.append(report);
-    }
-
-    this.resultBox.appendChild(card);
-  }
-
-  _renderValidationReport(v) {
-    const container = document.createElement("div");
-    container.innerHTML = DOMPurify.sanitize(`
-      <hr>
-      <h3>🧪 <strong>Report di Validazione</strong></h3>
-      <ul>
-        ${
-          !v.valid_syntax
-            ? `<li style="color:red;">❌ Errori di sintassi: ${
-                (v.missing_sections || []).map(s => `<code>${s}</code>`).join(", ")
-              }</li>`
-            : ""
-        }
-        ${
-          (v.undefined_objects_in_goal || []).length
-            ? `<li>🎯 Oggetti non nel goal: ${
-                v.undefined_objects_in_goal.map(o => `<code>${o}</code>`).join(", ")
-              }</li>`
-            : ""
-        }
-        ${
-          (v.semantic_errors || []).length
-            ? `<li>⚠️ Semantica: ${
-                v.semantic_errors.map(e => `<code>${e}</code>`).join(", ")
-              }</li>`
-            : ""
-        }
-      </ul>
-      <details>
-        <summary>📋 JSON completo</summary>
-        <pre>${JSON.stringify(v, null, 2)}</pre>
-      </details>
-    `);
-    return container;
+    resetCheckbox.checked = false;
+  } else {
+    if (source) source.close();
+    source = new EventSource(`/stream?lore=${encodeURIComponent(lore)}&thread_id=${threadId}`);
+    attachPipelineListeners(source);
   }
 }
 
-// 🔄 Popola dinamicamente la tendina dei file lore
-async function loadLoreOptions() {
-  const select = document.querySelector("[data-js=lorePathSelect]");
-  if (!select) return;
 
-  try {
-    const res = await fetch("/api/lore_files");
-    const files = await res.json();
+  runBtn.addEventListener("click", startStreaming);
 
-    select.innerHTML = `<option value="">-- Seleziona lore --</option>`;
-    files.forEach(file => {
-      const option = document.createElement("option");
-      option.value = file;
-      option.textContent = file;
-      select.appendChild(option);
-    });
-  } catch (err) {
-    console.error("Errore nel caricamento dei file lore:", err);
+
+  form.addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  form.classList.add("disabled");
+  append(msg, "user");
+  input.value = "";
+
+  const lore = loreSelect.value;
+  const reset = resetCheckbox.checked;
+
+  const res = await fetch("/message", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ lore, thread_id: threadId, message: msg, reset })
+  });
+
+  form.classList.remove("disabled");
+  resetCheckbox.checked = false;
+
+  const data = await res.json();
+
+  if (data.error) {
+    append(`❌ Errore: ${data.error}`, "bot");
+    return;
   }
-}
 
-// 🚀 Inizializzazione
-document.addEventListener("DOMContentLoaded", () => {
-  new PipelineRunner();
-  loadLoreOptions();
+  if (data.refined_domain) {
+    append("🔧 Nuovo domain.pddl:", "bot");
+    append(`<pre>${data.refined_domain}</pre>`);
+  }
+  if (data.refined_problem) {
+    append("🔧 Nuovo problem.pddl:", "bot");
+    append(`<pre>${data.refined_problem}</pre>`);
+  }
+
+  setTimeout(() => {
+    append("🚀 Continuo la pipeline dopo il tuo feedback…", "system");
+    startStreaming();
+  }, 500);
+});
+
+
+  
+
+  resetAll();
 });

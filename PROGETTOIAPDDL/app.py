@@ -5,7 +5,6 @@ from routes.app_factory import QuestMasterApp
 from config import DevConfig
 
 # 🛠️ Ottimizzazione leggera prima di creare l'app Flask
-optimize_before_launch()
 
 # 🚀 Crea e avvia l'app
 app = QuestMasterApp.create(DevConfig)

@@ -29,7 +29,7 @@ if not logger.hasHandlers():
 # Configurazione LLM
 # ----------------------------
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
-MODEL = "llama3:8b"
+MODEL = "llama3:8b-instruct-q5_K_M"
 
 
 # ----------------------------
@@ -134,25 +134,26 @@ def _save_failed_prompt(prompt: str):
     Path("llm_debug").mkdir(exist_ok=True)
     Path("llm_debug/last_failed_prompt.txt").write_text(prompt, encoding="utf-8")
 
-
-import re
-import logging
-
 logger = logging.getLogger(__name__)
 
+
 def extract_between(text: str, start: str, end: str) -> Optional[str]:
-    """Estrae testo tra due marker, anche se racchiuso da ``` o linguaggi."""
-    pattern = re.compile(
-        rf"{re.escape(start)}\s*```(?:pddl|lisp)?\s*(.*?)\s*```?\s*{re.escape(end)}",
-        re.DOTALL | re.IGNORECASE,
-    )
-    match = pattern.search(text)
-    if match:
-        return match.group(1).strip()
+    """Estrae il contenuto tra due marker, rimuovendo blocchi Markdown come ```pddl ... ``` se presenti."""
     
-    # fallback semplice se non ci sono backtick
-    fallback = re.search(rf"{re.escape(start)}(.*?){re.escape(end)}", text, re.DOTALL | re.IGNORECASE)
-    return fallback.group(1).strip() if fallback else None
+    # Primo tentativo: con o senza codice markdown
+    pattern = rf"{re.escape(start)}\s*(.*?)\s*{re.escape(end)}"
+    match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
+
+    if match:
+        content = match.group(1).strip()
+        # Se inizia con ``` e finisce con ```, pulisci
+        if content.startswith("```"):
+            content = re.sub(r"^```[a-zA-Z]*\n?", "", content)
+            content = re.sub(r"\n?```$", "", content)
+        return content.strip()
+
+    return None
+
 
 
 

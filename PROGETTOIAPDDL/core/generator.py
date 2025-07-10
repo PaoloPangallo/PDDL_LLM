@@ -106,11 +106,11 @@ def build_prompt_from_lore(lore: dict, examples: Optional[List[str]] = None) -> 
         "Your task is to produce two complete, valid and logically consistent PDDL files:\n"
         "- `domain.pddl`\n"
         "- `problem.pddl`\n\n"
-        "💡 These files will be automatically validated for:\n"
+        " These files will be automatically validated for:\n"
         "• Syntactic correctness (PDDL standards)\n"
         "• Object/predicate coherence across domain/problem/init/goal\n"
         "• Full consistency with the lore provided\n\n"
-        "📏 Please follow these STRICT constraints:\n"
+        " Please follow these STRICT constraints:\n"
         "1. Use ONLY objects, types and predicates from the lore.\n"
         "2. Each predicate in the goal must be declared and used.\n"
         "3. Init and goal must match exactly the lore.\n"
@@ -124,8 +124,8 @@ def build_prompt_from_lore(lore: dict, examples: Optional[List[str]] = None) -> 
         lore_text = lore.get("description", "")
         prompt = (
             intro +
-            f"\n🔍 QUEST DESCRIPTION:\n{lore_text}\n\n" +
-            "🎯 Your output must follow this exact format:\n"
+            f"\n QUEST DESCRIPTION:\n{lore_text}\n\n" +
+            " Your output must follow this exact format:\n"
             "=== DOMAIN START ===\n<insert domain.pddl here>\n=== DOMAIN END ===\n"
             "=== PROBLEM START ===\n<insert problem.pddl here>\n=== PROBLEM END ===\n"
         )
@@ -144,15 +144,15 @@ def build_prompt_from_lore(lore: dict, examples: Optional[List[str]] = None) -> 
 
         prompt = (
             intro +
-            "\n📦 OBJECTS:\n" + object_list + "\n\n" +
-            "🔋 INITIAL STATE:\n" + initial_state + "\n\n" +
-            "🎯 GOAL CONDITIONS:\n" + goal_conditions + "\n\n" +
-            f"🔀 BRANCHING FACTOR: min {branching['min']}, max {branching['max']}\n" +
-            f"🧭 DEPTH CONSTRAINTS: min {depth['min']}, max {depth['max']}\n\n" +
-            f"🗺️ QUEST TITLE: {lore.get('quest_title', '(not provided)')}\n" +
-            f"🌍 WORLD CONTEXT: {lore.get('world_context', '(not provided)')}\n" +
-            f"📜 NARRATIVE DESCRIPTION:\n{lore.get('description', '')}\n\n" +
-            "🎯 Your output MUST follow this format:\n"
+            "\n OBJECTS:\n" + object_list + "\n\n" +
+            " INITIAL STATE:\n" + initial_state + "\n\n" +
+            " GOAL CONDITIONS:\n" + goal_conditions + "\n\n" +
+            f" BRANCHING FACTOR: min {branching['min']}, max {branching['max']}\n" +
+            f" DEPTH CONSTRAINTS: min {depth['min']}, max {depth['max']}\n\n" +
+            f" QUEST TITLE: {lore.get('quest_title', '(not provided)')}\n" +
+            f" WORLD CONTEXT: {lore.get('world_context', '(not provided)')}\n" +
+            f" NARRATIVE DESCRIPTION:\n{lore.get('description', '')}\n\n" +
+            " Your output MUST follow this format:\n"
             "=== DOMAIN START ===\n<insert domain.pddl here>\n=== DOMAIN END ===\n"
             "=== PROBLEM START ===\n<insert problem.pddl here>\n=== PROBLEM END ===\n"
         )
@@ -182,12 +182,12 @@ def generate_pddl_from_dict(
     problem = extract_between(raw, "=== PROBLEM START ===", "=== PROBLEM END ===")
 
     if not domain or not problem or not domain.strip().lower().startswith("(define"):
-        logger.warning("⚠️ Generazione fallita: PDDL non valido.")
+        logger.warning(" Generazione fallita: PDDL non valido.")
         return None, None, used_examples
 
     validation = validate_pddl(domain, problem, lore)
     if not validation["valid_syntax"]:
-        logger.warning("⚠️ Validazione fallita: %s", json.dumps(validation, indent=2))
+        logger.warning(" Validazione fallita: %s", json.dumps(validation, indent=2))
         save_text_file(
             os.path.join(session_dir, "validation_failed.json"),
             json.dumps(validation, indent=2)
