@@ -32,6 +32,7 @@ def validate_pddl(domain: str, problem: str, lore: Any) -> Dict:
 
     # 1. Sezioni obbligatorie
     check_required_sections(domain, problem, report)
+    #holaa
 
     # 2. Nome dominio coerente
     check_domain_name_match(domain, problem, report)
