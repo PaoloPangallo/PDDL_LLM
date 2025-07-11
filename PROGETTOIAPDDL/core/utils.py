@@ -8,7 +8,6 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Tuple
-
 import requests
 
 # ----------------------------
@@ -157,9 +156,6 @@ def extract_between(text: str, start: str, end: str) -> Optional[str]:
         return content.strip()
 
     return None
-
-
-
 
 
 def read_text_file(path: str) -> str | None:
