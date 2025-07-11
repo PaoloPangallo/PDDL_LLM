@@ -8,9 +8,7 @@ logger.setLevel(logging.DEBUG)
 
 PDDL_SECTIONS = ["(:types", "(:predicates", "(:action", "(:objects", "(:init", "(:goal)"]
 
-
 def validate_pddl(domain: str, problem: str, lore: Any) -> Dict:
-    # Lore può essere stringa o dict
     if isinstance(lore, str):
         try:
             lore_dict = json.loads(lore)
@@ -26,7 +24,7 @@ def validate_pddl(domain: str, problem: str, lore: Any) -> Dict:
         "missing_sections": [],
         "undefined_predicates_in_goal": [],
         "undefined_predicates_in_init": [],
-        "undefined_actions": [],
+        "undefined_objects_in_goal": [],
         "mismatched_lore_entities": [],
         "domain_mismatch": None,
         "semantic_errors": []
@@ -42,40 +40,37 @@ def validate_pddl(domain: str, problem: str, lore: Any) -> Dict:
     object_list = extract_objects(problem)
     goal_atoms = extract_goal_atoms(problem)
     init_atoms = extract_init_atoms(problem)
+
     logger.debug("📋 Validating PDDL with %d objects, %d goal atoms", len(object_list), len(goal_atoms))
 
-    # 4. Coerenza con oggetti in goal/init
+    predicates = extract_predicates(domain)
+
     report["undefined_predicates_in_goal"] = [
-        atom[0] for atom in goal_atoms if atom[0] not in extract_predicates(domain)
+        atom[0] for atom in goal_atoms if atom[0] not in predicates
     ]
     report["undefined_predicates_in_init"] = [
-        atom[0] for atom in init_atoms if atom[0] not in extract_predicates(domain)
+        atom[0] for atom in init_atoms if atom[0] not in predicates
     ]
 
     report["undefined_objects_in_goal"] = [
         obj for atom in goal_atoms for obj in atom[1:] if obj not in object_list
     ]
 
-    # 5. Entità extra nel lore
-    lore_entities = []
-    if "entities" in lore_dict or "inventory" in lore_dict:
-        lore_entities = lore_dict.get("entities", []) + lore_dict.get("inventory", [])
-        object_set = set(object_list)
-        report["mismatched_lore_entities"] = [e for e in lore_entities if e not in object_set]
+    # 4. Entità extra nel lore
+    lore_entities = lore_dict.get("entities", []) + lore_dict.get("inventory", [])
+    object_set = set(object_list)
+    report["mismatched_lore_entities"] = [e for e in lore_entities if e not in object_set]
 
-    # 6. Azioni
-    defined_actions = extract_action_names(domain)
-    used_actions = extract_plan_actions(problem)
-    report["undefined_actions"] = [a for a in used_actions if a not in defined_actions]
-
-    # 7. Errori semantici
+    # 5. Verifica semantica con init/goal
     if isinstance(lore_dict.get("init"), list) and isinstance(lore_dict.get("goal"), list):
         report["semantic_errors"].extend(semantic_check(problem, lore_dict))
 
-    # 8. Struttura azioni
+    # 6. Controlli sintattici e semantici sul dominio
     report["semantic_errors"].extend(validate_action_structure(domain))
+    report["semantic_errors"].extend(detect_invalid_predicate_syntax(domain))
+    report["semantic_errors"].extend(validate_parameter_typing(domain))
+    report["semantic_errors"].extend(detect_hardcoded_constants(domain, object_list))
 
-    # 9. Invalida se errori
     if (
         report["missing_sections"]
         or report["semantic_errors"]
@@ -85,7 +80,6 @@ def validate_pddl(domain: str, problem: str, lore: Any) -> Dict:
         report["valid_syntax"] = False
 
     return report
-
 
 # =======================
 # 🔍 Helper functions
@@ -98,7 +92,6 @@ def check_required_sections(domain: str, problem: str, report: Dict):
     for section in ["(:objects", "(:init", "(:goal"]:
         if section not in problem:
             report["missing_sections"].append(section)
-
 
 def check_domain_name_match(domain: str, problem: str, report: Dict):
     domain_decl = re.search(r"\(define\s*\(domain\s+(\w+)\)", domain)
@@ -115,7 +108,6 @@ def check_domain_name_match(domain: str, problem: str, report: Dict):
             report["semantic_errors"].append(msg)
             report["valid_syntax"] = False
 
-
 def extract_objects(problem: str) -> List[str]:
     match = re.search(r"\(:objects(.*?)\)", problem, re.DOTALL)
     if not match:
@@ -131,13 +123,11 @@ def extract_objects(problem: str) -> List[str]:
     result.extend(current)
     return result
 
-
 def extract_goal_atoms(problem: str) -> List[List[str]]:
     match = re.search(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
     if not match:
         return []
     return [atom.split() for atom in re.findall(r"\(([^()]+)\)", match.group(1))]
-
 
 def extract_init_atoms(problem: str) -> List[List[str]]:
     match = re.search(r"\(:init(.*?)\)\s*\(:goal", problem, re.DOTALL)
@@ -145,48 +135,11 @@ def extract_init_atoms(problem: str) -> List[List[str]]:
         return []
     return [atom.split() for atom in re.findall(r"\(([^()]+)\)", match.group(1))]
 
-
 def extract_predicates(domain: str) -> List[str]:
     match = re.search(r"\(:predicates(.*?)\)", domain, re.DOTALL)
     if not match:
         return []
     return list(set(re.findall(r"\(([\w-]+)", match.group(1))))
-
-
-
-def extract_action_names(domain: str) -> List[str]:
-    return re.findall(r"\(:action\s+([\w-]+)", domain)
-
-
-def extract_plan_actions(problem: str) -> List[str]:
-    """
-    Dummy estrattore: estrae parole che sembrano azioni dentro :goal (solo per hint).
-    """
-    actions = set()
-    matches = re.findall(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
-    for body in matches:
-        for match in re.findall(r"\(([\w-]+)", body):
-            if match not in {"and", "or", "not"}:
-                actions.add(match)
-    return list(actions)
-
-
-
-def extract_init_facts(problem: str) -> List[str]:
-    match = re.search(r"\(:init(.*?)\)\s*\(:goal", problem, re.DOTALL)
-    if not match:
-        return []
-    atoms = re.findall(r"\(([^()]+)\)", match.group(1))
-    return ["(" + a.strip() + ")" for a in atoms]
-
-
-def extract_goal_facts(problem: str) -> List[str]:
-    match = re.search(r"\(:goal\s*(\(.*?\))\s*\)", problem, re.DOTALL)
-    if not match:
-        return []
-    atoms = re.findall(r"\(([^()]+)\)", match.group(1))
-    return ["(" + a.strip() + ")" for a in atoms]
-
 
 def semantic_check(problem: str, lore: dict) -> List[str]:
     errors = []
@@ -198,18 +151,11 @@ def semantic_check(problem: str, lore: dict) -> List[str]:
 
     for fact in init_expected:
         if fact not in init_actual:
-            errors.append(
-                f"❌ Init mismatch: '{fact}' not found in problem. "
-                f"🛠 Aggiungi questa tupla nella sezione (:init)."
-            )
+            errors.append(f"❌ Init mismatch: '{fact}' not found in problem. 🛠 Aggiungi questa tupla nella sezione (:init).")
     for fact in goal_expected:
         if fact not in goal_actual:
-            errors.append(
-                f"❌ Goal mismatch: '{fact}' not found in problem. "
-                f"🛠 Aggiungi questa tupla nella sezione (:goal)."
-            )
+            errors.append(f"❌ Goal mismatch: '{fact}' not found in problem. 🛠 Aggiungi questa tupla nella sezione (:goal).")
     return errors
-
 
 def validate_action_structure(domain: str) -> List[str]:
     problems = []
@@ -223,7 +169,30 @@ def validate_action_structure(domain: str) -> List[str]:
             problems.append(f"❌ Action '{name}' is missing ':effect'.")
     return problems
 
+def detect_invalid_predicate_syntax(domain: str) -> List[str]:
+    errors = []
+    match = re.search(r"\(:predicates(.*?)\)", domain, re.DOTALL)
+    if not match:
+        return errors
+    block = match.group(1)
+    for line in block.split("\n"):
+        if "-" in line and not re.search(r"\?\w+\s+-\s+\w+", line):
+            errors.append(f"❌ Invalid predicate syntax: `{line.strip()}` — expected typed parameters.")
+    return errors
 
+def validate_parameter_typing(domain: str) -> List[str]:
+    errors = []
+    matches = re.findall(r":parameters\s*\((.*?)\)", domain, re.DOTALL)
+    for param_block in matches:
+        tokens = param_block.split()
+        for i, token in enumerate(tokens):
+            if token.startswith("?") and (i+1 >= len(tokens) or tokens[i+1] != "-"):
+                errors.append(f"❌ Parameter `{token}` is missing type declaration.")
+    return errors
 
-
-
+def detect_hardcoded_constants(domain: str, object_names: List[str]) -> List[str]:
+    errors = []
+    for obj in object_names:
+        if re.search(rf"\b{re.escape(obj)}\b", domain):
+            errors.append(f"⚠️ Object '{obj}' appears directly in the domain. Use typed parameters instead.")
+    return errors

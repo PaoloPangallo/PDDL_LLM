@@ -1,20 +1,20 @@
 {
-  "description": "The hero must reach the Tower of Varnak carrying the Sword of Fire and defeat the Ice Dragon.",
+  "description": "The quest involves a hero who starts in the village. In order to complete the mission, the hero must: 1. Travel from the village to the Tower of Varnak. 2. Pick up the Sword of Fire, which is located at the Tower of Varnak. 3. Reach the Ice Dragon's location. 4. Defeat the Ice Dragon using the Sword of Fire. To defeat the Ice Dragon, the hero must be in the same location as the dragon and must be carrying the Sword of Fire. The Ice Dragon is initially sleeping.",
   "objects": [
     "hero - agent",
-    "tower-of-varnak - location",
-    "sword-of-fire - object",
-    "ice-dragon - monster",
+    "tower_of_varnak - location",
+    "sword_of_fire - object",
+    "ice_dragon - monster",
     "village - location"
   ],
   "init": [
     "(at hero village)",
-    "(on-ground sword-of-fire tower-of-varnak)",
-    "(sleeping ice-dragon)"
+    "(on-ground sword_of_fire tower_of_varnak)",
+    "(sleeping ice_dragon)"
   ],
   "goal": [
-    "(at hero tower-of-varnak)",
-    "(carrying hero sword-of-fire)",
-    "(defeated ice-dragon)"
+    "(at hero tower_of_varnak)",
+    "(carrying hero sword_of_fire)",
+    "(defeated ice_dragon)"
   ]
 }

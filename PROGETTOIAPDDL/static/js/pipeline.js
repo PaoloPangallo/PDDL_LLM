@@ -118,19 +118,29 @@ function startStreaming() {
   resetAll();
   append("💬 Inizio pipeline (streaming)…", "system");
 
-  // Invio reset (opzionale): fai una chiamata POST a /message
+  // Se è richiesto il reset, faccio prima una POST a /message per cancellare la memoria
   if (reset) {
+    append("♻️ Reset richiesto. Ripartiamo da zero…", "system");
+
     fetch("/message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ lore, thread_id: threadId, reset: true })
-    }).then(() => {
+    })
+    .then(() => {
+      // Dopo il reset, avvia il flusso SSE
       if (source) source.close();
-      source = new EventSource(`/stream?lore=${encodeURIComponent(lore)}&thread_id=${threadId}`);
+      source = new EventSource(`/stream?lore=${encodeURIComponent(lore)}&thread_id=${threadId}&reset=true`);
       attachPipelineListeners(source);
+      resetCheckbox.checked = false;
+    })
+    .catch(err => {
+      console.error("❌ Errore durante il reset", err);
+      append("❌ Errore durante il reset della sessione", "bot");
     });
-    resetCheckbox.checked = false;
+
   } else {
+    // Nessun reset: avvia subito il flusso SSE
     if (source) source.close();
     source = new EventSource(`/stream?lore=${encodeURIComponent(lore)}&thread_id=${threadId}`);
     attachPipelineListeners(source);
@@ -178,14 +188,7 @@ function startStreaming() {
     append(`<pre>${data.refined_problem}</pre>`);
   }
 
-  setTimeout(() => {
-    append("🚀 Continuo la pipeline dopo il tuo feedback…", "system");
-    startStreaming();
-  }, 500);
-});
-
-
-  
-
-  resetAll();
-});
+  append("✅ Feedback ricevuto. La pipeline è terminata correttamente.", "system");
+  form.classList.add("d-none");
+}); 
+})

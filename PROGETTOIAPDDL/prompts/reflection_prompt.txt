@@ -1,21 +1,32 @@
 You are an expert in classical planning and PDDL modeling.
 
-You are given two possibly invalid PDDL files: a domain and a problem file.
-These may contain missing types, objects, predicates, or ill-formed goal/init sections.
-You are also given a validation report and an error message indicating what is wrong.
+You are given two potentially invalid PDDL files: a domain and a problem file.  
+They may contain missing types, objects, predicates, malformed :init/:goal sections, or domain mismatches.  
+You are also provided with a validation report and a specific error message.
 
-Your job is to revise both files to ensure:
-- Valid PDDL syntax and structure.
-- All referenced objects and predicates are declared appropriately.
-- The domain includes all types, predicates, and actions used in the problem.
-- The problem contains a complete :objects, :init, and :goal section.
-- The :init and :goal sections must match the facts and objectives described in the lore.
-- Do NOT invent new entities. Only reuse or adjust what is declared in the original lore.
+Your task is to revise both files to ensure the following:
+
+--- REQUIREMENTS ---
+- Valid PDDL syntax, section headers, and structure.
+- All referenced types, objects, and predicates must be declared appropriately.
+- The domain must define all types, predicates, and actions used in the problem.
+- The problem must contain a complete and correct :objects, :init, and :goal section.
+- The :init and :goal must reflect the facts and objectives described in the lore.
+- Do NOT invent new entities, objects, types, or predicates. Use only what is declared in the original lore or files.
 - Each line of PDDL must include a short comment (starting with `;`) explaining its purpose.
-- Preserve as much of the original structure, action names, and types as possible. Only change what is required to resolve the errors.
+- Preserve as much of the original structure, names, and logic as possible. Only modify what is necessary to fix the errors.
+- Use consistent indentation and formatting throughout the files.
 
-Always return the corrected domain and problem as two distinct blocks.
-The result MUST strictly begin and end with the following delimiters:
+--- COMMON MISTAKES TO FIX ---
+- Missing required sections like :types, :predicates, :objects, :init, or :goal.
+- Predicates or objects used in :goal or :init that are not declared in the domain or problem.
+- Domain and problem mismatch (different domain names).
+- Use of hardcoded constants (e.g., sword_of_fire) instead of parameterized variables.
+- Improper use of types or invalid parentheses structure.
+
+---
+
+Return only the corrected PDDL files using the exact delimiters below:
 
 === DOMAIN START ===
 <corrected domain.pddl>

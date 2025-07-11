@@ -2051,3 +2051,671 @@ NameError: name 'should_continue_after_refine' is not defined
 2025-07-10 12:49:15,960 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
 2025-07-10 12:49:16,024 [DEBUG] ← RESPONSE GET /stream status=200
 [2025-07-10 12:49:16,246] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 12:59:21,435 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 12:59:21,548] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 13:06:20,393] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 13:12:08,330] ERROR: ❌ Errore di rete con Ollama: HTTPConnectionPool(host='127.0.0.1', port=11434): Read timed out. (read timeout=360)
+2025-07-10 13:12:09,144 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 13:12:10,162 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 13:12:10,408 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 13:12:12,071] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 14:12:52,623 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:12:52,695 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:12:52,793 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:12:52,818 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:12:52,822 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-10 14:12:52,842 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:13:03,680 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:13:04,336] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 14:13:13,656 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:13:13,813 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:13:13,906] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 14:20:03,530 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:20:03,570 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:20:03,616 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:20:03,634 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:20:03,648 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:20:03,660 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:20:10,599 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:20:11,393] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:11,472] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:11,754 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:20:11,769 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:11,902 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:11,995] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:12,069] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:16,873 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:20:17,199] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:17,267] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:17,482 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:20:17,493 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:17,568 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:17,673] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:17,748] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:27,086 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:20:27,453] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:27,512] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:27,519 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:27,605 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:27,670] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:27,744] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:27,747 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:20:27,759 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:27,867 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:27,948] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:28,020] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:33,547 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:20:33,549 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-10 14:20:33,550 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-10 14:20:33,560 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:20:34,134 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:20:34,522] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:34,585] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:34,786 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:20:34,800 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:34,902 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:35,042] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:35,118] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:47,246 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:20:47,605] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:47,668] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:47,900 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:20:47,917 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:48,087 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:48,195] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:48,271] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:50,016 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:50,229 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:50,373] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:50,456] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:52,294 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:52,484 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:52,491 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:20:52,576 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:20:52,646 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:52,767 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:20:52,828 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:52,981 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:20:53,017 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:20:53,105 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:53,173] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 14:20:53,191 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+[2025-07-10 14:20:53,251] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:53,275 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:53,335] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 14:20:53,382 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+[2025-07-10 14:20:53,424] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:53,464 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:53,522] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 14:20:53,552 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+[2025-07-10 14:20:53,608] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:20:53,630 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:20:53,674] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:20:53,745] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:21:01,301 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:21:01,560 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:21:01,693] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:21:01,769] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:21:45,510 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:21:45,551 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:21:45,618 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:21:45,634 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:21:45,668 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:21:45,684 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:21:51,456 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:21:51,590 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:21:52,100] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:21:52,176] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:22:17,613 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:22:17,950] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:22:18,027] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:22:18,317 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:22:18,333 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:22:18,460 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:22:18,589] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:22:18,662] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:22:26,045 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore2.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:22:26,255 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:22:26,398] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:22:26,465] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:22:29,811 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:22:30,117] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:22:30,180] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+[2025-07-10 14:22:30,248] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:22:30,315] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:22:30,426 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:22:30,967 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore2.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:22:31,135 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:22:31,252] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:22:31,320] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+[2025-07-10 14:22:31,366] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:22:31,429] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:23:07,480 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:23:07,768] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:23:07,835] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:23:08,096 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:23:08,109 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore2.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:23:08,287 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:23:08,478] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:23:08,549] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:23:35,123 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore2.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:23:35,248 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:23:35,442] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:23:35,505] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:25:04,248 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:25:04,296 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:25:04,353 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:25:04,368 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:25:04,395 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:25:04,410 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:25:08,133 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:08,135 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-10 14:25:11,831 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:11,982 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:25:12,557] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:25:12,628] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:25:21,722 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:25:22,058] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:25:22,122] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:25:22,324 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:25:22,334 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:22,413 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:25:22,528] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:25:22,594] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:25:23,521 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:23,686 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:23,711 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:25:23,785 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:25:23,841 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:24,011 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:24,016 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:25:24,131 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:25:24,168 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:24,290 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:25:24,359 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:24,534 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:24,547 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:25:24,610 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:25:24,690 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:24,814 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:25:24,928 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:25:25,104 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:25:25,209] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:25:25,278] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:29:18,505 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:29:18,581 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:29:18,657 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:29:18,677 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:29:18,678 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:29:18,693 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:29:24,821 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:29:25,351] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:29:25,424] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.7 GiB)"}
+2025-07-10 14:29:25,667 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:29:25,680 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:29:25,772 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:29:25,872] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:29:25,942] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.7 GiB)"}
+2025-07-10 14:30:39,582 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:30:39,624 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:30:39,666 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:30:39,683 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:30:39,696 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:30:39,711 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:30:48,372 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:30:49,227] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:30:49,300] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.8 GiB)"}
+2025-07-10 14:30:49,615 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:30:49,638 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:30:49,656 [ERROR] Exception on /stream [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/pipeline_chat.py", line 146, in stream_pipeline
+    graph = get_pipeline_with_memory(thread_id, reset=reset)
+NameError: name 'reset' is not defined
+2025-07-10 14:30:49,694 [ERROR] Errore interno: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-07-10 14:30:49,696 [DEBUG] ← RESPONSE GET /stream status=500
+2025-07-10 14:31:11,407 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:31:11,762] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:31:11,826] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.8 GiB)"}
+2025-07-10 14:31:12,042 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:31:12,055 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:31:12,067 [ERROR] Exception on /stream [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/pipeline_chat.py", line 146, in stream_pipeline
+    graph = get_pipeline_with_memory(thread_id, reset=reset)
+NameError: name 'reset' is not defined
+2025-07-10 14:31:12,075 [ERROR] Errore interno: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-07-10 14:31:12,076 [DEBUG] ← RESPONSE GET /stream status=500
+2025-07-10 14:31:12,818 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:31:12,838 [ERROR] Exception on /stream [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/paolo/ProgettoIAPDDL/PROGETTOIAPDDL/routes/pipeline_chat.py", line 146, in stream_pipeline
+    graph = get_pipeline_with_memory(thread_id, reset=reset)
+NameError: name 'reset' is not defined
+2025-07-10 14:31:12,852 [ERROR] Errore interno: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-07-10 14:31:12,853 [DEBUG] ← RESPONSE GET /stream status=500
+2025-07-10 14:37:53,030 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:37:53,067 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:37:53,134 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:37:53,149 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:37:53,152 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:37:53,166 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:37:58,941 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:37:59,057 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:37:59,423] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:37:59,498] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:38:03,643 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:38:03,923] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:38:03,994] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:38:04,300 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:38:04,316 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:38:04,447 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:38:04,578] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:38:04,650] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:38:05,745 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:38:05,939 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:38:06,079] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:38:06,150] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:38:08,184 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:38:08,193 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:38:08,233 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:38:08,235 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:38:08,245 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:38:08,248 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:38:22,819 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:38:23,177] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:38:23,245] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:38:23,499 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:38:23,518 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:38:23,676 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:38:23,790] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:38:23,861] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:38:28,325 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:38:28,632] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:38:28,693] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:38:28,903 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:38:29,444 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:38:29,635 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:38:29,847] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:38:29,909] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:39:52,345 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:39:52,372 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:39:52,399 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:39:52,414 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:39:52,427 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:39:52,440 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:40:00,389 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:40:01,140] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:40:01,218] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:40:01,539 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:40:01,554 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:40:01,669 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:40:01,810] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:40:01,874] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (13.0 GiB)"}
+2025-07-10 14:46:33,075 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:46:33,116 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:46:33,177 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:46:33,191 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:46:33,204 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:46:33,219 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=200
+2025-07-10 14:46:37,486 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:46:37,613 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:46:38,002] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:46:38,072] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.9 GiB)"}
+2025-07-10 14:46:41,226 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:46:41,571] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:46:41,638] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.9 GiB)"}
+2025-07-10 14:46:41,943 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:46:41,960 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1', 'reset': 'true'} form=[]
+2025-07-10 14:46:42,110 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:46:42,313] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:46:42,386] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.9 GiB)"}
+2025-07-10 14:48:29,069 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:48:29,114 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:48:29,170 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:48:29,187 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:48:29,489 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:48:29,509 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:48:34,017 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:48:34,793] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:48:34,889] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.9 GiB)"}
+2025-07-10 14:48:35,191 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:48:35,207 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1', 'reset': 'true'} form=[]
+2025-07-10 14:48:35,338 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:48:35,534] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:48:35,604] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.9 GiB)"}
+2025-07-10 14:50:28,316 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:50:28,379 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:50:28,478 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:50:28,504 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:50:28,507 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:50:28,527 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:50:33,993 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:34,108 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:50:34,304] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:50:34,379] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.7 GiB)"}
+2025-07-10 14:50:37,838 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:50:38,034] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:50:38,101] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.7 GiB)"}
+2025-07-10 14:50:38,190 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:50:38,204 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1', 'reset': 'true'} form=[]
+2025-07-10 14:50:38,330 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:50:38,385] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:50:38,461] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.8 GiB)"}
+2025-07-10 14:50:39,385 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:39,504 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:39,556 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:39,654 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:50:39,711] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 14:50:39,774 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+[2025-07-10 14:50:39,776] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.8 GiB)"}
+2025-07-10 14:50:39,889 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:50:40,016] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:50:40,090] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.8 GiB)"}
+2025-07-10 14:50:40,497 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:40,670 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:40,700 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:40,774 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:40,838 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:40,922 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:50:40,989] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 14:50:41,010 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+[2025-07-10 14:50:41,100] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.8 GiB)"}
+2025-07-10 14:50:41,162 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:41,163 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:41,263 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:41,334 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:41,431 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:41,488 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:41,604 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:41,643 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:41,730 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:41,794 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:41,900 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:41,920 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:42,022 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:42,055 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:42,244 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:42,275 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:42,310 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:42,363 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:42,422 [DEBUG] ← RESPONSE GET /stream status=200
+2025-07-10 14:50:42,445 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 14:50:42,545 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:50:42,634] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:50:42,701] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.8 GiB)"}
+2025-07-10 14:53:19,055 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:53:19,107 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:53:19,181 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:53:19,202 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:53:19,204 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:53:19,219 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:53:28,613 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:53:29,395] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:53:29,462] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.8 GiB)"}
+2025-07-10 14:53:29,712 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 14:53:29,728 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1', 'reset': 'true'} form=[]
+2025-07-10 14:53:29,856 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 14:53:30,046] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 14:53:30,114] ERROR: ❌ HTTP Error da Ollama (500): {"error":"model requires more system memory (13.1 GiB) than is available (12.8 GiB)"}
+2025-07-10 14:55:48,024 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 14:55:48,090 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 14:55:48,192 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 14:55:48,220 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 14:55:48,226 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 14:55:48,248 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 14:55:56,026 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 14:55:57,126] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:00:03,654 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 15:00:03,956] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:00:09,033 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 15:00:09,046 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 15:00:09,119 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 15:00:09,123 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 15:00:09,136 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 15:00:09,139 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 15:00:10,957 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1'} form=[]
+2025-07-10 15:00:10,961 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-10 15:00:12,295 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1'} form=[]
+2025-07-10 15:00:12,299 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-10 15:00:14,294 [DEBUG] → REQUEST POST /message args={} form=[]
+2025-07-10 15:00:14,299 [DEBUG] ← RESPONSE POST /message status=400
+2025-07-10 15:00:14,314 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1', 'reset': 'true'} form=[]
+2025-07-10 15:00:14,318 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-10 15:01:06,344 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 15:01:06,391 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 15:01:06,435 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 15:01:06,449 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 15:01:06,455 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 15:01:06,470 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 15:01:13,212 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 15:01:14,070] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:02:28,264 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 15:02:28,286 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-10 15:02:28,289 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-10 15:02:28,298 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 15:02:40,774 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 15:02:40,790 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 15:02:40,885 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-10 15:02:40,889 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-10 15:02:40,894 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 15:02:40,924 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-10 15:02:40,948 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 15:02:40,978 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=200
+2025-07-10 15:02:51,008 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 15:02:51,184 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 15:02:51,445] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:06:45,361 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 15:06:45,494 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 15:06:45,575] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:08:02,218 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 15:08:02,257 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 15:08:02,294 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 15:08:02,309 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 15:08:02,315 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 15:08:02,326 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 15:08:07,628 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 15:08:07,775 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 15:08:08,540] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:30:36,662 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 15:30:36,823] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:36:33,468 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 15:36:34,787 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 15:36:34,898 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 15:36:35,019] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:39:39,200 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 15:39:39,243 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 15:39:39,289 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 15:39:39,306 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 15:39:39,316 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 15:39:39,328 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 15:39:40,915 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 15:39:40,920 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 15:39:40,949 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 15:39:40,958 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 15:39:40,962 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 15:39:40,975 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 15:39:49,010 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 15:39:49,520] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:40:00,097 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 15:40:00,300] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:40:00,921 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 15:40:01,088] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:40:03,303 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 15:40:03,353 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 15:40:03,397] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-10 15:46:03,495] ERROR: ❌ Errore di rete con Ollama: HTTPConnectionPool(host='127.0.0.1', port=11434): Read timed out. (read timeout=360)
+2025-07-10 15:53:27,668 [DEBUG] ← RESPONSE POST /message status=500
+2025-07-10 15:53:27,680 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1', 'reset': 'true'} form=[]
+2025-07-10 15:53:27,757 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 15:53:27,836] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 15:57:32,385 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 15:57:32,410 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 15:57:32,428 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 15:57:32,435 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 15:57:32,446 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 15:57:32,454 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 15:57:37,049 [DEBUG] → REQUEST POST /message args={} form=[]
+2025-07-10 15:57:37,053 [DEBUG] ← RESPONSE POST /message status=400
+2025-07-10 15:57:37,061 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1', 'reset': 'true'} form=[]
+2025-07-10 15:57:37,076 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-10 15:57:43,447 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 15:57:43,560 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 15:57:43,994] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 16:01:49,501 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 16:01:49,533 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 16:01:49,583 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 16:01:49,593 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 16:01:49,640 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 16:01:49,648 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 16:01:56,036 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 16:01:56,198 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 16:01:56,473] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 16:14:52,203 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 16:14:52,324] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 16:21:55,323 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 16:21:56,733 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 16:21:56,783 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 16:21:56,861] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 16:29:27,953 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 16:29:27,983 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 16:29:28,021 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 16:29:28,029 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 16:29:28,036 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 16:29:28,044 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 16:29:30,593 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 16:29:30,596 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 16:29:30,611 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 16:29:30,617 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 16:29:30,619 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 16:29:30,627 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 16:29:34,350 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 16:29:34,380 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 16:29:34,563] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 16:35:51,297 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 16:35:51,395] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 16:42:52,889 [DEBUG] ← RESPONSE POST /message status=200
+2025-07-10 16:42:53,742 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 16:42:53,824 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 16:42:53,866] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 16:49:53,734 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 16:49:53,762 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 16:49:53,778 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 16:49:53,787 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 16:49:53,803 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 16:49:53,811 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=200
+2025-07-10 16:49:57,402 [DEBUG] → REQUEST POST /message args={} form=[]
+2025-07-10 16:49:57,410 [DEBUG] ← RESPONSE POST /message status=400
+2025-07-10 16:49:57,418 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1', 'reset': 'true'} form=[]
+2025-07-10 16:49:57,420 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-10 16:50:00,826 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1'} form=[]
+2025-07-10 16:50:00,829 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-10 16:50:02,178 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1'} form=[]
+2025-07-10 16:50:02,181 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-10 16:50:18,976 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1'} form=[]
+2025-07-10 16:50:18,980 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-10 16:50:46,224 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 16:50:46,500] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 16:50:48,546 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 16:50:48,593 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 16:50:48,635] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 16:53:23,755 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 16:53:23,762 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-10 16:53:23,763 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-10 16:53:23,773 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 16:53:28,338 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 16:53:28,361 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 16:53:28,376 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-10 16:53:28,377 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-10 16:53:28,388 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 16:53:28,397 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-10 16:53:28,427 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 16:53:28,436 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=200
+2025-07-10 16:53:32,976 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 16:53:33,023 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 16:53:33,191] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 17:13:09,357 [DEBUG] → REQUEST POST /message args={} form=[]
+2025-07-10 17:13:09,478 [DEBUG] ← RESPONSE POST /message status=500
+2025-07-10 17:26:43,813 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 17:26:43,834 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 17:26:43,854 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 17:26:43,862 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 17:26:43,874 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 17:26:43,882 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 17:26:48,888 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 17:26:48,952 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 17:26:49,128] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 17:50:54,646 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 17:50:54,679 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 17:50:54,703 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 17:50:54,715 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 17:50:54,726 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 17:50:54,731 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 17:50:58,361 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 17:50:58,395 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 17:50:58,641] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 17:55:57,805 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 17:55:57,829 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 17:55:57,845 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 17:55:57,854 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 17:55:57,861 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 17:55:57,867 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 17:56:06,000 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 17:56:06,093 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 17:56:06,310] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 18:09:38,197 [DEBUG] → REQUEST POST /message args={} form=[]
+2025-07-10 18:09:38,323 [DEBUG] ← RESPONSE POST /message status=500
+2025-07-10 18:23:45,776 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 18:23:45,804 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 18:23:45,819 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 18:23:45,832 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 18:23:45,842 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 18:23:45,853 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 18:23:49,354 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 18:23:49,395 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 18:23:49,560] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 18:34:06,475 [DEBUG] → REQUEST POST /message args={} form=[]
+2025-07-10 18:34:06,573 [DEBUG] ← RESPONSE POST /message status=500
+2025-07-10 18:35:54,892 [DEBUG] → REQUEST POST /message args={} form=[]
+2025-07-10 18:35:55,048 [DEBUG] ← RESPONSE POST /message status=500
+2025-07-10 18:36:12,941 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 18:36:12,973 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 18:36:13,022 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 18:36:13,033 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 18:36:13,043 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 18:36:13,055 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 18:36:14,727 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-10 18:36:14,730 [DEBUG] ← RESPONSE GET / status=200
+2025-07-10 18:36:14,745 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-10 18:36:14,750 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-10 18:36:14,752 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-10 18:36:14,759 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-10 18:36:18,890 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-10 18:36:18,923 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-10 18:36:19,089] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-10 18:46:56,322 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-10 18:46:56,482] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M

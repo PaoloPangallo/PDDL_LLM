@@ -54,10 +54,11 @@ def handle_pipeline_chat():
         memory_path = os.path.join("memory", f"{thread_id}.sqlite")
         if reset and os.path.exists(memory_path):
             os.remove(memory_path)
-            logger.warning(f"🧹 Memoria cancellata per nuova run: {memory_path}")
+            logger.warning("🧹 Memoria cancellata per nuova run: %s", memory_path)
 
         # Ottieni pipeline persistente
-        graph = get_pipeline_with_memory(thread_id)
+        graph = get_pipeline_with_memory(thread_id, reset=reset)
+
 
         # Recupera stato se esiste
         try:
@@ -75,9 +76,11 @@ def handle_pipeline_chat():
 
         # Invoca la pipeline con o senza feedback umano
         if user_message:
-            logger.info("✍️ Feedback umano: invoco ChatFeedback")
+            logger.info("✍️ Feedback umano: invio messaggio a ChatFeedback")
             state["messages"].append(HumanMessage(content=user_message))
-            result = graph.invoke(state, config={"node": "ChatFeedback"})
+            result = graph.invoke(state, config={"thread_id": thread_id})
+
+
         else:
             logger.info("⚡ Avvio pipeline completa")
             result = graph.invoke(state)
@@ -143,7 +146,9 @@ def stream_pipeline():
     with open(lore_path, encoding="utf-8") as f:
         lore = json.load(f)
 
-    graph = get_pipeline_with_memory(thread_id)
+    reset = request.args.get("reset", "false").lower() == "true"
+    graph = get_pipeline_with_memory(thread_id, reset=reset)
+
     state = {"lore": lore, "messages": [], "status": "ok"}
 
     def event_stream():

@@ -1,21 +1,26 @@
-You are a professional PDDL generation assistant.
-Your task is to produce two complete, valid and logically consistent PDDL files:
+You are a professional assistant for generating classical PDDL files (Planning Domain Definition Language).
+Your task is to produce two complete, **valid** and **logically consistent** PDDL files:
 - `domain.pddl`
 - `problem.pddl`
 
- These files will be automatically validated for:
-• Syntactic correctness (PDDL standards)
-• Object/predicate coherence across domain/problem/init/goal
-• Full consistency with the lore provided
+🛠️ These files will be validated automatically for:
+• ✅ Syntactic correctness (valid parentheses, sections, keywords)
+• ✅ Semantic coherence between domain/problem/init/goal
+• ✅ Consistency with the lore (description, objects, goal, init)
 
- Please follow these STRICT constraints:
-1. Use ONLY objects, types and predicates from the lore.
-2. Each predicate in the goal must be declared and used.
-3. Init and goal must match exactly the lore.
-4. Use valid and modular PDDL syntax, with correct parentheses.
-5. Comment each line with a `;` explaining its purpose.
-6. Do NOT invent anything beyond the description.
-7. Keep the output clean, readable, and logically structured.
+🔒 STRICT CONSTRAINTS — Do NOT violate these:
+1. Use **ONLY** objects, types, and predicates provided in the lore.
+2. Each predicate in the goal must be declared and consistently used.
+3. Use **valid STRIPS-compatible PDDL syntax**:
+   • Use `:precondition` and `:effect` (not plurals).
+   • Parentheses must be properly closed.
+   • Sections allowed: `(:types)`, `(:predicates)`, `(:action)`.
+4. Do NOT invent non-standard sections like `(:problem-factors)` or `(:problem-depths)`.
+5. Define realistic types (e.g., `agent`, `location`, `object`) **without self-referencing**.
+6. Each `:action` block must be syntactically valid and well-formed.
+7. Use `;` comments to describe each section clearly.
+8. Keep the formatting clean, modular, and readable.
+9. NEVER include placeholders like `<insert here>` or explanations in the output.
 
  OBJECTS:
 hero - agent
@@ -40,7 +45,7 @@ village - location
  QUEST TITLE: (not provided)
  WORLD CONTEXT: (not provided)
  NARRATIVE DESCRIPTION:
-The hero must reach the Tower of Varnak carrying the Sword of Fire and defeat the Ice Dragon.
+The quest involves a hero who starts in the village. In order to complete the mission, the hero must: 1. Travel from the village to the Tower of Varnak. 2. Pick up the Sword of Fire, which is located at the Tower of Varnak. 3. Reach the Ice Dragon's location. 4. Defeat the Ice Dragon using the Sword of Fire. To defeat the Ice Dragon, the hero must be in the same location as the dragon and must be carrying the Sword of Fire. The Ice Dragon is initially sleeping.
 
  Your output MUST follow this format:
 === DOMAIN START ===

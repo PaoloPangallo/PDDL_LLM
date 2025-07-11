@@ -108,7 +108,7 @@ def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 20480) -> str:
                 "stream": False,
                 "options": {"num_ctx": num_ctx}
             },
-            timeout=(10, 360)
+            timeout=(10, 720)
         )
         response.raise_for_status()
         result = response.json()

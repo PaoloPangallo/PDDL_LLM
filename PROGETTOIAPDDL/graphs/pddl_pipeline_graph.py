@@ -2,11 +2,13 @@ import os
 import json
 import logging
 import re
-import tempfile
 from typing import Any, TypedDict, Optional
 from langgraph.graph import StateGraph
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langchain_core.messages import BaseMessage
+
+
+
 
 
 
@@ -78,24 +80,36 @@ def node_increment_refine_attempts(state: PipelineState) -> PipelineState:
     """Aggiunge 1 a refine_attempts in modo esplicito."""
     current_attempts = int(state.get("refine_attempts", 0))
     current_attempts += 1
-    logger.debug(f"🔁 refine_attempts incrementato a {current_attempts}")
+    logger.debug("🔁 refine_attempts incrementato a %d", current_attempts)
     return {**state, "refine_attempts": current_attempts}
 
+def is_positive_feedback(msg: str) -> bool:
+    msg = msg.strip().lower()
+    return msg in {"ok", "va bene", "accetto", "accetta", "perfetto", "tutto ok", "confermato"}
+
 def node_chat_feedback(state: PipelineState) -> PipelineState:
-    """Gestisce il feedback umano e aggiorna i file PDDL."""
+    """Gestisce il feedback umano e aggiorna i file PDDL, oppure conclude."""
     if not state.get("messages"):
         logger.warning("⏸️ Nessun messaggio umano. Attesa feedback utente.")
         return {**state, "status": "awaiting_feedback"}
 
-
-    # Recupera ultimo messaggio umano
     user_msgs = [m for m in state["messages"] if isinstance(m, HumanMessage)]
     if not user_msgs:
         logger.warning("⏸️ Nessun HumanMessage trovato. Attesa feedback.")
         return {**state, "status": "awaiting_feedback"}
 
+    last_msg = user_msgs[-1].content.strip()
+    logger.info(f"✍️ Feedback umano ricevuto: {last_msg}")
 
-    last_msg = user_msgs[-1].content
+    if is_positive_feedback(last_msg):
+        logger.info("✅ Feedback positivo → fine pipeline.")
+        return {
+        **state,
+        "status": "ok",
+        "thread_id": state["thread_id"],
+    }
+
+    # Altrimenti: rigenera i file
     domain = state.get("domain", "")
     problem = state.get("problem", "")
     validation = state.get("validation", {})
@@ -146,7 +160,6 @@ Now rewrite both files fixing the issues. Output in the format:
             "problem": rp,
             "refined_domain": rd,
             "refined_problem": rp,
-
             "status": "ok",
             "messages": state["messages"] + [AIMessage(content=response)]
         }
@@ -156,8 +169,11 @@ Now rewrite both files fixing the issues. Output in the format:
         return {
             **state,
             "status": "failed",
-            "error_message": f"ChatFeedback error: {str(e)}"
-        }
+            "error_message": f"ChatFeedback error: {str(e)}",
+            "thread_id": state["thread_id"],
+}
+
+
 
 
 
@@ -297,19 +313,23 @@ def node_refine(state: PipelineState) -> PipelineState:
 
         logger.info("✅ [Refine] Raffinamento completato con successo.")
         return {
-            **state,
-            "refined_domain": rd,
-            "refined_problem": rp,
-            "status": "ok"
-        }
+    **state,
+    "refined_domain": rd,
+    "refined_problem": rp,
+    "status": "ok",
+    "thread_id": state["thread_id"],
+}
+
 
     except Exception as e:
         logger.error("❌ [Refine] Errore durante il refine: %s", str(e), exc_info=True)
         return {
-            **state,
-            "status": "failed",
-            "error_message": str(e)
-        }
+    **state,
+    "status": "failed",
+    "error_message": str(e),
+    "thread_id": state["thread_id"],
+}
+
 
 
 def end_node(state: PipelineState) -> PipelineState:
@@ -348,37 +368,34 @@ def validate_branching_logic(state: PipelineState) -> dict[str, Any]:
     state["refine_attempts"] = refine_attempts
 
     if refine_attempts == 0:
-        logger.info("❌ Validazione fallita → prima refine automatica")
-        return {"next": "Refine", "state": {**state, "status": "start_refine"}}
+        return {
+        "next": "Refine",
+        "state": { **state, "status": "start_refine", "thread_id": state["thread_id"] }
+    }
     else:
-        logger.info("🧠 Validazione fallita dopo refine → attesa feedback umano")
-        return {"next": "ChatFeedback", "state": {**state, "status": "awaiting_feedback"}}
+        return {
+            "next": "ChatFeedback",
+            "state": { **state, "status": "awaiting_feedback", "thread_id": state["thread_id"] }
+    }
+
 
 
 
 def should_continue_after_refine(state: PipelineState) -> dict[str, Any]:
-    logger.debug(f"🔄 should_continue_after_refine: refine_attempts={state.get('refine_attempts')}, messages={len(state.get('messages', []))}")
-
-    # Se abbiamo già rifinito almeno una volta → chiedi feedback umano
-    if state.get("refine_attempts", 0) >= 1:
-        logger.info("🧠 Prima refine completata. Attesa feedback umano.")
-        return {"next": "ChatFeedback", "state": {**state, "status": "awaiting_feedback"}}
-
-    # In tutti gli altri casi, fallback
     user_msgs = [m for m in state.get("messages", []) if isinstance(m, HumanMessage)]
-    last_msg = user_msgs[-1].content.strip().lower() if user_msgs else None
+    if user_msgs:
+        last_msg = user_msgs[-1].content.strip().lower()
+        if last_msg in {"ok", "accetto", "va bene", "perfetto"}:
+            return {
+                "next": "End",
+                "state": {**state, "status": "ok", "thread_id": state["thread_id"]}
+            }
 
-    if not last_msg:
-        return {"next": "ChatFeedback", "state": {**state, "status": "awaiting_feedback"}}
-
-    if last_msg in {"ok", "accetto", "va bene", "accetta"}:
-        return {"next": "End", "state": {**state, "status": "ok"}}
-
-    return {"next": "ChatFeedback", "state": {**state, "status": "awaiting_feedback"}}
-
-
-
-
+    # 🔁 Se non è "ok", vai a Refine
+    return {
+        "next": "Refine",
+        "state": {**state, "status": "start_refine", "thread_id": state["thread_id"]}
+    }
 
 
 
@@ -420,26 +437,32 @@ def build_pipeline(checkpointer=None):
 
 
 
-import os
 import sqlite3
 
 logger = logging.getLogger("pddl_pipeline_graph")
 
-def get_pipeline_with_memory(thread_id: str):
-    # Logging
+def get_pipeline_with_memory(thread_id: str, reset: bool = False):
     logger.info(f"🧠 Pipeline persistente per thread: {thread_id}")
-    
-    # Path assoluto al DB e creazione cartella
+
     abs_path = os.path.abspath(f"memory/{thread_id}.sqlite")
     os.makedirs(os.path.dirname(abs_path), exist_ok=True)
-    logger.info(f"📍 Salvataggio in: {abs_path}")
 
-    # Connessione manuale e istanza SqliteSaver vera
+    # ✅ Reset: cancella completamente la memoria
+    if reset and os.path.exists(abs_path):
+        os.remove(abs_path)
+        logger.warning(f"🧹 File di memoria rimosso per reset: {abs_path}")
+
+    # ✅ Connessione nuova e saver isolato
     conn = sqlite3.connect(abs_path, check_same_thread=False)
     saver = SqliteSaver(conn)
-    logger.debug(f"✅ get_pipeline_with_memory → saver type: {type(saver)}")
 
-    # Costruisci e ritorna pipeline con checkpointer
+    # ✅ Svuota tabelle se esistono (in caso il file esista ma non venga cancellato correttamente)
+    if reset:
+        with conn:
+            conn.execute("DROP TABLE IF EXISTS state")
+            conn.execute("DROP TABLE IF EXISTS checkpoints")
+
+    # ✅ Costruisci sempre la pipeline
     pipeline = build_pipeline(checkpointer=saver)
     return pipeline.with_config(configurable={"thread_id": thread_id})
 

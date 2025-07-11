@@ -85,12 +85,20 @@ def ask_llm_with_fallback(prompt: str) -> str:
 # ===============================
 #  Costruzione del prompt
 # ===============================
+from pathlib import Path
+import json
+import logging
+from typing import Optional
+
+logger = logging.getLogger(__name__)
+
 def build_prompt(domain_text: str, problem_text: str, error_message: str, validation: Optional[dict] = None, lore: Optional[dict] = None) -> str:
     prompt_path = Path("prompts/reflection_prompt.txt")
+    
     if prompt_path.exists():
         template = prompt_path.read_text(encoding="utf-8")
     else:
-        logger.warning("⚠️ Template reflection_prompt.txt mancante, uso fallback minimale.")
+        logger.warning("Template reflection_prompt.txt mancante. Uso fallback minimale.")
         template = (
             "### DOMAIN FILE:\n{domain}\n\n"
             "### PROBLEM FILE:\n{problem}\n\n"
@@ -100,49 +108,55 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
             "\n=== PROBLEM START ===\n<...>\n=== PROBLEM END ==="
         )
 
-    #  Note generali per l’LLM
-    notes = "\n\n OBIETTIVO:\n"
-    notes += "- Correggi i file PDDL affinché siano validi, completi e coerenti con la pianificazione classica.\n"
-    notes += "- NON inventare nuovi predicati, oggetti o tipi non presenti nei file originali.\n"
-    notes += "- Mantieni la struttura delle azioni esistenti (nomi, parametri, logica) dove possibile.\n"
-    notes += "- Aggiungi un commento (usando `;`) alla fine di ogni riga PDDL per spiegare cosa fa.\n"
-    notes += "- Assicurati che ogni sezione obbligatoria (:types, :predicates, :init, :goal, ...) sia presente.\n"
-    notes += "- Includi solo modifiche necessarie per far validare i file.\n"
-    notes += "- NON rimuovere i commenti `;` presenti nei file se già corretti.\n"
-    notes += "- Se aggiungi una nuova azione, documentala con un commento descrittivo.\n"
-    notes += "- Rispetta la formattazione canonica del PDDL: indentazione e struttura chiara.\n"
+    # Costruzione note aggiuntive per LLM
+    notes = "\n\n---\nOBIETTIVO:\n"
+    notes += (
+        "- Correggere i file PDDL affinché siano validi, completi e semanticamente coerenti con la pianificazione classica.\n"
+        "- NON inventare predicati, oggetti o tipi non presenti nei file originali.\n"
+        "- Mantenere la struttura delle azioni esistenti (nomi, parametri, logica) dove possibile.\n"
+        "- Aggiungere un commento con `;` alla fine di ogni riga PDDL per spiegare la funzione della riga.\n"
+        "- Includere tutte le sezioni obbligatorie: :types, :predicates, :objects, :init, :goal.\n"
+        "- Includere solo modifiche minime e mirate per rendere i file validi.\n"
+        "- NON rimuovere i commenti `;` già presenti se corretti.\n"
+        "- Se vengono aggiunte nuove azioni, includere un commento descrittivo.\n"
+        "- Rispettare la formattazione canonica del PDDL: indentazione, ordine e struttura.\n"
+    )
 
-
-    # 🔎 Errori semantici e specifici
+    # Errori rilevati dal validatore
     if isinstance(validation, dict):
         if validation.get("undefined_objects_in_goal"):
-            notes += "\n🔹 Oggetti mancanti nel goal: " + ", ".join(validation["undefined_objects_in_goal"])
+            notes += "\nOggetti mancanti nella sezione :goal:\n- " + "\n- ".join(validation["undefined_objects_in_goal"])
+        if validation.get("undefined_predicates_in_goal"):
+            notes += "\nPredicati non definiti usati nel :goal:\n- " + "\n- ".join(validation["undefined_predicates_in_goal"])
+        if validation.get("undefined_predicates_in_init"):
+            notes += "\nPredicati non definiti usati nell' :init:\n- " + "\n- ".join(validation["undefined_predicates_in_init"])
         if validation.get("semantic_errors"):
-            notes += "\n Errori semantici rilevati:\n" + "\n".join(validation["semantic_errors"])
+            notes += "\nErrori semantici rilevati:\n" + "\n".join(f"- {err}" for err in validation["semantic_errors"])
         if validation.get("missing_sections"):
-            notes += "\n Sezioni mancanti: " + ", ".join(validation["missing_sections"])
+            notes += "\nSezioni PDDL mancanti:\n- " + "\n- ".join(validation["missing_sections"])
         if validation.get("domain_mismatch"):
-            notes += "\n Domain mismatch: " + validation["domain_mismatch"]
+            notes += f"\nIncoerenza nei nomi del dominio: {validation['domain_mismatch']}"
 
-    # 🧠 Lore originale (se disponibile)
+    # Lore originale (se fornita)
     if lore:
         try:
             lore_json = json.dumps(lore, indent=2, ensure_ascii=False)
-            notes += f"\n LORE ORIGINALE:\n{lore_json}"
-        except Exception:
-            pass
+            notes += "\n\n---\nLORE ORIGINALE:\n" + lore_json
+        except Exception as e:
+            logger.warning("Impossibile serializzare il lore: %s", e)
 
-    # 🔧 Errori noti
+    # Errori noti ricorrenti
     if "unhashable type: 'list'" in error_message:
-        notes += "\n Evita liste annidate nella sezione :init."
+        notes += "\n\nNota tecnica: evitare l'uso di liste annidate nella sezione :init."
 
-    # Costruzione prompt finale
+    # Componi il prompt finale
     return template.format(
         domain=domain_text.strip(),
         problem=problem_text.strip(),
         error_message=error_message.strip() + notes,
         validation=json.dumps(validation, indent=2, ensure_ascii=False) if validation else ""
     )
+
 
 
 
