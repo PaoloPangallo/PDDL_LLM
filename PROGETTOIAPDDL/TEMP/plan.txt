@@ -1,3 +1,5 @@
-(carry-and-move hero sword_of_fire village tower)
-(defeat hero ice_dragon tower sword_of_fire)
-; cost = 2 (unit cost)
+(bypass_door_reroute xr_17 security_door control_panel start_loc door_cleared_loc)
+(sprint_through_emi xr_17 emi_zone door_cleared_loc emi_cleared_loc)
+(emp_burst xr_17 patrolling_drone emi_cleared_loc drone_cleared_loc)
+(use_hypercharge xr_17 hypercharge_dock central_charging_station_loc drone_cleared_loc)
+; cost = 4 (unit cost)

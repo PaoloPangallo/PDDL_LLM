@@ -20,9 +20,10 @@ logger = logging.getLogger(__name__)
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 #MODEL = "llama3.2-vision"
 #MODEL = "deepseek-r1:8b"
-MODEL = "deepseek-coder-v2:16b"
+#MODEL = "deepseek-coder-v2:16b"
 #MODEL = "codellama:13b"
 #MODEL = "starcoder:15b"
+MODEL = "devstral:24b"
 
 TAVILY_KEY = "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"
 tavily = TavilyClient(api_key=TAVILY_KEY)
@@ -180,6 +181,16 @@ def extract_section(text: str, section: str) -> Optional[str]:
         if match:
             return match.group("body").strip()
 
+        lisp_pattern = (
+            rf"```[^\n]*\n"                             # apertura fence: ```lang
+            rf"(?P<body>"                              
+                rf"\(define\s*\({section.lower()}\b"  # inizio define (domain|problem)
+                rf"[\s\S]*?"                           # qualsiasi contenuto non-greedy
+            rf")\n```"                                 # chiusura fence
+        )   
+        m = re.search(lisp_pattern, text, flags=re.IGNORECASE)
+        if m:
+            return m.group("body").strip()
     return None
 
 

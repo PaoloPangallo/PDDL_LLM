@@ -1,0 +1,318 @@
+(define (domain dragon-quest)
+    (:requirements :strips :typing)
+    (:types
+    
+        
+        entity
+        
+        agent - entity
+        
+        monster - entity
+        
+        normal_monster - monster
+        
+        boss - monster
+        
+        object - entity
+        
+        weapon - object
+        
+        artifact - object
+        
+        location
+        
+    
+    )
+    (:predicates
+    
+        (at ?x - entity ?l - location)
+    
+        (has ?h - agent ?o - object)
+    
+        (explored ?l - location)
+    
+        (sleeping ?d - monster)
+    
+        (defeated ?m - monster)
+    
+        (connected ?from - location ?to - location)
+    
+        (rested ?h - agent)
+    
+    )
+    
+    (:action move
+        :parameters (
+        
+        ?h - agent
+        
+        ?from - location
+        
+        ?to - location
+        
+        )
+        :precondition (and
+        
+            
+            (at ?h ?from)
+            
+        
+            
+            (connected ?from ?to)
+            
+        
+        
+        )
+        :effect (and
+        
+            (at ?h ?to)
+        
+        
+            (not (at ?h ?from))
+        
+        )
+    )
+    
+    (:action pickup
+        :parameters (
+        
+        ?h - agent
+        
+        ?w - weapon
+        
+        ?l - location
+        
+        )
+        :precondition (and
+        
+            
+            (at ?h ?l)
+            
+        
+            
+            (at ?w ?l)
+            
+        
+        
+        )
+        :effect (and
+        
+            (has ?h ?w)
+        
+        
+            (not (at ?w ?l))
+        
+        )
+    )
+    
+    (:action drop
+        :parameters (
+        
+        ?h - agent
+        
+        ?o - object
+        
+        ?l - location
+        
+        )
+        :precondition (and
+        
+            
+            (at ?h ?l)
+            
+        
+            
+            (has ?h ?o)
+            
+        
+        
+        )
+        :effect (and
+        
+            (at ?o ?l)
+        
+        
+            (not (has ?h ?o))
+        
+        )
+    )
+    
+    (:action explore
+        :parameters (
+        
+        ?h - agent
+        
+        ?l - location
+        
+        )
+        :precondition (and
+        
+            
+            (at ?h ?l)
+            
+        
+            
+            (not (explored ?l))
+            
+        
+        
+        )
+        :effect (and
+        
+            (explored ?l)
+        
+        
+        )
+    )
+    
+    (:action rest
+        :parameters (
+        
+        ?h - agent
+        
+        ?l - location
+        
+        )
+        :precondition (and
+        
+            
+            (at ?h ?l)
+            
+        
+            
+            (not (rested ?h))
+            
+        
+        
+        )
+        :effect (and
+        
+            (rested ?h)
+        
+        
+        )
+    )
+    
+    (:action defeat-monster
+        :parameters (
+        
+        ?h - agent
+        
+        ?m - normal_monster
+        
+        ?l - location
+        
+        ?w - weapon
+        
+        )
+        :precondition (and
+        
+            
+            (at ?h ?l)
+            
+        
+            
+            (at ?m ?l)
+            
+        
+            
+            (has ?h ?w)
+            
+        
+        
+        )
+        :effect (and
+        
+            (defeated ?m)
+        
+        
+        )
+    )
+    
+    (:action loot
+        :parameters (
+        
+        ?h - agent
+        
+        ?m - normal_monster
+        
+        ?o - object
+        
+        ?l - location
+        
+        )
+        :precondition (and
+        
+            
+            (at ?h ?l)
+            
+        
+            
+            (at ?m ?l)
+            
+        
+            
+            (defeated ?m)
+            
+        
+            
+            (at ?o ?l)
+            
+        
+        
+        )
+        :effect (and
+        
+            (has ?h ?o)
+        
+        
+            (not (at ?o ?l))
+        
+        )
+    )
+    
+    (:action defeat-dragon
+        :parameters (
+        
+        ?h - agent
+        
+        ?d - boss
+        
+        ?l - location
+        
+        ?w - weapon
+        
+        ?a - artifact
+        
+        )
+        :precondition (and
+        
+            
+            (at ?h ?l)
+            
+        
+            
+            (at ?d ?l)
+            
+        
+            
+            (has ?h ?w)
+            
+        
+            
+            (has ?h ?a)
+            
+        
+        
+        )
+        :effect (and
+        
+            (defeated ?d)
+        
+        
+            (not (sleeping ?d))
+        
+        )
+    )
+    
+)

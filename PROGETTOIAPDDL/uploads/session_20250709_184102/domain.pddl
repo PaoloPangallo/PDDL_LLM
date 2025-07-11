@@ -1,0 +1,43 @@
+(define (domain hero-journey)
+  (:requirements :strips :typing)
+  (:types agent object monster location explored rested)
+  (:predicates
+    (at ?x - agent ?y - location)
+    (on_ground ?o - object ?l - location)
+    (connected ?a - location ?b - location)
+    (defeated ?m - monster)
+    (sleeping ?m - monster)
+    (explored ?l - location)
+    (rested ?x - agent)
+  )
+  (:action move
+    :parameters (?h - agent ?from - location ?to - location)
+    :precondition (and (at ?h ?from) (connected ?from ?to))
+    :effect (and (not (at ?h ?from)) (at ?h ?to))
+  )
+  (:action carry-and-move
+    :parameters (?h - agent ?o - object ?from - location ?to - location)
+    :precondition (and (at ?h ?from) (on_ground ?o ?from) (connected ?from ?to))
+    :effect (and (not (at ?h ?from)) (at ?h ?to) (not (on_ground ?o ?from)) (on_ground ?o ?to))
+  )
+  (:action explore
+    :parameters (?h - agent ?l - location)
+    :precondition (and (at ?h ?l) (not (explored ?l)))
+    :effect (explored ?l)
+  )
+  (:action rest
+    :parameters (?h - agent ?l - location)
+    :precondition (and (at ?h ?l))
+    :effect (rested ?h)
+  )
+  (:action defeat-monster
+    :parameters (?h - agent ?m - monster ?l - location)
+    :precondition (and (at ?h ?l) (at ?m ?l))
+    :effect (defeated ?m)
+  )
+  (:action defeat-dragon
+    :parameters (?h - agent ?d - monster ?l - location ?s - object)
+    :precondition (and (at ?h ?l) (on_ground ?s ?l) (sleeping ?d) (explored ?l))
+    :effect (and (defeated ?d) (not (sleeping ?d)))
+  )
+)

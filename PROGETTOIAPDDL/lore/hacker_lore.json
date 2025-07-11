@@ -1,0 +1,141 @@
+{
+  "description": "The cyber-hacker must infiltrate Halcyon Corp's neon skyscraper to steal the prototype AI core, but only after either disabling the city's CCTV grid or bribing an insider. After securing the AI core, the hacker must escape through either the rooftop helipad or the underground metro tunnels and deliver it to the safehouse.",
+  "trama": "Under the glow of rain-slicked neon alleys, the hacker starts in their safehouse. First they choose how to breach the fortress: ride to the network hub and hack the CCTV grid, or slip into Glitterbar and bribe an insider for an override code. Only once cameras are down or credentials in hand can they move into the skyscraper and hack the mainframe. Then—and only then—may they extract the AI core. Finally, with the core in hand, they escape via metro or rooftop helipad back to the safehouse and deliver it.",
+  "domain": {
+    "name": "cyber-heist-mission",
+    "types": [
+      "entity",
+      "agent           - entity",
+      "npc             - entity",
+      "security_system - object",
+      "credential      - object",
+      "device          - object",
+      "artifact        - object",
+      "location",
+      "house           - location"
+    ],
+    "predicates": [
+      "(at ?x - entity ?l - location)",
+      "(connected ?from - location ?to - location)",
+      "(hacked ?o - object)",
+      "(has ?h - agent ?o - object)",
+      "(delivered ?o - object)"
+    ],
+    "objects": [
+      { "name": "hacker",         "type": "agent"           },
+      { "name": "insider",        "type": "npc"             },
+      { "name": "cctv_grid",      "type": "security_system" },
+      { "name": "override_code",  "type": "credential"      },
+      { "name": "mainframe",      "type": "device"          },
+      { "name": "ai_core",        "type": "artifact"        },
+      { "name": "safehouse",      "type": "location"        },
+      { "name": "network_hub",    "type": "location"        },
+      { "name": "glitterbar",     "type": "location"        },
+      { "name": "skyscraper",     "type": "location"        },
+      { "name": "rooftop_helipad","type": "location"        },
+      { "name": "metro_tunnel",   "type": "location"        }
+    ],
+    "actions": [
+      {
+        "name": "move",
+        "params": [ "?h - agent", "?from - location", "?to - location" ],
+        "pre": { "and": [ "at ?h ?from", "connected ?from ?to" ] },
+        "eff": { "add": [ "at ?h ?to" ], "del": [ "at ?h ?from" ] }
+      },
+      {
+        "name": "hack-cctv",
+        "params": [ "?h - agent", "?g - security_system", "?l - location" ],
+        "pre": { "and": [ "at ?h ?l", "at ?g ?l" ] },
+        "eff": { "add": [ "hacked ?g" ] }
+      },
+      {
+        "name": "bribe-insider",
+        "params": [ "?h - agent", "?i - npc", "?c - credential", "?l - location" ],
+        "pre": { "and": [ "at ?h ?l", "at ?i ?l", "at ?c ?l" ] },
+        "eff": { "add": [ "has ?h ?c" ], "del": [ "at ?c ?l" ] }
+      },
+      {
+        "name": "hack-mainframe-via-cctv",
+        "params": [ "?h - agent", "?m - device", "?l - location", "?g - security_system"],
+        "pre": { "and": [ "at ?h ?l", "at ?m ?l", "hacked ?g" ] },
+        "eff": { "add": [ "hacked ?m"] }
+      },
+      {
+        "name": "hack-mainframe-via-override",
+        "params": [ "?h - agent", "?m - device", "?l - location", "?c - credential"],
+        "pre": { "and": [ "at ?h ?l", "at ?m ?l", "has ?h ?c"] },
+        "eff": { "add": [ "hacked ?m"] }
+      },
+      {
+        "name": "transfer-ai", 
+        "params": [ "?h - agent", "?o - artifact", "?l - location", "?m - device"],
+        "pre": { "and": [ "at ?h ?l", "at ?o ?l", "hacked ?m" ] },
+        "eff": { "add": [ "has ?h ?o" ], "del": [ "at ?o ?l" ] }
+      },
+      {
+        "name": "escape-rooftop",
+        "params": [ "?h - agent", "?from - location", "?to - location", "?o - artifact"],
+        "pre": { "and": [ "at ?h ?from", "connected ?from ?to", "has ?h ?o" ] },
+        "eff": { "add": [ "at ?h ?to" ], "del": [ "at ?h ?from" ] }
+      },
+      {
+        "name": "escape-metro",
+        "params": [ "?h - agent", "?from - location", "?to - location", "?o - artifact"],
+        "pre": { "and": [ "at ?h ?from", "connected ?from ?to", "has ?h ?o" ] },
+        "eff": { "add": [ "at ?h ?to" ], "del": [ "at ?h ?from" ] }
+      },
+      {
+        "name": "deliver-ai",
+        "params": [ "?h - agent", "?o - artifact", "?c - house"],
+        "pre": { "and": [ "at ?h ?c", "has ?h ?o" ] },
+        "eff": { "add": [ "delivered ?o" ] }
+      }
+    ]
+  },
+  "problem": {
+    "name": "cyber-heist-problem",
+    "domain": "cyber-heist-mission",
+    "objects": [
+      "hacker           - agent",
+      "insider          - npc",
+      "cctv_grid        - security_system",
+      "override_code    - credential",
+      "mainframe        - device",
+      "ai_core          - artifact",
+      "safehouse        - house",
+      "network_hub      - location",
+      "glitterbar       - location",
+      "skyscraper       - location",
+      "rooftop_helipad  - location",
+      "metro_tunnel     - location"
+    ],
+    "init": [
+      "at hacker safehouse",
+      "at cctv_grid network_hub",
+      "at insider glitterbar",
+      "at override_code glitterbar",
+      "at mainframe skyscraper",
+      "at ai_core skyscraper",
+      "connected safehouse network_hub",
+      "connected safehouse glitterbar",
+      "connected network_hub skyscraper",
+      "connected skyscraper network_hub",
+      "connected glitterbar skyscraper",
+      "connected skyscraper glitterbar",
+      "connected skyscraper rooftop_helipad",
+      "connected rooftop_helipad skyscraper",
+      "connected skyscraper metro_tunnel",
+      "connected metro_tunnel skyscraper",
+      "connected metro_tunnel safehouse",
+      "connected rooftop_helipad safehouse"
+    ],
+    "goal": [
+      "at hacker safehouse",
+      "delivered ai_core"
+    ]
+  },
+  "branching": {
+    "min": 1,
+    "max": 2
+  }
+}

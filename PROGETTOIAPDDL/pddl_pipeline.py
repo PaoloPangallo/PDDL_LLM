@@ -1,11 +1,13 @@
 import os
 import json
 import logging
-from typing import TypedDict, Optional
-from jinja2 import Template
+import re
+from typing import TypedDict, Optional, Any, Dict, List, Mapping, Tuple, Set
+from jinja2 import Template, Environment
+from types import SimpleNamespace
 
 from langgraph.graph import StateGraph
-from game.generator import build_prompt_from_lore, build_prompt_from_lore4
+from game.generator import build_prompt_from_lore, build_prompt_from_lore2
 from game.utils import ask_ollama, extract_between, save_text_file, load_few_shot_examples
 from game.validator import validate_pddl
 from agent.reflection_agent import refine_pddl
@@ -59,17 +61,19 @@ def node_build_prompt(state: PDDLState) -> PDDLState:
 
     logger.info("🧾 Lore ricevuta:\n %s", json.dumps(lore or {}, indent=2))
 
-    logger.info("✅ Lore pronta all’uso.\n")
+    logger.info("✅ Lore pronta all'uso.\n")
 
     few_shot_examples = load_few_shot_examples("examples", max_examples=3)
-    prompt, *_ = build_prompt_from_lore4(lore, few_shot_examples)
+    prompt, *_ = build_prompt_from_lore2(lore, few_shot_examples)
 
     # print("\n")
     # logger.debug("BuildPrompt — prompt generato:\n%s\n", prompt)
     # print("\n")
 
     state["prompt"] = prompt
-    logger.debug(f"📄 Prompt generato (inizio):\n{prompt[:700]}...\n\n")
+    state.setdefault("attempt", 0)
+
+    logger.debug("📄 Prompt generato (primi 700 caratteri):\n%s...\n\n", prompt[:700])
     return state
 
 
@@ -186,7 +190,8 @@ def node_validate(state: PDDLState) -> dict:
 def node_refine(state: PDDLState) -> dict:
     """Raffina i file PDDL in base agli errori emersi."""
     try:
-        logger.debug("Refine — avvio con error_message: %s\n", state.get("error_message"))
+        attempt = state.get("attempt", 0)
+        logger.debug("Refine — Tentaivo %d — Avvio con error_message: %s\n", attempt + 1, state.get("error_message"))
         errorMessage: str = state.get("error_message") or ""
 
         refined = refine_pddl(
@@ -222,7 +227,7 @@ def node_refine(state: PDDLState) -> dict:
             "domain": domain,
             "problem": problem,
             "error_message": None,
-            "attempt": attempt
+            "attempt": attempt+1
         }
     except Exception as err:
         msg = f"Errore nel raffinamento: {err}"
@@ -258,182 +263,107 @@ def node_generate_plan(state: PDDLState) -> dict:
         logger.debug(result["log"])
         return {"plan": None, "plan_log": result["log"], 
                 "error_message": "Nessun piano trovato: goal irraggiungibile o dominio mal modellato."}
-    
 
-
-DOMAIN_TEMPLATE = Template(r"""
-(define (domain {{ domain_name }})
-  (:requirements :strips :typing){% if types %}
-  (:types {{ types|join(" ") }}){% endif %}{% if predicates %}
-  (:predicates
-  {%- for p in predicates %}
-    {{ p }}
-  {%- endfor %}
-  ){% endif %}
-{%- for act in actions %}
-  (:action {{ act.name }}
-    :parameters ({% for param in act.parameters %}?{{param.name}} - {{param.type}}{% if not loop.last %} {% endif %}{% endfor %})
-    :precondition (and{% for pre in act.precondition %} {{ pre }}{% endfor %})
-    :effect       (and{% for eff in act.effect       %} {{ eff }}{% endfor %})
-  )
-{%- endfor %}
+domain_template_str = r"""
+(define (domain {{ domain.name }})
+    (:requirements :strips :typing{% if domain.actions | selectattr('pre.or') | list %} :adl{% endif %})
+    (:types
+    {% if domain.types %}
+        {% for t in domain.types %}
+        {{ t }}
+        {% endfor %}
+    {% else %}
+        {% for t in domain.objects | map(attribute='type') | unique %}
+        {{ t }}
+        {% endfor %}
+    {% endif %}
+    )
+    (:predicates
+    {% for p in domain.predicates %}
+        {{ p }}
+    {% endfor %}
+    )
+    {% for action in domain.actions %}
+    (:action {{ action.name }}
+        :parameters (
+        {% for p in action.params %}
+        {{ p }}
+        {% endfor %}
+        )
+        :precondition (and
+        {% for lit in action.pre.and %}
+            {% if lit.startswith('not ') %}
+            (not ({{ lit[4:] }}))
+            {% else %}
+            ({{ lit }})
+            {% endif %}
+        {% endfor %}
+        {% if action.pre.or %}
+        (or
+            {% for lit in action.pre.or %}
+                {% if lit.startswith('not ') %}
+                (not ({{ lit[4:] }}))
+                {% else %}
+                ({{ lit }})
+                {% endif %}
+            {% endfor %}
+        )
+        {% endif %}
+        )
+        :effect (and
+        {% for a in action.eff.add %}
+            ({{ a }})
+        {% endfor %}
+        {% for d in action.eff.del %}
+            (not ({{ d }}))
+        {% endfor %}
+        )
+    )
+    {% endfor %}
 )
-""".strip())
+""".strip()
 
-PROBLEM_TEMPLATE = Template(r"""
-(define (problem {{ problem_name }})
-  (:domain {{ domain_name }})
-  (:objects
-  {%- for typ, objs in objects_by_type.items() %}
-    {{ objs|join(" ") }} - {{ typ }}
-  {%- endfor %}
-  )
-  (:init
-  {%- for fact in init %}
-    {{ fact }}
-  {%- endfor %}
-  )
-  (:goal (and{% for g in goal %} {{ g }}{% endfor %}))
+problem_template_str = r"""
+(define (problem {{ problem.name }})
+    (:domain {{ problem.domain }})
+    (:objects
+        {% for obj in problem.objects %}
+        {{ obj }}
+        {% endfor %}
+    )
+    (:init
+        {% for fact in problem.init %}
+        ({{ fact }})
+        {% endfor %}
+    )
+    (:goal (and
+        {% for g in problem.goal %}
+        ({{ g }})
+        {% endfor %}
+    ))
 )
-""".strip())
+""".strip()
 
-def node_template_fallback(state: PDDLState) -> dict:
-    lore = state["lore"]
-    domain_name  = lore.get("domain_name", "my-domain")
-    problem_name = lore.get("problem_name", "my-problem")
-    constants    = lore.get("constants", [])
-    objects      = lore.get("objects", [])
-    init         = lore.get("init", [])
-    goal         = lore.get("goal", [])
-    actions      = lore.get("actions", [])
+def node_template_fallback(state: Mapping[str, Any]) -> Dict[str, Any]:
+    lore   = state["lore"]
+    domain = lore["domain"]
+    problem= lore["problem"]
 
-    # 1) constant → tipo
-    const_type = {
-        c.split(" - ")[0].strip(): c.split(" - ")[1].strip()
-        for c in constants
-    }
+    env = Environment(trim_blocks=True, lstrip_blocks=True)
+    DOMAIN_T  = env.from_string(domain_template_str)
+    PROBLEM_T = env.from_string(problem_template_str)
 
-    # 1b) var_type_map: tutti i ?variabili già dichiarati in TUTTE le azioni
-    var_type_map = {}
-    for act in actions:
-        for p in act["parameters"]:
-            name, typ = [x.strip() for x in p.lstrip("?").split(" - ")]
-            var_type_map[name] = typ
-
-    # 2) processa azioni e parameterizza concreti e variabili mancanti
-    processed = []
-    for act in actions:
-        # parametri iniziali
-        params = []
-        for p in act["parameters"]:
-            v, t = [x.strip() for x in p.lstrip("?").split(" - ")]
-            params.append({"name": v, "type": t})
-
-        preconds = list(act["precondition"])
-        effects  = list(act["effect"])
-        for lst in (preconds, effects):
-            for i, lit in enumerate(lst):
-                toks = lit.strip("()").split()
-                for tok in toks[1:]:
-                    if tok.startswith("?"):
-                        var = tok.lstrip("?")
-                        # se var non è già dichiarata e la conosciamo da var_type_map:
-                        if var not in [p["name"] for p in params] and var in var_type_map:
-                            params.append({"name": var, "type": var_type_map[var]})
-                            lit = lit.replace(f" {tok}", f" {tok}")
-                    else:
-                        # concreti come sword_of_fire
-                        if tok in const_type:
-                            var = tok
-                            if var not in [p["name"] for p in params]:
-                                params.append({"name": var, "type": const_type[var]})
-                            lit = lit.replace(f" {tok}", f" ?{tok}")
-                lst[i] = lit
-
-        processed.append({
-            "name":         act["name"],
-            "parameters":   params,
-            "precondition": preconds,
-            "effect":       effects
-        })
-
-    # 3) raccogli i predicati unici
-    pred_map = {}
-    def collect(lits):
-        for lit in lits:
-            parts = lit.strip("()").split()
-            pred = parts[0]
-            if pred in ("and", "not", "or", "="): continue
-            args = parts[1:]
-            arg_list = []
-            for a in args:
-                var = a.lstrip("?")
-                typ = None
-                # cerca tipo fra i params elaborati
-                for act in processed:
-                    for p in act["parameters"]:
-                        if p["name"] == var:
-                            typ = p["type"]
-                # fallback su const_type
-                if typ is None and var in const_type:
-                    typ = const_type[var]
-                if typ is None:
-                    typ = "object"
-                arg_list.append((var, typ))
-            pred_map[pred] = arg_list
-
-    collect(init)
-    collect(goal)
-    for act in processed:
-        collect(act["precondition"])
-        collect(act["effect"])
-
-    predicates = [
-        f"({name} {' '.join(f'?{v} - {t}' for v,t in args)})"
-        for name, args in pred_map.items()
-    ]
-
-    # 4) tipi unici
-    types_set = set()
-    for p in processed:
-        for pr in p["parameters"]:
-            types_set.add(pr["type"])
-    for _, args in pred_map.items():
-        for _, t in args:
-            types_set.add(t)
-    types = sorted(types_set)
-
-    # 5) oggetti per PROBLEM
-    objects_by_type = {}
-    for entry in objects + constants:
-        n, typ = [x.strip() for x in entry.split(" - ")]
-        objects_by_type.setdefault(typ, []).append(n)
-    for typ in objects_by_type:
-        objects_by_type[typ] = sorted(set(objects_by_type[typ]))
-
-    # 6) render
-    domain = DOMAIN_TEMPLATE.render(
-        domain_name=domain_name,
-        types=types,
-        predicates=predicates,
-        actions=processed
-    ).strip()
-    problem = PROBLEM_TEMPLATE.render(
-        problem_name=problem_name,
-        domain_name=domain_name,
-        objects_by_type=objects_by_type,
-        init=init,
-        goal=goal
-    ).strip()
+    # Se ho già types e predicates in domain, salto la generazione dinamica
+    dom_pddl = DOMAIN_T.render(domain=domain)
+    prob_pddl= PROBLEM_T.render(problem=problem)
 
     print("\n")
-    print("Template Domain:\n", domain)
+    print("Domain Template:\n", dom_pddl)
     print("\n")
-    print("Template Problem:\n", problem)
+    print("Problem Template:\n", prob_pddl)
     print("\n")
 
-    return {"domain": domain, "problem": problem, "error_message": None}
-
+    return {"domain": dom_pddl, "problem": prob_pddl, "error_message": None}
 
 def node_human_review_initial(state: PDDLState) -> PDDLState:
     domain, problem = state["domain"], state["problem"]
@@ -457,11 +387,8 @@ def end_node(state: PDDLState) -> PDDLState:
     return state
 
 
-
-MAX_ATTEMPTS = 3  # Numero massimo di tentativi
-
 # Aggiungiamo un contatore allo stato per il numero di tentativi
-PDDLState.__annotations__["attempt"] = int
+#PDDLState.__annotations__["attempt"] = int
 # ---------------------
 # Costruzione del grafo LangGraph
 # ---------------------
@@ -548,7 +475,7 @@ PDDLState.__annotations__["attempt"] = int
 # ---------------------
 # Costruzione del grafo LangGraph
 # ---------------------
-MAX_REFINE = 3
+MAX_REFINE = 0
 
 workflow = StateGraph(PDDLState)
 workflow.add_node("BuildPrompt",      node_build_prompt)
@@ -563,15 +490,20 @@ workflow.set_entry_point("BuildPrompt")
 workflow.add_edge("BuildPrompt",  "GeneratePDDL")
 
 # Se GeneratePDDL non estrae domain/problem → TemplateFallback
+# workflow.add_conditional_edges(
+#     "GeneratePDDL",
+#     path=lambda s: "TemplateFallback" if (s.get("domain") == "" or s.get("problem") == "") else "Validate"
+# )
+
 workflow.add_conditional_edges(
     "GeneratePDDL",
-    path=lambda s: "TemplateFallback" if (s.get("domain") is "" or s.get("problem") is "") else "Validate"
+    path=lambda s: "TemplateFallback" if (not s.get("domain") or not s.get("problem")) else "Validate"
 )
 
 # Se Refine non estrae domain/problem → TemplateFallback
 workflow.add_conditional_edges(
     "Refine",
-    path=lambda s: "TemplateFallback" if (s.get("domain") is "" or s.get("problem") is "") else "Validate"
+    path=lambda s: "TemplateFallback" if (s.get("domain") == "" or s.get("problem") == "") else "Validate"
 )
 
 # Logica di Validate:

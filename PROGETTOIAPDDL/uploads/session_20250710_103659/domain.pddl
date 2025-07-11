@@ -1,0 +1,43 @@
+(define (domain dragon-quest)
+  (:requirements :strips :typing)
+  (:types agent location monster object)
+  (:predicates
+    (at ?arg1 - agent ?arg2 - location)
+    (connected ?arg1 - location ?arg2 - location)
+    (has ?arg1 - agent ?arg2 - object)
+    (explored ?arg1 - location)
+    (rested ?arg1 - agent)
+    (sleeping ?arg1 - monster)
+    (defeated ?arg1 - monster)
+  )
+  (:action move
+    :parameters (?h - agent ?from - location ?to - location)
+    :precondition (and (at ?h ?from) (connected ?from ?to))
+    :effect (and (at ?h ?to) (not (at ?h ?from)))
+  )
+  (:action explore
+    :parameters (?h - agent ?l - location)
+    :precondition (and (at ?h ?l) (not (explored ?l)))
+    :effect (explored ?l)
+  )
+  (:action rest
+    :parameters (?h - agent ?l - location)
+    :precondition (at ?h ?l)
+    :effect (rested ?h)
+  )
+  (:action defeat-monster
+    :parameters (?h - agent ?m - monster ?l - location)
+    :precondition (and (at ?h ?l) (at ?m ?l))
+    :effect (defeated ?m)
+  )
+  (:action pickup
+    :parameters (?h - agent ?o - object ?l - location)
+    :precondition (and (at ?h ?l) (at ?o ?l))
+    :effect (and (has ?h ?o) (not (at ?o ?l)))
+  )
+  (:action defeat-dragon
+    :parameters (?h - agent ?d - monster ?l - location ?a - object)
+    :precondition (and (at ?h ?l) (has ?h ?a) (explored ?l))
+    :effect (and (defeated ?d) (not (sleeping ?d)))
+  )
+)

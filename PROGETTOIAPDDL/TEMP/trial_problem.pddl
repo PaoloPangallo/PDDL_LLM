@@ -1,18 +1,16 @@
-(define (problem pc-assembly-prob)
-  (:domain pc-assembly)
+(define (problem hero-journey-problem)
+  (:domain hero-journey)
   (:objects
-    tech   - agent
-    cpu ram disk  - component
-    workbench office  - location
+    hero - agent
   )
   (:init
-    (at tech office)
-    ; inizialmente non ha componenti
+    (at            hero village)
+    (on_ground     sword_of_fire village)
+    (sleeping      ice_dragon)
   )
   (:goal (and
-    (mounted cpu)
-    (mounted ram)
-    (mounted disk)
-    (at tech workbench)
+    (at            hero tower)
+    (on_ground     sword_of_fire tower)
+    (defeated      ice_dragon)
   ))
 )
