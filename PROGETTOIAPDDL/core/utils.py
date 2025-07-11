@@ -29,9 +29,12 @@ if not logger.hasHandlers():
 # Configurazione LLM
 # ----------------------------
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
+MODEL = "llama3:8b-instruct-q5_K_M"
+
 #MODEL = "llama3:8b-instruct-q5_K_M"
 #MODEL = "devstral:24b"
 MODEL = "deepseek-coder-v2:16b"
+
 
 # ----------------------------
 # Funzioni principali

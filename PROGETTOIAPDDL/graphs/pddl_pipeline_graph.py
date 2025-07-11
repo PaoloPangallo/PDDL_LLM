@@ -8,10 +8,6 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from langchain_core.messages import BaseMessage
 
 
-
-
-
-
 from typing import Annotated
 
 from langgraph.graph.message import add_messages
@@ -98,7 +94,8 @@ def node_chat_feedback(state: PipelineState) -> PipelineState:
         logger.warning("⏸️ Nessun HumanMessage trovato. Attesa feedback.")
         return {**state, "status": "awaiting_feedback"}
 
-    last_msg = user_msgs[-1].content.strip()
+    last_msg_content = user_msgs[-1].content #prova a vedere
+    last_msg = str(last_msg_content).strip()
     logger.info(f"✍️ Feedback umano ricevuto: {last_msg}")
 
     if is_positive_feedback(last_msg):
@@ -195,7 +192,7 @@ def node_build_prompt(state: PipelineState) -> PipelineState:
 
     # costruiamo il prompt come prima
     examples_raw = retrieve_similar_examples_from_db(state["lore"], k=1)
-    examples = [e for e in examples_raw if isinstance(e, str)]
+    examples = [str(e) for e in examples_raw if isinstance(e, str)]
     prompt, _ = build_prompt_from_lore(state["lore"], examples=examples)
 
     return {
@@ -212,7 +209,8 @@ def node_generate_pddl(state: PipelineState) -> PipelineState:
         return {**state, "status": "failed", "error_message": "Skipped generate (bad status)"}
 
     try:
-        response = ask_ollama(state["prompt"])
+        prompt = state["prompt"] or ""
+        response = ask_ollama(prompt)
         tmp_dir = state["tmp_dir"]
 
         raw_path = os.path.join(tmp_dir, "raw_response.txt")
@@ -257,31 +255,43 @@ def node_generate_pddl(state: PipelineState) -> PipelineState:
         }
 
 def node_validate(state: PipelineState) -> PipelineState:
-    logger.debug("📦 Stato ricevuto da GeneratePDDL:")
+    logger.debug("📦 [Validate] Stato ricevuto:")
+    
     if state.get("status") != "ok":
         return {**state, "status": "failed", "error_message": "Skipped validate"}
 
     try:
-        validation = validate_pddl(state["domain"], state["problem"], state["lore"])
+        # 🔁 Usa i refined se presenti
+        domain = state.get("refined_domain") or state.get("domain") or ""
+        problem = state.get("refined_problem") or state.get("problem") or ""
+
+        source = "refined" if state.get("refined_domain") else "original"
+        logger.info(f"🔍 Validazione su file: {source}")
+
+        validation = validate_pddl(domain, problem, state["lore"])
         valid_syntax = validation.get("valid_syntax", False)
-        sem_err = validation.get("semantic_errors", [])
-        status = "ok" if valid_syntax and not sem_err else "failed"
+        semantic_errors = validation.get("semantic_errors", [])
+        status = "ok" if valid_syntax and not semantic_errors else "failed"
         err_msg = None if status == "ok" else "Validation errors"
 
         logger.debug("📋 [Validate] %s", json.dumps(validation, indent=2))
+        all_validations = state.get("all_validations", [])
         return {
             **state,
             "validation": validation,
+            "all_validations": all_validations + [validation], # type: ignore
             "status": status,
-            "error_message": err_msg
+            "error_message": err_msg,
         }
+
     except Exception as e:
-        logger.error("❌ [Validate] %s", e, exc_info=True)
+        logger.error("❌ [Validate] Errore: %s", e, exc_info=True)
         return {
             **state,
             "status": "failed",
             "error_message": str(e)
         }
+
 
 def node_refine(state: PipelineState) -> PipelineState:
     if state.get("status") != "failed":
@@ -330,7 +340,7 @@ def node_refine(state: PipelineState) -> PipelineState:
     "thread_id": state["thread_id"],
 }
 
-
+### ciao
 
 def end_node(state: PipelineState) -> PipelineState:
     logger.debug("✅ [End] state finale: %s", state)
@@ -350,34 +360,30 @@ def end_node(state: PipelineState) -> PipelineState:
 # ============================
 
 def validate_branching_logic(state: PipelineState) -> dict[str, Any]:
+    # Se è già OK → End
     if state.get("status") == "ok":
-        logger.info("✅ Validazione OK → fine")
         return {"next": "End", "state": state}
 
-    # 🛡️ Gestione robusta di refine_attempts
+    # Normalizziamo refine_attempts
     try:
-        refine_attempts = int(state.get("refine_attempts", 0))
-        if refine_attempts < 0 or refine_attempts > 100:
-            logger.warning(f"⚠️ refine_attempts invalido: {refine_attempts}, azzero a 0")
-            refine_attempts = 0
-    except (ValueError, TypeError):
-        logger.warning(f"⚠️ refine_attempts non interpretabile, azzero a 0")
-        refine_attempts = 0
+        ra = int(state.get("refine_attempts", 0))
+    except:
+        ra = 0
+    ra = max(0, min(ra, 100))
+    state["refine_attempts"] = ra
 
-    # Aggiorna lo stato con il valore corretto
-    state["refine_attempts"] = refine_attempts
-
-    if refine_attempts == 0:
+    # Se non abbiamo ancora fatto due refine automatici → Refine
+    if ra < 2:
         return {
-        "next": "Refine",
-        "state": { **state, "status": "start_refine", "thread_id": state["thread_id"] }
-    }
-    else:
-        return {
-            "next": "ChatFeedback",
-            "state": { **state, "status": "awaiting_feedback", "thread_id": state["thread_id"] }
-    }
+            "next": "Refine",
+            "state": { **state, "status": "start_refine" }
+        }
 
+    # Altrimenti (2 o più refine già tentati) → ChatFeedback
+    return {
+        "next": "ChatFeedback",
+        "state": { **state, "status": "awaiting_feedback" }
+    }
 
 
 
@@ -425,8 +431,10 @@ def build_pipeline(checkpointer=None):
     builder.add_conditional_edges("Validate", path=validate_branching_logic)
 
     # Refine → IncrementRefineAttempts → ChatFeedback
+    # Refine → IncrementRefineAttempts → Validate (ripeti validazione sui PDDL raffinati)
     builder.add_edge("Refine", "IncrementRefineAttempts")
-    builder.add_edge("IncrementRefineAttempts", "ChatFeedback")
+    builder.add_edge("IncrementRefineAttempts", "Validate")
+
 
     # ChatFeedback → End o Refine (in base a should_continue_after_refine)
     builder.add_edge("ChatFeedback", "End")

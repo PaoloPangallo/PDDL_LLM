@@ -41,70 +41,119 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function attachPipelineListeners(source) {
-    source.addEventListener("BuildPrompt", e => {
-      const { prompt } = JSON.parse(e.data);
-      console.debug("[BuildPrompt]", prompt);
-      promptEl.textContent = prompt;
-      append("📝 Prompt generato", "bot");
-    });
+  const allValidations = [];
+  const allRefines = [];
 
-    source.addEventListener("Generate", e => {
-      const { domain, problem } = JSON.parse(e.data);
-      console.debug("[Generate]", domain, problem);
-      rawEl.textContent = `=== DOMAIN ===\n${domain}\n\n=== PROBLEM ===\n${problem}`;
-      append("🧠 Generazione completata", "bot");
-    });
+  source.addEventListener("BuildPrompt", e => {
+    const { prompt } = JSON.parse(e.data);
+    promptEl.textContent = prompt;
+    append("📝 Prompt generato", "bot");
+  });
 
-    source.addEventListener("Validate", e => {
-      const { validation } = JSON.parse(e.data);
-      console.debug("[Validate]", validation);
-      valEl.textContent = JSON.stringify(validation, null, 2);
-      append("✅ Validazione completata", "bot");
-    });
+  source.addEventListener("Generate", e => {
+    const { domain, problem } = JSON.parse(e.data);
+    rawEl.textContent = `=== DOMAIN ===\n${domain}\n\n=== PROBLEM ===\n${problem}`;
+    append("🧠 Generazione completata", "bot");
+  });
 
-    source.addEventListener("Refine", e => {
-      const { refined_domain, refined_problem } = JSON.parse(e.data);
-      console.debug("[Refine]", refined_domain, refined_problem);
-      refineEl.textContent = 
-        `=== DOMAIN REFINED ===\n${refined_domain}\n\n=== PROBLEM REFINED ===\n${refined_problem}`;
-      append("🔧 Raffinamento completato", "bot");
-    });
+  source.addEventListener("Validate", e => {
+    const { validation } = JSON.parse(e.data);
+    allValidations.push(validation);
+    valEl.textContent = JSON.stringify(validation, null, 2);
+    append(`📋 Validazione #${allValidations.length} completata`, "bot");
+    renderValidationTimeline(allValidations);
+  });
 
-    source.addEventListener("messages", e => {
-      const msgs = JSON.parse(e.data);
-      console.debug("[messages]", msgs);
-      if (Array.isArray(msgs)) {
-        msgs.forEach(m => {
-          if (m.type === "ai" && m.content) {
-            append(m.content, "bot");
-          }
-        });
-      }
-    });
+  source.addEventListener("Refine", e => {
+    const { refined_domain, refined_problem } = JSON.parse(e.data);
+    allRefines.push({ domain: refined_domain, problem: refined_problem });
+    refineEl.textContent = 
+      `=== DOMAIN REFINED ===\n${refined_domain}\n\n=== PROBLEM REFINED ===\n${refined_problem}`;
+    append(`🔧 Refine #${allRefines.length} completato`, "bot");
+    renderRefineTimeline(allRefines);
+  });
 
-    source.addEventListener("status", e => {
-      const status = e.data;
-      console.debug("[status]", status);
-      if (status === "awaiting_feedback") {
-        append("🙋 La pipeline è in attesa di un tuo feedback.", "system");
-        form.classList.remove("d-none");
-        source.close();
-      }
-    });
+  source.addEventListener("messages", e => {
+    const msgs = JSON.parse(e.data);
+    if (Array.isArray(msgs)) {
+      msgs.forEach(m => {
+        if (m.type === "ai" && m.content) {
+          append(m.content, "bot");
+        }
+      });
+    }
+  });
 
-    source.addEventListener("done", () => {
-      console.debug("[DONE]");
-      append("🏁 Pipeline terminata. Ora puoi inviare un feedback.", "system");
+
+  function renderValidationTimeline(validations) {
+  const container = document.getElementById("validation-timeline");
+  container.innerHTML = "";
+  validations.forEach((val, idx) => {
+    const item = document.createElement("div");
+    item.className = "accordion-item";
+    item.innerHTML = `
+      <h2 class="accordion-header" id="valHead${idx}">
+        <button class="accordion-button ${idx > 0 ? 'collapsed' : ''}" type="button"
+                data-bs-toggle="collapse" data-bs-target="#valCollapse${idx}"
+                aria-expanded="${idx === 0}" aria-controls="valCollapse${idx}">
+          🔍 Validation #${idx + 1}
+        </button>
+      </h2>
+      <div id="valCollapse${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}"
+           aria-labelledby="valHead${idx}">
+        <div class="accordion-body">
+          <pre>${JSON.stringify(val, null, 2)}</pre>
+        </div>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function renderRefineTimeline(refines) {
+  const container = document.getElementById("refine-timeline");
+  container.innerHTML = "";
+  refines.forEach((r, idx) => {
+    const col = document.createElement("div");
+    col.className = "col";
+    col.innerHTML = `
+      <div class="card shadow-sm">
+        <div class="card-header">Refine #${idx + 1}</div>
+        <div class="card-body">
+          <h6 class="text-muted">domain.pddl</h6>
+          <pre class="small bg-light p-2 border rounded">${r.domain}</pre>
+          <h6 class="text-muted mt-3">problem.pddl</h6>
+          <pre class="small bg-light p-2 border rounded">${r.problem}</pre>
+        </div>
+      </div>
+    `;
+    container.appendChild(col);
+  });
+}
+
+
+  source.addEventListener("status", e => {
+    const status = e.data;
+    if (status === "awaiting_feedback") {
+      append("🙋 La pipeline è in attesa di un tuo feedback.", "system");
       form.classList.remove("d-none");
       source.close();
-    });
+    }
+  });
 
-    source.onerror = err => {
-      console.error("❌ SSE ERROR", err);
-      append("❌ Errore nello streaming", "bot");
-      source.close();
-    };
-  }
+  source.addEventListener("done", () => {
+    append("🏁 Pipeline terminata. Ora puoi inviare un feedback.", "system");
+    form.classList.remove("d-none");
+    source.close();
+  });
+
+  source.onerror = err => {
+    console.error("❌ SSE ERROR", err);
+    append("❌ Errore nello streaming", "bot");
+    source.close();
+  };
+}
+
 
 function startStreaming() {
   const lore = loreSelect.value;

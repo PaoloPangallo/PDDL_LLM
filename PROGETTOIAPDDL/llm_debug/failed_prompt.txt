@@ -1,0 +1,176 @@
+You are an expert in classical planning and PDDL modeling.
+
+You are given two potentially invalid PDDL files: a domain and a problem file.  
+They may contain missing types, objects, predicates, malformed :init/:goal sections, or domain mismatches.  
+You are also provided with a validation report and a specific error message.
+
+Your task is to revise both files to ensure the following:
+
+--- REQUIREMENTS ---
+- Valid PDDL syntax, section headers, and structure.
+- All referenced types, objects, and predicates must be declared appropriately.
+- The domain must define all types, predicates, and actions used in the problem.
+- The problem must contain a complete and correct :objects, :init, and :goal section.
+- The :init and :goal must reflect the facts and objectives described in the lore.
+- Do NOT invent new entities, objects, types, or predicates. Use only what is declared in the original lore or files.
+- Each line of PDDL must include a short comment (starting with `;`) explaining its purpose.
+- Preserve as much of the original structure, names, and logic as possible. Only modify what is necessary to fix the errors.
+- Use consistent indentation and formatting throughout the files.
+
+--- COMMON MISTAKES TO FIX ---
+- Missing required sections like :types, :predicates, :objects, :init, or :goal.
+- Predicates or objects used in :goal or :init that are not declared in the domain or problem.
+- Domain and problem mismatch (different domain names).
+- Use of hardcoded constants (e.g., sword_of_fire) instead of parameterized variables.
+- Improper use of types or invalid parentheses structure.
+
+---
+
+Return only the corrected PDDL files using the exact delimiters below:
+
+=== DOMAIN START ===
+<corrected domain.pddl>
+=== DOMAIN END ===
+
+=== PROBLEM START ===
+<corrected problem.pddl>
+=== PROBLEM END ===
+
+---
+
+### Validation Report:
+{
+  "valid_syntax": false,
+  "missing_sections": [],
+  "undefined_predicates_in_goal": [
+    "carrying",
+    "defeated"
+  ],
+  "undefined_predicates_in_init": [
+    "on-ground",
+    "sleeping"
+  ],
+  "undefined_objects_in_goal": [],
+  "mismatched_lore_entities": [],
+  "domain_mismatch": null,
+  "semantic_errors": [
+    "⚠️ Object 'agent' appears directly in the domain. Use typed parameters instead.",
+    "⚠️ Object 'location' appears directly in the domain. Use typed parameters instead.",
+    "⚠️ Object 'object' appears directly in the domain. Use typed parameters instead.",
+    "⚠️ Object 'monster' appears directly in the domain. Use typed parameters instead.",
+    "⚠️ Object 'location' appears directly in the domain. Use typed parameters instead."
+  ]
+}
+
+---
+
+### Error message:
+Skipped validate
+
+---
+OBIETTIVO:
+- Correggere i file PDDL affinché siano validi, completi e semanticamente coerenti con la pianificazione classica.
+- NON inventare predicati, oggetti o tipi non presenti nei file originali.
+- Mantenere la struttura delle azioni esistenti (nomi, parametri, logica) dove possibile.
+- Aggiungere un commento con ; alla fine di ogni riga PDDL per spiegare la funzione della riga.
+- Includere tutte le sezioni obbligatorie: :types, :predicates, :objects, :init, :goal.
+- Includere solo modifiche minime e mirate per rendere i file validi.
+- NON rimuovere i commenti ; già presenti se corretti.
+- Se vengono aggiunte nuove azioni, includere un commento descrittivo.
+- Rispettare la formattazione canonica del PDDL: indentazione, ordine e struttura.
+
+Predicati non definiti usati nel :goal:
+- carrying
+- defeated
+Predicati non definiti usati nell' :init:
+- on-ground
+- sleeping
+Errori semantici rilevati:
+- ⚠️ Object 'agent' appears directly in the domain. Use typed parameters instead.
+- ⚠️ Object 'location' appears directly in the domain. Use typed parameters instead.
+- ⚠️ Object 'object' appears directly in the domain. Use typed parameters instead.
+- ⚠️ Object 'monster' appears directly in the domain. Use typed parameters instead.
+- ⚠️ Object 'location' appears directly in the domain. Use typed parameters instead.
+
+---
+LORE ORIGINALE:
+{
+  "description": "The quest involves a hero who starts in the village. In order to complete the mission, the hero must: 1. Travel from the village to the Tower of Varnak. 2. Pick up the Sword of Fire, which is located at the Tower of Varnak. 3. Reach the Ice Dragon's location. 4. Defeat the Ice Dragon using the Sword of Fire. To defeat the Ice Dragon, the hero must be in the same location as the dragon and must be carrying the Sword of Fire. The Ice Dragon is initially sleeping.",
+  "objects": [
+    "hero - agent",
+    "tower_of_varnak - location",
+    "sword_of_fire - object",
+    "ice_dragon - monster",
+    "village - location"
+  ],
+  "init": [
+    "(at hero village)",
+    "(on-ground sword_of_fire tower_of_varnak)",
+    "(sleeping ice_dragon)"
+  ],
+  "goal": [
+    "(at hero tower_of_varnak)",
+    "(carrying hero sword_of_fire)",
+    "(defeated ice_dragon)"
+  ]
+}
+
+---
+
+### Original domain.pddl:
+(define (domain quest)
+  (:types agent location object monster)
+
+  (:predicates
+    (at ?a - agent ?l - location) ; Agent is at location
+    (on-ground ?o - object ?l - location) ; Object is on the ground at location
+    (carrying ?a - agent ?o - object) ; Agent is carrying object
+    (defeated ?m - monster) ; Monster is defeated
+    (sleeping ?m - monster) ; Monster is sleeping
+  )
+
+  (:action move
+    :parameters (?a - agent ?from - location ?to - location)
+    :precondition (and (at ?a ?from) (not (at ?a ?to)))
+    :effect (and (not (at ?a ?from)) (at ?a ?to))
+  )
+
+  (:action pick-up
+    :parameters (?a - agent ?o - object ?l - location)
+    :precondition (and (at ?a ?l) (on-ground ?o ?l))
+    :effect (and (not (on-ground ?o ?l)) (carrying ?a ?o))
+  )
+
+  (:action drop
+    :parameters (?a - agent ?o - object ?l - location)
+    :precondition (and (at ?a ?l) (carrying ?a ?o))
+    :effect (and (not (carrying ?a ?o)) (on-ground ?o ?l))
+  )
+
+  (:action defeat
+    :parameters (?a - agent ?m - monster ?o - object)
+    :precondition (and (at ?a ?m) (carrying ?a ?o) (sleeping ?m))
+    :effect (defeated ?m)
+  )
+)
+
+---
+
+### Original problem.pddl:
+(define (problem quest-problem) (:domain quest)
+
+  (:objects hero - agent
+           tower_of_varnak - location
+           sword_of_fire - object
+           ice_dragon - monster
+           village - location
+           )
+
+  (:init (at hero village)
+         (on-ground sword_of_fire tower_of_varnak)
+         (sleeping ice_dragon))
+
+  (:goal (and (at hero tower_of_varnak)
+              (carrying hero sword_of_fire)
+              (defeated ice_dragon)))
+)

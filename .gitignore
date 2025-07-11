@@ -1,7 +1,19 @@
 venv.zip
 .venv.zip
-# Ignora il virtualenv
-venv/
 
 # Ignora i log di questmaster
 **/questmaster.log
+
+# Python bytecode e cache
+PROGETTOIAPDDL/**/__pycache__/
+*.py[cod]
+
+# Virtualenv
+venv/
+
+# Session DB e log
+PROGETTOIAPDDL/memory/
+questmaster.log
+
+# Uploads (file utente)
+PROGETTOIAPDDL/static/uploads/
