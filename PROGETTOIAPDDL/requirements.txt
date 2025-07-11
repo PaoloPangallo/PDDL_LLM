@@ -8,6 +8,7 @@ tqdm
 
 # Web app (opzionale per Fase 2)
 flask
+flask_wtf
 
 # Se prevedi JSON complessi o validazione
 jsonschema

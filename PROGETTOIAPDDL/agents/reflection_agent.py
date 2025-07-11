@@ -17,11 +17,13 @@ from core.utils import (
 )
 
 # ===============================
-# ⚙️ Configurazione
+# ⚙ Configurazione
 # ===============================
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
-DEFAULT_MODEL = "llama3:8b-instruct-q5_K_M"
-FALLBACK_MODEL = "mistral"
+#DEFAULT_MODEL = "mistral"
+DEFAULT_MODEL = "devstral:24b"
+#FALLBACK_MODEL = "mistral"
+FALLBACK_MODEL = "deepseek-coder-v2:8b"
 HEADERS = {"Content-Type": "application/json"}
 DEBUG_LLM = True  # Attiva salvataggio completo per debug
 
@@ -37,11 +39,11 @@ if not logger.hasHandlers():
 # ===============================
 # 🔁 Invio prompt al LLM locale
 # ===============================
-def ask_local_llm(prompt: str, model: str) -> str:
+def ask_local_llm(prompt: str, model: str) -> Optional[str]:
     logger.info(" Invio richiesta a Ollama (%s)...", model)
     logger.debug(" Prompt inviato (primi 500 char):\n%s", prompt[:500])
     if len(prompt) > 4000:
-        logger.warning("⚠️ Prompt molto lungo: %d caratteri", len(prompt))
+        logger.warning("⚠ Prompt molto lungo: %d caratteri", len(prompt))
 
     for attempt in range(3):
         try:
@@ -114,10 +116,10 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
         "- Correggere i file PDDL affinché siano validi, completi e semanticamente coerenti con la pianificazione classica.\n"
         "- NON inventare predicati, oggetti o tipi non presenti nei file originali.\n"
         "- Mantenere la struttura delle azioni esistenti (nomi, parametri, logica) dove possibile.\n"
-        "- Aggiungere un commento con `;` alla fine di ogni riga PDDL per spiegare la funzione della riga.\n"
+        "- Aggiungere un commento con ; alla fine di ogni riga PDDL per spiegare la funzione della riga.\n"
         "- Includere tutte le sezioni obbligatorie: :types, :predicates, :objects, :init, :goal.\n"
         "- Includere solo modifiche minime e mirate per rendere i file validi.\n"
-        "- NON rimuovere i commenti `;` già presenti se corretti.\n"
+        "- NON rimuovere i commenti ; già presenti se corretti.\n"
         "- Se vengono aggiunte nuove azioni, includere un commento descrittivo.\n"
         "- Rispettare la formattazione canonica del PDDL: indentazione, ordine e struttura.\n"
     )
@@ -220,7 +222,7 @@ def refine_and_save(domain_path: str, problem_path: str, error_message: str, out
         save_text_file(os.path.join(output_dir, "validation.json"), json.dumps(validation, indent=2))
 
     if not domain_suggestion or not domain_suggestion.strip().lower().startswith("(define"):
-        logger.warning("⚠️ DOMAIN non valido. Output salvato.")
+        logger.warning("⚠ DOMAIN non valido. Output salvato.")
         save_text_file(os.path.join(output_dir, "refinement_error.txt"), "Dominio non valido o mancante")
         return None, None
 

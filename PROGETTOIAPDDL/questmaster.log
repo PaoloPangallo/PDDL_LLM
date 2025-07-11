@@ -2719,3 +2719,141 @@ NameError: name 'reset' is not defined
 [2025-07-10 18:36:19,089] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
 2025-07-10 18:46:56,322 [DEBUG] → REQUEST POST /message args={} form=[]
 [2025-07-10 18:46:56,482] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-11 11:49:50,215 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 11:49:50,220 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 11:49:50,236 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 11:49:50,238 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-11 11:49:50,339 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 11:49:50,340 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=200
+2025-07-11 11:49:50,419 [DEBUG] → REQUEST GET /favicon.ico args={} form=[]
+2025-07-11 11:49:50,419 [DEBUG] ← RESPONSE GET /favicon.ico status=404
+2025-07-11 11:50:03,442 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 11:50:03,442 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 11:50:03,452 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-11 11:50:03,452 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-11 11:50:20,487 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 11:50:20,488 [ERROR] Exception on /stream [GET]
+Traceback (most recent call last):
+  File "/home/giova/PDDL_LLM-1/venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/giova/PDDL_LLM-1/venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/giova/PDDL_LLM-1/venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/giova/PDDL_LLM-1/venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/giova/PDDL_LLM-1/PROGETTOIAPDDL/routes/pipeline_chat.py", line 150, in stream_pipeline
+    graph = get_pipeline_with_memory(thread_id, reset=reset)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/giova/PDDL_LLM-1/PROGETTOIAPDDL/graphs/pddl_pipeline_graph.py", line 466, in get_pipeline_with_memory
+    pipeline = build_pipeline(checkpointer=saver)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/giova/PDDL_LLM-1/PROGETTOIAPDDL/graphs/pddl_pipeline_graph.py", line 406, in build_pipeline
+    builder = StateGraph(PipelineState, stateful=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: StateGraph.__init__() got an unexpected keyword argument 'stateful'
+2025-07-11 11:50:20,489 [ERROR] Errore interno: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-07-11 11:50:20,489 [DEBUG] ← RESPONSE GET /stream status=500
+2025-07-11 11:53:44,746 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 11:53:44,752 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 11:53:44,771] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-11 11:53:44,780] ERROR: ❌ HTTP Error da Ollama (404): {"error":"model 'llama3:8b-instruct-q5_K_M' not found"}
+[2025-07-11 11:53:44,789] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-11 11:53:44,792] ERROR: ❌ HTTP Error da Ollama (404): {"error":"model 'llama3:8b-instruct-q5_K_M' not found"}
+2025-07-11 11:55:41,333 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 11:55:41,339 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 11:55:41,362] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+[2025-07-11 11:59:05,426] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 12:17:50,901 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 12:17:50,908 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 12:17:50,934] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 12:22:38,271 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 12:22:38,278 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 12:22:38,303] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 12:29:08,905 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 12:29:08,911 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 12:29:08,930] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 12:29:18,154 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-11 12:29:18,155 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-11 12:29:20,426 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 12:29:20,437 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 12:29:20,483 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 12:29:20,486 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-11 12:29:20,490 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-11 12:29:20,491 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 12:29:20,512 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 12:29:20,513 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=200
+2025-07-11 12:29:35,740 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 12:29:35,740 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 12:29:35,780 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-11 12:29:35,781 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-11 12:29:35,801 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 12:29:35,803 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 12:29:35,804 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 12:29:35,805 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-11 12:30:34,278 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 12:30:34,284 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 12:30:34,296 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 12:30:34,298 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 12:30:34,345 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 12:30:34,346 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-11 12:44:07,194 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 12:44:07,200 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 12:44:07,213 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 12:44:07,215 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 12:44:07,238 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 12:44:07,239 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-11 12:44:08,850 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 12:44:08,850 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 12:44:08,858 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-11 12:44:08,859 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-11 12:51:18,148 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 12:51:18,155 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 12:51:18,175 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-11 12:51:18,176 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-11 12:51:18,177 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 12:51:18,182 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 12:51:18,194 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 12:51:18,195 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=200
+2025-07-11 12:53:06,390 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 12:53:06,397 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 12:53:06,507 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 12:53:06,511 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 12:53:06,531 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 12:53:06,531 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=200
+2025-07-11 12:53:06,575 [DEBUG] → REQUEST GET /favicon.ico args={} form=[]
+2025-07-11 12:53:06,575 [DEBUG] ← RESPONSE GET /favicon.ico status=404
+2025-07-11 12:53:10,580 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 12:53:10,580 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 12:53:10,602 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-11 12:53:10,603 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-11 12:53:16,986 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 12:53:16,994 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 12:53:17,019] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 14:35:54,223 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 14:35:54,229 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 14:35:54,243 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 14:35:54,248 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 14:35:54,268 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 14:35:54,268 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-11 14:35:54,322 [DEBUG] → REQUEST GET /favicon.ico args={} form=[]
+2025-07-11 14:35:54,322 [DEBUG] ← RESPONSE GET /favicon.ico status=404
+2025-07-11 14:35:57,385 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 14:35:57,395 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 14:35:57,424] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 14:41:19,448 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 14:41:19,455 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 14:41:19,488] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 14:44:37,202 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 14:44:37,214 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 14:44:37,224] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 14:44:50,859 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 14:44:50,865 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 14:44:50,885] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 15:00:27,435 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 15:00:27,443 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 15:00:27,469] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b

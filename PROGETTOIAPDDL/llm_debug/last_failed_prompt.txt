@@ -1,56 +1,52 @@
-You are a professional assistant for generating classical PDDL files (Planning Domain Definition Language).
-Your task is to produce two complete, **valid** and **logically consistent** PDDL files:
-- `domain.pddl`
-- `problem.pddl`
+You are a PDDL refinement assistant.
+The following feedback was provided by a human:
 
-🛠️ These files will be validated automatically for:
-• ✅ Syntactic correctness (valid parentheses, sections, keywords)
-• ✅ Semantic coherence between domain/problem/init/goal
-• ✅ Consistency with the lore (description, objects, goal, init)
+💬 "=== DOMAIN REFINED === (define (domain quest-domain)   ; :types section   (:types      ; List of types in this domain     agent     location     object     monster)    ; :predicates section   (:predicates      ; Predicates used in this domain     (at ?a - agent ?l - location) ; a is at location l     (on-ground ?o - object ?l - location) ; o is on ground at location l     (sleeping ?m - monster) ; m is sleeping     (carrying ?a - agent ?o - object) ; a is carrying o     (defeated ?m - monster)) ; m is defeated    ; :action section   (:action      travel-to     ; Parameters of the action     (?a - agent ?l1 - location ?l2 - location)     ; Preconditions for the action to be executed     (:precondition        (at ?a ?l1) ; a is at l1       (not (at ?a ?l2))) ; a is not already at l2      ; Effects of the action     (:effect        (at ?a ?l2) ; a becomes at l2))    (:action      pick-up     (?a - agent ?o - object ?l - location)     (:precondition        (on-ground ?o ?l) ; o is on ground at l       (at ?a ?l)) ; a is at l      (:effect        (carrying ?a ?o))) ; a becomes carrying o))    (:action      defeat-monster     (?a - agent ?m - monster ?l - location)     (:precondition        (at ?a ?l) ; a is at l       (sleeping ?m) ; m is sleeping       (carrying ?a sword_of_fire)) ; a is carrying sword of fire      (:effect        (defeated ?m))) ; m becomes defeated)    (:action      defeat-monster     (?a - agent ?m - monster)     (:precondition        (at ?a ?l) ; a is at l       (sleeping ?m) ; m is sleeping       (carrying ?a sword_of_fire)) ; a is carrying sword of fire      (:effect        (defeated ?m))) ; m becomes defeated)    (:action      travel-to     (?a - agent ?l - location)     (:precondition        (at ?a ?l1) ; a is at l1       (not (at ?a ?l))) ; a is not already at l      (:effect        (at ?a ?l))) ; a becomes at l))    (:action      pick-up     (?a - agent ?o - object)     (:precondition        (on-ground ?o) ; o is on ground       (at ?a)) ; a is at      (:effect        (carrying ?a ?o))) ; a becomes carrying o))    (:action      pick-up     (?a - agent ?o - object ?l - location)     (:precondition        (on-ground ?o ?l) ; o is on ground at l       (at ?a ?l)) ; a is at l      (:effect        (carrying ?a ?o))) ; a becomes carrying o))    (:action      defeat-monster     (?a - agent ?m - monster)     (:precondition        (at ?a) ; a is at       (sleeping ?m) ; m is sleeping       (carrying ?a sword_of_fire)) ; a is carrying sword of fire      (:effect        (defeated ?m))) ; m becomes defeated)    (:action      defeat-monster     (?a - agent ?m - monster)     (:precondition        (at ?a) ; a is at       (sleeping ?m) ; m is sleeping       (carrying ?a sword_of_fire)) ; a is carrying sword of fire      (:effect        (defeated ?m))) ; m becomes defeated)  === PROBLEM REFINED === (define (problem quest-problem)   ; :domain section   (:domain quest-domain)    ; :objects section   (:objects      hero - agent     tower_of_varnak - location     sword_of_fire - object     ice_dragon - monster     village - location)    ; :init section   (:init      (at hero village) ; hero starts at village     (on-ground sword_of_fire tower_of_varnak) ; sword of fire is on ground at tower_of_varnak     (sleeping ice_dragon)) ; ice dragon is sleeping    ; :goal section   (:goal      (and        (at hero tower_of_varnak) ; hero becomes at tower_of_varnak       (carrying hero sword_of_fire) ; hero becomes carrying sword of fire       (defeated ice_dragon)))) ; ice dragon becomes defeated"
 
-🔒 STRICT CONSTRAINTS — Do NOT violate these:
-1. Use **ONLY** objects, types, and predicates provided in the lore.
-2. Each predicate in the goal must be declared and consistently used.
-3. Use **valid STRIPS-compatible PDDL syntax**:
-   • Use `:precondition` and `:effect` (not plurals).
-   • Parentheses must be properly closed.
-   • Sections allowed: `(:types)`, `(:predicates)`, `(:action)`.
-4. Do NOT invent non-standard sections like `(:problem-factors)` or `(:problem-depths)`.
-5. Define realistic types (e.g., `agent`, `location`, `object`) **without self-referencing**.
-6. Each `:action` block must be syntactically valid and well-formed.
-7. Use `;` comments to describe each section clearly.
-8. Keep the formatting clean, modular, and readable.
-9. NEVER include placeholders like `<insert here>` or explanations in the output.
+Here are the current files:
 
- OBJECTS:
-hero - agent
-tower-of-varnak - location
-sword-of-fire - object
-ice-dragon - monster
-village - location
-
- INITIAL STATE:
-(at hero village)
-(on-ground sword-of-fire tower-of-varnak)
-(sleeping ice-dragon)
-
- GOAL CONDITIONS:
-(at hero tower-of-varnak)
-(carrying hero sword-of-fire)
-(defeated ice-dragon)
-
- BRANCHING FACTOR: min 1, max 4
- DEPTH CONSTRAINTS: min 3, max 10
-
- QUEST TITLE: (not provided)
- WORLD CONTEXT: (not provided)
- NARRATIVE DESCRIPTION:
-The quest involves a hero who starts in the village. In order to complete the mission, the hero must: 1. Travel from the village to the Tower of Varnak. 2. Pick up the Sword of Fire, which is located at the Tower of Varnak. 3. Reach the Ice Dragon's location. 4. Defeat the Ice Dragon using the Sword of Fire. To defeat the Ice Dragon, the hero must be in the same location as the dragon and must be carrying the Sword of Fire. The Ice Dragon is initially sleeping.
-
- Your output MUST follow this format:
 === DOMAIN START ===
-<insert domain.pddl here>
+
+=== DOMAIN END ===
+
+=== PROBLEM START ===
+
+=== PROBLEM END ===
+
+Validation Summary:
+{
+  "valid_syntax": false,
+  "missing_sections": [
+    "(:objects"
+  ],
+  "undefined_predicates_in_goal": [
+    "carrying",
+    "defeated"
+  ],
+  "undefined_predicates_in_init": [],
+  "undefined_objects_in_goal": [
+    "hero",
+    "tower_of_varnak",
+    "hero",
+    "sword_of_fire",
+    "ice_dragon"
+  ],
+  "mismatched_lore_entities": [],
+  "domain_mismatch": null,
+  "semantic_errors": [
+    "\u274c Init mismatch: '(at hero village)' not found in problem. \ud83d\udee0 Aggiungi questa tupla nella sezione (:init).",
+    "\u274c Init mismatch: '(on-ground sword_of_fire tower_of_varnak)' not found in problem. \ud83d\udee0 Aggiungi questa tupla nella sezione (:init).",
+    "\u274c Init mismatch: '(sleeping ice_dragon)' not found in problem. \ud83d\udee0 Aggiungi questa tupla nella sezione (:init).",
+    "\u274c Action 'travel-to' is missing ':parameters'.",
+    "\u274c Action 'pick-up' is missing ':parameters'.",
+    "\u274c Action 'defeat-monster' is missing ':parameters'."
+  ]
+}
+
+Now rewrite both files fixing the issues. Output in the format:
+=== DOMAIN START ===
+...domain.pddl...
 === DOMAIN END ===
 === PROBLEM START ===
-<insert problem.pddl here>
+...problem.pddl...
 === PROBLEM END ===

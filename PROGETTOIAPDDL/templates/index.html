@@ -3,7 +3,7 @@
 
 {% block content %}
 <main class="container my-5">
-  <h1 class="mb-4">⚙️ Pipeline Automatica PDDL (Streaming)</h1>
+  <h1 class="mb-4">⚙ Pipeline Automatica PDDL (Streaming)</h1>
 
   <div class="row mb-3 align-items-end">
     <div class="col-md-6">
@@ -105,6 +105,22 @@
       </div>
     </div>
   </div>
+
+
+
+  <!-- Timeline Valutazioni -->
+<div class="mt-4">
+  <h3 class="section-title">📋 Tutte le Validazioni</h3>
+
+  <div id="validation-timeline" class="accordion" role="region"></div>
+</div>
+
+<!-- Timeline Refine -->
+<div class="mt-4">
+<h3 class="section-title">🔧 Iterazioni di Refine</h3>
+  <div id="refine-timeline" class="row row-cols-1 row-cols-md-2 g-3"></div>
+</div>
+
 
   <!-- Form di feedback umano -->
   <form id="chatbot-form" class="mt-4 d-none" autocomplete="off" aria-label="Invia un feedback umano">
