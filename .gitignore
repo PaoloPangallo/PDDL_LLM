@@ -1,2 +1,7 @@
 venv.zip
 .venv.zip
+# Ignora il virtualenv
+venv/
+
+# Ignora i log di questmaster
+**/questmaster.log
