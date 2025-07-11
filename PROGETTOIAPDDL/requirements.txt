@@ -1,5 +1,6 @@
 # Interazione con LLM locale (Ollama)
 requests
+ollama
 
 # Utility per analisi e I/O
 pandas
@@ -7,6 +8,16 @@ tqdm
 
 # Web app (opzionale per Fase 2)
 flask
+flask_wtf
 
 # Se prevedi JSON complessi o validazione
 jsonschema
+
+# Utils
+scikit-learn
+langchain
+langchain_community
+langchain_ollama
+langgraph==0.5.1
+langgraph.checkpoint==2.1.0
+langgraph.checkpoint.sqlite==2.0.10

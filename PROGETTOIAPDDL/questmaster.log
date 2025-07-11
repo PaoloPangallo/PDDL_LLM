@@ -2719,3 +2719,61 @@ NameError: name 'reset' is not defined
 [2025-07-10 18:36:19,089] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
 2025-07-10 18:46:56,322 [DEBUG] → REQUEST POST /message args={} form=[]
 [2025-07-10 18:46:56,482] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+2025-07-11 15:32:09,312 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 15:32:09,318 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 15:32:09,330 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 15:32:09,332 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 15:32:09,354 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 15:32:09,355 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=200
+2025-07-11 15:32:13,875 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 15:32:13,884 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 15:32:13,901] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-11 15:32:13,909] ERROR: ❌ HTTP Error da Ollama (404): {"error":"model 'llama3:8b-instruct-q5_K_M' not found"}
+[2025-07-11 15:32:13,917] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b-instruct-q5_K_M
+[2025-07-11 15:32:13,919] ERROR: ❌ HTTP Error da Ollama (404): {"error":"model 'llama3:8b-instruct-q5_K_M' not found"}
+2025-07-11 15:41:44,412 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 15:41:44,417 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 15:41:44,430 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 15:41:44,432 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 15:41:44,518 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 15:41:44,518 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-11 15:41:47,744 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 15:41:47,751 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 15:41:47,768] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+[2025-07-11 15:48:08,568] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 15:54:22,669 [DEBUG] → REQUEST POST /message args={} form=[]
+[2025-07-11 15:54:22,696] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+[2025-07-11 16:01:32,657] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 16:03:47,979 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 16:03:47,987 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 16:03:48,017] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+[2025-07-11 16:10:29,629] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 16:13:53,589 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 16:13:53,596 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 16:13:53,630] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 16:13:56,095 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 16:13:56,100 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 16:13:56,107 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-11 16:13:56,107 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-11 16:13:58,071 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-11 16:13:58,085 [DEBUG] ← RESPONSE GET / status=200
+2025-07-11 16:13:58,134 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-11 16:13:58,135 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-11 16:13:58,142 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-11 16:13:58,143 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-11 16:13:58,162 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-11 16:13:58,163 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-11 16:14:00,671 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1'} form=[]
+2025-07-11 16:14:00,672 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-11 16:14:12,463 [DEBUG] → REQUEST GET /stream args={'lore': '— Scegli una lore —', 'thread_id': 'session-1'} form=[]
+2025-07-11 16:14:12,463 [DEBUG] ← RESPONSE GET /stream status=404
+2025-07-11 16:14:14,382 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 16:14:14,389 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 16:14:14,411] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 16:15:01,651 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 16:15:01,667 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 16:15:01,682] INFO: 📤 Invio prompt a Ollama con modello: devstral:24b
+2025-07-11 16:19:50,964 [DEBUG] → REQUEST GET /stream args={'lore': 'example_lore.json', 'thread_id': 'session-1'} form=[]
+2025-07-11 16:19:50,970 [DEBUG] ← RESPONSE GET /stream status=200
+[2025-07-11 16:19:50,991] INFO: 📤 Invio prompt a Ollama con modello: deepseek-coder-v2:16b
+[2025-07-11 16:21:24,250] INFO: 📤 Invio prompt a Ollama con modello: deepseek-coder-v2:16b
