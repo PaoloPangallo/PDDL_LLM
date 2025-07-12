@@ -1,479 +1,421 @@
+"""
+PDDL pipeline graph: genera, valida e raffina file PDDL con persistenza su SQLite.
+"""
+
 import os
 import json
 import logging
 import re
-from typing import Any, TypedDict, Optional
+import shutil
+import sqlite3
+from typing import Any, TypedDict, Optional, Dict, List, Annotated, cast
+
 from langgraph.graph import StateGraph
 from langgraph.checkpoint.sqlite import SqliteSaver
-from langchain_core.messages import BaseMessage
-
-
-from typing import Annotated
-
-from langgraph.graph.message import add_messages
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 
 from core.generator import build_prompt_from_lore
 from db.db import retrieve_similar_examples_from_db
 from core.utils import ask_ollama, extract_between, save_text_file
-from core.validator import validate_pddl
+from core.validator import validate_pddl, generate_plan_with_fd
 from agents.reflection_agent import refine_pddl
 
-logger = logging.getLogger("pddl_pipeline_graph")
+# ---------------------
+# Logging
+# ---------------------
 logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger("pddl_pipeline_graph")
 
-# ============================
-# 🧠 Stato della pipeline (completo e flessibile)
+# -------------------------------------------------
+# Gestione dello stato - Politiche di merging
+# -------------------------------------------------
+def last(_old, new): 
+    return new
 
+def non_empty_or_last(old, new):
+    """
+    Se `new` è None o stringa vuota, ritorna `old`, 
+    altrimenti ritorna `new`.
+    """
+    if new is None:
+        return old
+    if isinstance(new, str) and new.strip() == "":
+        return old
+    return new
 
-def safe_add(left, right):
-    try:
-        return int(left or 0) + int(right or 0)
-    except Exception:
-        return 0
-
-
-
-# Merge strategy: accetta solo l'ultimo valore
-def last(_, right):
-    return right
-
-
-
-
-
-
+# ---------------------
+# Stato della pipeline
+# ---------------------
 class PipelineState(TypedDict):
-    lore: dict
-    tmp_dir: Annotated[str, last]
-    prompt: Annotated[Optional[str], last]
-    
-    domain: Annotated[Optional[str], last]
-    problem: Annotated[Optional[str], last]
-    
-    validation: Annotated[Optional[dict], last]
-    refined_domain: Annotated[Optional[str], last]
-    refined_problem: Annotated[Optional[str], last]
+    lore: Annotated[Dict[str, Any], last]
     thread_id: Annotated[str, last]
 
+    tmp_dir: Annotated[Optional[str], last]
+    prompt: Annotated[Optional[str], last]
 
-    status: Annotated[str, last]
+    # Qui applico non_empty_or_last
+    domain: Annotated[Optional[str], non_empty_or_last]
+    problem: Annotated[Optional[str], non_empty_or_last]
+    refined_domain: Annotated[Optional[str], non_empty_or_last]
+    refined_problem: Annotated[Optional[str], non_empty_or_last]
+
+    validation: Annotated[Optional[dict], last]
     error_message: Annotated[Optional[str], last]
+    status: Annotated[Optional[str], last]
 
-    refine_attempts: Annotated[int, safe_add]
-    messages: Annotated[list[BaseMessage], add_messages]
-    
-    
+    attempt: Annotated[int, last] #viene incrementato manualmente ad ogni refine
+    messages: Annotated[List[BaseMessage], last]
 
-
-# ============================
-# 🚀 Nodi della pipeline
-# ============================
-
-from langchain_core.messages import HumanMessage, AIMessage
+    plan: Annotated[Optional[str], last]
+    plan_log: Annotated[Optional[str], last]
 
 
-def node_increment_refine_attempts(state: PipelineState) -> PipelineState:
-    """Aggiunge 1 a refine_attempts in modo esplicito."""
-    current_attempts = int(state.get("refine_attempts", 0))
-    current_attempts += 1
-    logger.debug("🔁 refine_attempts incrementato a %d", current_attempts)
-    return {**state, "refine_attempts": current_attempts}
+# ---------------------
+# Parametri globali
+# ---------------------
+MAX_REFINE_ATTEMPTS = 3
 
+# ---------------------
+# Helpers
+# ---------------------
 def is_positive_feedback(msg: str) -> bool:
-    msg = msg.strip().lower()
-    return msg in {"ok", "va bene", "accetto", "accetta", "perfetto", "tutto ok", "confermato"}
-
-def node_chat_feedback(state: PipelineState) -> PipelineState:
-    """Gestisce il feedback umano e aggiorna i file PDDL, oppure conclude."""
-    if not state.get("messages"):
-        logger.warning("⏸️ Nessun messaggio umano. Attesa feedback utente.")
-        return {**state, "status": "awaiting_feedback"}
-
-    user_msgs = [m for m in state["messages"] if isinstance(m, HumanMessage)]
-    if not user_msgs:
-        logger.warning("⏸️ Nessun HumanMessage trovato. Attesa feedback.")
-        return {**state, "status": "awaiting_feedback"}
-
-    last_msg_content = user_msgs[-1].content #prova a vedere
-    last_msg = str(last_msg_content).strip()
-    logger.info(f"✍️ Feedback umano ricevuto: {last_msg}")
-
-    if is_positive_feedback(last_msg):
-        logger.info("✅ Feedback positivo → fine pipeline.")
-        return {
-        **state,
-        "status": "ok",
-        "thread_id": state["thread_id"],
+    return msg.strip().lower() in {
+        "ok", "va bene", "accetto", "accetta",
+        "perfetto", "tutto ok", "confermato"
     }
 
-    # Altrimenti: rigenera i file
-    domain = state.get("domain", "")
-    problem = state.get("problem", "")
-    validation = state.get("validation", {})
-
-    prompt = f"""You are a PDDL refinement assistant.
-The following feedback was provided by a human:
-
-💬 "{last_msg}"
-
-Here are the current files:
-
-=== DOMAIN START ===
-{domain}
-=== DOMAIN END ===
-
-=== PROBLEM START ===
-{problem}
-=== PROBLEM END ===
-
-Validation Summary:
-{json.dumps(validation, indent=2)}
-
-Now rewrite both files fixing the issues. Output in the format:
-=== DOMAIN START ===
-...domain.pddl...
-=== DOMAIN END ===
-=== PROBLEM START ===
-...problem.pddl...
-=== PROBLEM END ===
-"""
-
-    try:
-        logger.info("🧠 Invio prompt a Ollama per rifinitura con feedback umano...")
-        response = ask_ollama(prompt)
-
-        rd = extract_between(response, "=== DOMAIN START ===", "=== DOMAIN END ===")
-        rp = extract_between(response, "=== PROBLEM START ===", "=== PROBLEM END ===")
-
-        if not rd or not rp:
-            raise ValueError("Estrazione fallita: output non ben formattato")
-
-        save_text_file(os.path.join(state["tmp_dir"], "domain_refined.pddl"), rd)
-        save_text_file(os.path.join(state["tmp_dir"], "problem_refined.pddl"), rp)
-
-        return {
-            **state,
-            "domain": rd,
-            "problem": rp,
-            "refined_domain": rd,
-            "refined_problem": rp,
-            "status": "ok",
-            "messages": state["messages"] + [AIMessage(content=response)]
-        }
-
-    except Exception as e:
-        logger.error("❌ [ChatFeedback] %s", e, exc_info=True)
-        return {
-            **state,
-            "status": "failed",
-            "error_message": f"ChatFeedback error: {str(e)}",
-            "thread_id": state["thread_id"],
-}
-
-
-
-
-
-def clean_code_blocks(text: str) -> str:
-    """Rimuove blocchi markdown tipo ```lang\n...``` o ```...``` intorno al codice"""
-    return re.sub(r"```(?:[a-zA-Z]+\n)?(.*?)```", r"\1", text, flags=re.DOTALL)
-
-import shutil
-
+# ---------------------
+# Nodi
+# ---------------------
 def node_build_prompt(state: PipelineState) -> PipelineState:
-    # invece di usare tempfile, pointiamo a static/uploads/<thread_id>
-    thread_id = state.get("thread_id", "default")
+    print("\n=== Enter node_build_prompt ===")
+    print(f"Stato in ingresso: attempt={state.get('attempt')}, status={state.get('status')}")
+    thread_id = state["thread_id"]
     upload_dir = os.path.join("static", "uploads", thread_id)
-    # puliamo / ricreiamo la cartella
     if os.path.exists(upload_dir):
         shutil.rmtree(upload_dir)
     os.makedirs(upload_dir, exist_ok=True)
-    logger.debug("🧠 [BuildPrompt] upload_dir creato: %s", upload_dir)
 
-    # costruiamo il prompt come prima
-    examples_raw = retrieve_similar_examples_from_db(state["lore"], k=1)
-    examples = [str(e) for e in examples_raw if isinstance(e, str)]
+    examples = [
+        str(e)
+        for e in retrieve_similar_examples_from_db(state["lore"], k=1)
+        if isinstance(e, str)
+    ]
     prompt, _ = build_prompt_from_lore(state["lore"], examples=examples)
+
+    new_state = {**state,
+        "tmp_dir": upload_dir,
+        "prompt": prompt,
+        "status": "ok",
+        "attempt": 0
+    }
+    print(f"Prompt generato, tmp_dir={upload_dir}")
+    print("=== Exit node_build_prompt ===\n")
+    return cast(PipelineState, new_state)
+
+def node_generate_pddl(state: PipelineState) -> PipelineState:
+    print("\n=== Enter node_generate_pddl ===")
+    print(f"Stato in ingresso: status={state.get('status')}")
+    if state.get("status") != "ok":
+        print("Skip generate: status != ok")
+        return cast(PipelineState, {**state, "status": "failed", "error_message": "Skipped generate"})
+
+    try:
+        print("Invio prompt a LLM...")
+        response = ask_ollama(state["prompt"] or "")
+        tmp = state["tmp_dir"] or ""
+        save_text_file(os.path.join(tmp, "raw_response.txt"), response)
+
+        dom_raw = extract_between(response, "=== DOMAIN START ===", "=== DOMAIN END ===")
+        prob_raw = extract_between(response, "=== PROBLEM START ===", "=== PROBLEM END ===")
+        if not dom_raw or not prob_raw:
+            raise ValueError("Formato PDDL non trovato")
+
+        clean = lambda t: re.sub(r"```(?:\w*\n)?(.*?)```", r"\1", t, flags=re.DOTALL)
+        domain  = clean(dom_raw)
+        problem = clean(prob_raw)
+
+        save_text_file(os.path.join(tmp, "domain.pddl"), domain)
+        save_text_file(os.path.join(tmp, "problem.pddl"), problem)
+
+        print("Domain e Problem salvati su disco.")
+        print("=== Exit node_generate_pddl ===\n")
+        return cast(PipelineState, {**state,
+            "domain": domain,
+            "problem": problem,
+            "status": "ok",
+            "error_message": None
+        })
+    except Exception as e:
+        print(f"Errore in generate: {e}")
+        logger.error("GeneratePDDL — %s", e, exc_info=True)
+        return cast(PipelineState, {**state,
+            "status": "failed",
+            "error_message": f"Generate error: {e}"
+        })
+
+def node_validate(state: PipelineState) -> PipelineState:
+    print("\n=== Enter node_validate ===")
+    print(f"Stato in ingresso: status={state.get('status')}, attempt={state.get('attempt')}")
+    if state.get("status") != "ok":
+        print("Skip validate: status != ok")
+        return cast(PipelineState, {**state, "status": "failed", "error_message": "Skipped validate"})
+
+    domain = state.get("refined_domain") or state.get("domain") or ""
+    problem = state.get("refined_problem") or state.get("problem") or ""
+
+    print("Avvio validate_pddl()...")
+    validation = validate_pddl(domain, problem, state["lore"])
+    valid = validation.get("valid_syntax", False)
+    sem_err = validation.get("semantic_errors", [])
+
+    if valid and not sem_err:
+        print("Validate → OK")
+        print("=== Exit node_validate ===\n")
+        return cast(PipelineState, {**state,
+            "validation": validation,
+            "status": "ok",
+            "error_message": None
+        })
+    else:
+        print("Validate → FAILED")
+        print("Errors:", validation)
+        print("=== Exit node_validate ===\n")
+        return cast(PipelineState, {**state,
+            "validation": validation,
+            "status": "failed",
+            "error_message": "Validation errors"
+        })
+
+def node_refine(state: PipelineState) -> PipelineState:
+    print("\n=== Enter node_refine ===")
+    print(f"Stato in ingresso: status={state.get('status')}, attempt={state.get('attempt')}")
+    if state.get("status") != "failed":
+        print("Skip refine: status != failed")
+        print("=== Exit node_refine ===\n")
+        return state
+
+    tmp = state.get("tmp_dir") or ""
+    try:
+        print("Chiamata a refine_pddl()...")
+        updated = refine_pddl(
+            domain_path=os.path.join(tmp, "domain.pddl"),
+            problem_path=os.path.join(tmp, "problem.pddl"),
+            error_message=state.get("error_message") or "",
+            lore=state["lore"]
+        )
+        rd = extract_between(updated, "=== DOMAIN START ===", "=== DOMAIN END ===") or ""
+        rp = extract_between(updated, "=== PROBLEM START ===", "=== PROBLEM END ===") or ""
+        save_text_file(os.path.join(tmp, "domain_refined.pddl"), rd)
+        save_text_file(os.path.join(tmp, "problem_refined.pddl"), rp)
+
+        new_attempt = state.get("attempt", 0) + 1
+        print(f"Refine completato → nuovo attempt = {new_attempt}")
+        print("=== Exit node_refine ===\n")
+        return cast(PipelineState, {**state,
+            "refined_domain": rd,
+            "refined_problem": rp,
+            "domain": rd,
+            "problem": rp,
+            "error_message": None,
+            "attempt": new_attempt,
+            "status": "ok"
+        })
+    except Exception as e:
+        print(f"Errore in refine: {e}")
+        logger.error("Refine — %s", e, exc_info=True)
+        return cast(PipelineState, {**state,
+            "status": "failed",
+            "error_message": str(e)
+        })
+
+def node_chat_feedback(state: PipelineState) -> PipelineState:
+    msgs = state.get("messages", [])
+    # 1) nessun nuovo messaggio → pausa
+    if not msgs:
+        return { **state, "status": "awaiting_feedback" }
+
+    last_msg = msgs[-1]
+    content = last_msg.content
+    if isinstance(last_msg, HumanMessage) and isinstance(content, str) and is_positive_feedback(content):
+        # 2) feedback positivo → fine
+        return { **state, "status": "ok" }
+
+    # 3) feedback umano negativo → rigenera via LLM
+    # Ensure content is a string for feedback
+    if isinstance(content, str):
+        feedback_str = content.strip()
+    elif isinstance(content, list):
+        # Join list elements as string, handling dicts if present
+        feedback_str = " ".join(
+            [str(item) if not isinstance(item, dict) else json.dumps(item) for item in content]
+        ).strip()
+    else:
+        feedback_str = str(content).strip()
+
+    prompt = (
+        "You are a PDDL refinement assistant.\n"
+        f"Human feedback: \"{feedback_str}\"\n\n"
+        "=== DOMAIN START ===\n"  + (state.get("domain") or "") + "\n=== DOMAIN END ===\n\n"
+        "=== PROBLEM START ===\n" + (state.get("problem") or "") + "\n=== PROBLEM END ===\n\n"
+        "Validation Summary:\n" + json.dumps(state.get("validation") or {}, indent=2) +
+        "\n\nPlease rewrite both files fixing the issues."
+    )
+    resp = ask_ollama(prompt)
+    rd = extract_between(resp, "=== DOMAIN START ===",   "=== DOMAIN END ===")   or ""
+    rp = extract_between(resp, "=== PROBLEM START ===",  "=== PROBLEM END ===")  or ""
+    tmp = state["tmp_dir"] or ""
+    save_text_file(os.path.join(tmp,"domain_refined.pddl"), rd)
+    save_text_file(os.path.join(tmp,"problem_refined.pddl"), rp)
 
     return {
         **state,
-        "tmp_dir": upload_dir,   # ora punta a static/uploads/<thread_id>
-        "prompt": prompt,
-        "status": "ok"
+        "domain": rd,
+        "problem": rp,
+        "refined_domain": rd,
+        "refined_problem": rp,
+        "status": "ok",
+        "messages": [AIMessage(content=resp)] #registro anche la risposta dell’agente in memoria
     }
 
 
-def node_generate_pddl(state: PipelineState) -> PipelineState:
-    if state.get("status") != "ok":
-        logger.warning("⚠️ Skipping generate due to status != ok")
-        return {**state, "status": "failed", "error_message": "Skipped generate (bad status)"}
+def feedback_branch(state: PipelineState) -> Optional[str]:
+    # se ancora in attesa, resto qui (None = nessun ramo, pause)
+    if state.get("status") == "awaiting_feedback":
+        return None
+    # se OK, fine
+    if state.get("status") == "ok":
+        return "End"
+    # altrimenti rientro in refine
+    return "Refine"
 
-    try:
-        prompt = state["prompt"] or ""
-        response = ask_ollama(prompt)
-        tmp_dir = state["tmp_dir"]
-
-        raw_path = os.path.join(tmp_dir, "raw_response.txt")
-        save_text_file(raw_path, response)
-        logger.info(f"📄 Risposta grezza salvata in: {raw_path}")
-
-        logger.debug("📟 Prompt usato:\n%s", state["prompt"])
-        logger.debug("📨 Risposta grezza (primi 300):\n%s", response[:300])
-
-        domain_raw = extract_between(response, "=== DOMAIN START ===", "=== DOMAIN END ===")
-        problem_raw = extract_between(response, "=== PROBLEM START ===", "=== PROBLEM END ===")
-
-        if not domain_raw or not problem_raw:
-            logger.warning("⚠️ Dominio o problema non trovati nell'output.")
-            logger.debug("💬 Output ricevuto:\n%s", response)
-            raise ValueError("Dominio o problema non trovati nel formato atteso")
-
-        domain = clean_code_blocks(domain_raw)
-        problem = clean_code_blocks(problem_raw)
-
-        domain_path = os.path.join(tmp_dir, "domain.pddl")
-        problem_path = os.path.join(tmp_dir, "problem.pddl")
-        save_text_file(domain_path, domain)
-        save_text_file(problem_path, problem)
-
-
-        return {
-            **state,
-            "domain": domain,
-            "problem": problem,
-            "status": "ok"
-        }
-
-    except Exception as e:
-        logger.error("❌ [GeneratePDDL] %s", e, exc_info=True)
-        return {
-            **state,
-            "domain": "",
-            "problem": "",
-            "status": "failed",
-            "error_message": f"GeneratePDDL error: {str(e)}"
-        }
-
-def node_validate(state: PipelineState) -> PipelineState:
-    logger.debug("📦 [Validate] Stato ricevuto:")
-    
-    if state.get("status") != "ok":
-        return {**state, "status": "failed", "error_message": "Skipped validate"}
-
-    try:
-        # 🔁 Usa i refined se presenti
-        domain = state.get("refined_domain") or state.get("domain") or ""
-        problem = state.get("refined_problem") or state.get("problem") or ""
-
-        source = "refined" if state.get("refined_domain") else "original"
-        logger.info(f"🔍 Validazione su file: {source}")
-
-        validation = validate_pddl(domain, problem, state["lore"])
-        valid_syntax = validation.get("valid_syntax", False)
-        semantic_errors = validation.get("semantic_errors", [])
-        status = "ok" if valid_syntax and not semantic_errors else "failed"
-        err_msg = None if status == "ok" else "Validation errors"
-
-        logger.debug("📋 [Validate] %s", json.dumps(validation, indent=2))
-        all_validations = state.get("all_validations", [])
-        return {
-            **state,
-            "validation": validation,
-            "all_validations": all_validations + [validation], # type: ignore
-            "status": status,
-            "error_message": err_msg,
-        }
-
-    except Exception as e:
-        logger.error("❌ [Validate] Errore: %s", e, exc_info=True)
-        return {
-            **state,
-            "status": "failed",
-            "error_message": str(e)
-        }
-
-
-def node_refine(state: PipelineState) -> PipelineState:
-    if state.get("status") != "failed":
-        logger.debug("✅ [Refine] Stato OK, skip refine.")
-        return {**state, "status": "ok"}
-
-    if not state.get("tmp_dir"):
-        logger.warning("⚠️ [Refine] tmp_dir mancante, impossibile procedere.")
-        return {
-            **state,
-            "status": "failed",
-            "error_message": "Missing tmp_dir for refine"
-        }
-
-    try:
-        logger.debug("🔧 [Refine] Avvio refine con error: %s", state.get("error_message", ""))
-        updated = refine_pddl(
-            domain_path=os.path.join(state["tmp_dir"], "domain.pddl"),
-            problem_path=os.path.join(state["tmp_dir"], "problem.pddl"),
-            error_message=state.get("error_message", ""),
-            lore=state["lore"]
-        )
-
-        rd = extract_between(updated, "=== DOMAIN START ===", "=== DOMAIN END ===")
-        rp = extract_between(updated, "=== PROBLEM START ===", "=== PROBLEM END ===")
-
-        save_text_file(os.path.join(state["tmp_dir"], "domain_refined.pddl"), rd)
-        save_text_file(os.path.join(state["tmp_dir"], "problem_refined.pddl"), rp)
-
-        logger.info("✅ [Refine] Raffinamento completato con successo.")
-        return {
-    **state,
-    "refined_domain": rd,
-    "refined_problem": rp,
-    "status": "ok",
-    "thread_id": state["thread_id"],
-}
-
-
-    except Exception as e:
-        logger.error("❌ [Refine] Errore durante il refine: %s", str(e), exc_info=True)
-        return {
-    **state,
-    "status": "failed",
-    "error_message": str(e),
-    "thread_id": state["thread_id"],
-}
-
-### ciao
 
 def end_node(state: PipelineState) -> PipelineState:
-    logger.debug("✅ [End] state finale: %s", state)
-    out: PipelineState = {
-        "prompt":  state.get("prompt"),
-        "tmp_dir": state.get("tmp_dir"),
-    }
-    for key in ("domain", "problem", "validation", "error_message", "refined_domain", "refined_problem"):
-        if key in state:
-            out[key] = state[key]
-    return out
+    print("\n=== Enter end_node ===")
+    print(f"Stato finale: attempt={state.get('attempt')}, status={state.get('status')}")
+    print("=== Exit end_node ===\n")
+    return state
 
+# ---------------------
+# Branching logic
+# ---------------------
+def validate_decision(state: PipelineState) -> str:
+    print("\n>>> validate_decision <<<")
+    em = state.get("error_message")
+    attempt = state.get("attempt", 0)
+    print(f"error_message={em}, attempt={attempt}/{MAX_REFINE_ATTEMPTS}")
+    if not em:
+        print("→ nessun errore → GeneratePlan")
+        return "GeneratePlan"
+    if attempt <= MAX_REFINE_ATTEMPTS:
+        state["attempt"] = attempt + 1
+        print(f"→ errore ma attempt < MAX → Refine (ora attempt={state['attempt']})")
+        return "Refine"
+    print("→ attempt >= MAX → ChatFeedback")
+    return "ChatFeedback"
 
+def node_generate_plan(state: PipelineState) -> PipelineState:
+    """
+    Runs Fast-Downward on the (refined) domain/problem and
+    attaches the plan and log back into state.
+    """
+    print("\n=== Enter GeneratePlan_node ===")
+    dom = state.get("refined_domain") or state.get("domain") or ""
+    prob = state.get("refined_problem") or state.get("problem") or ""
 
-# ============================
-# 🔄 Controllo branching
-# ============================
+    # guard in case something is missing
+    if not dom or not prob:
+        return { **state,
+                 "status": "failed",
+                 "error_message": "Missing domain or problem for planning" }
 
-def validate_branching_logic(state: PipelineState) -> dict[str, Any]:
-    # Se è già OK → End
-    if state.get("status") == "ok":
-        return {"next": "End", "state": state}
-
-    # Normalizziamo refine_attempts
-    try:
-        ra = int(state.get("refine_attempts", 0))
-    except:
-        ra = 0
-    ra = max(0, min(ra, 100))
-    state["refine_attempts"] = ra
-
-    # Se non abbiamo ancora fatto due refine automatici → Refine
-    if ra < 2:
+    # call your Fast-Downward wrapper
+    result = generate_plan_with_fd(dom, prob)
+    if result.get("found_plan"):
+        print(f"\n{result["plan"]}\n")
+        print("=== Exit GeneratePlan_node ===\n")
         return {
-            "next": "Refine",
-            "state": { **state, "status": "start_refine" }
+            **state,
+            "plan":     result["plan"],
+            "plan_log": result["log"],
+            "status":   "ok",
+            "error_message": None
         }
-
-    # Altrimenti (2 o più refine già tentati) → ChatFeedback
-    return {
-        "next": "ChatFeedback",
-        "state": { **state, "status": "awaiting_feedback" }
-    }
-
-
-
-def should_continue_after_refine(state: PipelineState) -> dict[str, Any]:
-    user_msgs = [m for m in state.get("messages", []) if isinstance(m, HumanMessage)]
-    if user_msgs:
-        last_msg = user_msgs[-1].content.strip().lower()
-        if last_msg in {"ok", "accetto", "va bene", "perfetto"}:
-            return {
-                "next": "End",
-                "state": {**state, "status": "ok", "thread_id": state["thread_id"]}
-            }
-
-    # 🔁 Se non è "ok", vai a Refine
-    return {
-        "next": "Refine",
-        "state": {**state, "status": "start_refine", "thread_id": state["thread_id"]}
-    }
-
-
-
-# ============================
-# ⚙️ Costruzione grafo
-# ============================
+    else:
+        print("Nessun piano trovato...")
+        print("=== Exit GeneratePlan_node ===\n")
+        return {
+            **state,
+            "plan":     None,
+            "plan_log": result["log"],
+            "status":   "failed",
+            "error_message": "Planning failed"
+        }
+# ---------------------
+# Costruzione del grafo
+# ---------------------
 def build_pipeline(checkpointer=None):
-    builder = StateGraph(PipelineState, stateful=True)
+    builder = StateGraph(PipelineState)
 
-    # Nodi
-    builder.add_node("BuildPrompt", node_build_prompt)
-    builder.add_node("Generate", node_generate_pddl)
-    builder.add_node("Validate", node_validate)
-    builder.add_node("Refine", node_refine)
-    builder.add_node("IncrementRefineAttempts", node_increment_refine_attempts)  # ← nuovo nodo
-    builder.add_node("ChatFeedback", node_chat_feedback)
-    builder.add_node("End", end_node)
+    # (ri)definisci tutti i nodi che già avevi: BuildPrompt, Generate, Validate, Refine…
+    builder.add_node("BuildPrompt",   node_build_prompt)
+    builder.add_node("Generate",      node_generate_pddl)
+    builder.add_node("Validate",      node_validate)
+    builder.add_node("Refine",        node_refine)
+    builder.add_node("ChatFeedback",  node_chat_feedback)
+    builder.add_node("GeneratePlan",  node_generate_plan)
+    builder.add_node("End",           end_node)
 
-    # Flusso principale
+    # flusso base
     builder.set_entry_point("BuildPrompt")
     builder.add_edge("BuildPrompt", "Generate")
-    builder.add_edge("Generate", "Validate")
+    builder.add_edge("Generate",    "Validate")
 
-    # Validate → Refine o End (condizionale)
-    builder.add_edge("Validate", "Refine")
-    builder.add_edge("Validate", "End")
-    builder.add_conditional_edges("Validate", path=validate_branching_logic)
+    # Validate → { Refine | End | ChatFeedback }
+    builder.add_conditional_edges("Validate", path=validate_decision)
 
-    # Refine → IncrementRefineAttempts → ChatFeedback
-    # Refine → IncrementRefineAttempts → Validate (ripeti validazione sui PDDL raffinati)
-    builder.add_edge("Refine", "IncrementRefineAttempts")
-    builder.add_edge("IncrementRefineAttempts", "Validate")
+    # quando refini, torni a validare
+    builder.add_edge("Refine", "Validate")
 
+    # ChatFeedback → { Refine | End }, ma in pausa finché feedback_branch non sblocca
+    builder.add_conditional_edges("ChatFeedback", path=feedback_branch)
 
-    # ChatFeedback → End o Refine (in base a should_continue_after_refine)
-    builder.add_edge("ChatFeedback", "End")
-    builder.add_conditional_edges("ChatFeedback", path=should_continue_after_refine)
+    # Dopo aver generato il piano → End
+    builder.add_edge("GeneratePlan", "End")
 
-    # Compilazione
-    return builder.compile(checkpointer=checkpointer) if checkpointer else builder.compile()
+    return builder.compile(checkpointer=checkpointer)
 
+# ---------------------
+# Pipeline con memoria
+# ---------------------
 
-
-import sqlite3
-
-logger = logging.getLogger("pddl_pipeline_graph")
-
-def get_pipeline_with_memory(thread_id: str, reset: bool = False):
-    logger.info(f"🧠 Pipeline persistente per thread: {thread_id}")
-
-    abs_path = os.path.abspath(f"memory/{thread_id}.sqlite")
-    os.makedirs(os.path.dirname(abs_path), exist_ok=True)
-
-    # ✅ Reset: cancella completamente la memoria
-    if reset and os.path.exists(abs_path):
-        os.remove(abs_path)
-        logger.warning(f"🧹 File di memoria rimosso per reset: {abs_path}")
-
-    # ✅ Connessione nuova e saver isolato
-    conn = sqlite3.connect(abs_path, check_same_thread=False)
+def get_pipeline_with_memory(thread_id: str, reset: bool=False):
+    db = f"memory/{thread_id}.sqlite"
+    os.makedirs(os.path.dirname(db), exist_ok=True)
+    if reset and os.path.exists(db):
+        os.remove(db)
+    conn = sqlite3.connect(db, check_same_thread=False)
     saver = SqliteSaver(conn)
-
-    # ✅ Svuota tabelle se esistono (in caso il file esista ma non venga cancellato correttamente)
-    if reset:
-        with conn:
-            conn.execute("DROP TABLE IF EXISTS state")
-            conn.execute("DROP TABLE IF EXISTS checkpoints")
-
-    # ✅ Costruisci sempre la pipeline
-    pipeline = build_pipeline(checkpointer=saver)
-    return pipeline.with_config(configurable={"thread_id": thread_id})
+    return build_pipeline(checkpointer=saver).with_config(configurable={"thread_id":thread_id})
 
 
+# def get_pipeline_with_memory(thread_id: str, reset: bool = False):
+#     print(f"\n>>> get_pipeline_with_memory(thread_id={thread_id}, reset={reset})")
+#     db = os.path.abspath(f"memory/{thread_id}.sqlite")
+#     os.makedirs(os.path.dirname(db), exist_ok=True)
+#     if reset and os.path.exists(db):
+#         os.remove(db)
 
-__all__ = ["get_pipeline_with_memory"]
+#     conn = sqlite3.connect(db, check_same_thread=False)
+#     saver = SqliteSaver(conn)
+#     if reset:
+#         with conn:
+#             conn.execute("DROP TABLE IF EXISTS state")
+#             conn.execute("DROP TABLE IF EXISTS checkpoints")
+
+#     pipeline = build_pipeline(checkpointer=saver)
+#     pipeline = pipeline.with_config(configurable={"thread_id": thread_id})
+#     print("Pipeline with memory creata\n")
+#     return pipeline
+
+

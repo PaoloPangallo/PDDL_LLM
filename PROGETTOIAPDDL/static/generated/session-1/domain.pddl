@@ -1,49 +1,50 @@
-(define (domain quest)
-
-  ; Types
-  (:types 
-    agent - Type
-    location - Type
-    object - Type
-    monster - Type
-  )
-
+(define (domain hero-quest)
+  (:requirements :strips)
+  
   ; Predicates
-  (:predicates 
-    (at ?a ?l) - (agent location)
-    (on-ground ?o ?l) - (object location)
-    (sleeping ?m) - (monster)
-    (carrying ?a ?o) - (agent object)
-    (defeated ?m) - (monster)
+  (:predicates
+    (at ?agent - agent ?location - location)
+    (on-ground ?object - object ?location - location)
+    (sleeping ?monster - monster)
+    (carrying ?agent - agent ?object - object)
+    (defeated ?monster - monster)
   )
-
+  
   ; Actions
-  (:action 
-    travel-to-location
-    :parameters (?a ?l1 ?l2)
-    :precondition (and (at ?a ?l1))
-    :effect (and (not (at ?a ?l1)) (at ?a ?l2))
+  (:action move
+    :parameters (?a - agent ?o - object ?l1 - location ?l2 - location)
+    :preconditions (and
+      (at ?a ?l1)
+      (on-ground ?o ?l1)
+    )
+    :effects (and
+      (not (at ?a ?l1))
+      (at ?a ?l2)
+    )
   )
-
-  (:action 
-    pick-up-object
-    :parameters (?a ?o ?l)
-    :precondition (and (on-ground ?o ?l) (at ?a ?l))
-    :effect (and (carrying ?a ?o) (not (on-ground ?o ?l)))
+  
+  (:action pick-up
+    :parameters (?a - agent ?o - object ?l - location)
+    :preconditions (and
+      (at ?a ?l)
+      (on-ground ?o ?l)
+    )
+    :effects (and
+      (not (on-ground ?o ?l))
+      (carrying ?a ?o)
+    )
   )
-
-  (:action 
-    approach-monster
-    :parameters (?a ?m ?l)
-    :precondition (and (at ?a ?l) (sleeping ?m))
-    :effect (and (not (sleeping ?m)) (carrying ?a ?sword_of_fire) (at ?a ?l))
+  
+  (:action defeat
+    :parameters (?a - agent ?m - monster ?l - location)
+    :preconditions (and
+      (at ?a ?l)
+      (carrying ?a ?o)
+      (sleeping ?m)
+    )
+    :effects (and
+      (not (sleeping ?m))
+      (defeated ?m)
+    )
   )
-
-  (:action 
-    defeat-monster
-    :parameters (?a ?m)
-    :precondition (and (carrying ?a ?sword_of_fire) (at ?a ?l) (on-ground ?ice_dragon ?l))
-    :effect (and (defeated ?m) (not (carrying ?a ?sword_of_fire)) (not (sleeping ?m)))
-  )
-
 )

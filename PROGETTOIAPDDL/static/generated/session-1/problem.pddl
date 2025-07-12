@@ -1,23 +1,26 @@
-(define (problem quest-problem)
-  (:domain quest-domain)
+(define (problem hero-quest-problem)
+  (:domain hero-quest)
   
-  (:objects 
-    hero - agent
-    tower-of-varnak - location
-    sword-of-fire - object
-    ice-dragon - monster
-    village - location
+  ; Objects
+  (:objects
+    hero
+    tower_of_varnak village
+    sword_of_fire ice_dragon
   )
-
-  (:init 
+  
+  ; Initial State
+  (:init
     (at hero village)
-    (on-ground sword-of-fire tower-of-varnak)
-    (sleeping ice-dragon)
+    (on-ground sword_of_fire tower_of_varnak)
+    (sleeping ice_dragon)
   )
-
-  (:goal 
-    (and (at hero tower-of-varnak)
-         (carrying hero sword-of-fire)
-         (defeated ice-dragon))
+  
+  ; Goal Conditions
+  (:goal
+    (and
+      (at hero tower_of_varnak)
+      (carrying hero sword_of_fire)
+      (defeated ice_dragon)
+    )
   )
 )
