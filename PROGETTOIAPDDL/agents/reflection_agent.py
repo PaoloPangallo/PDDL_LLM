@@ -1,162 +1,232 @@
-import logging 
-import json
-from typing import Any, Dict, Optional
+"""
+Modulo per il raffinamento automatico dei file PDDL tramite LLM locale (es. Ollama).
+"""
 
-from core.utils import ask_ollama, extract_between
-from prompts.prompt_templates import NARRATIVE_PROMPT_TEMPLATE
+import os
+import json
+import logging
+from pathlib import Path
+from typing import Optional
+import requests
+
+from core.validator import validate_pddl
+from core.utils import (
+    read_text_file,
+    save_text_file,
+    extract_between,
+)
+
+# ===============================
+# ⚙️ Configurazione
+# ===============================
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
+DEFAULT_MODEL = "mistral"
+FALLBACK_MODEL = "mistral"
+HEADERS = {"Content-Type": "application/json"}
+DEBUG_LLM = True  # Attiva salvataggio completo per debug
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+if not logger.hasHandlers():
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
 
-class NarrativeAgent:
-    def __init__(self, model_name: str = "llama3:8b"):
-        self.model_name = model_name
+# ===============================
+# 🔁 Invio prompt al LLM locale
+# ===============================
+def ask_local_llm(prompt: str, model: str) -> str:
+    logger.info(" Invio richiesta a Ollama (%s)...", model)
+    logger.debug(" Prompt inviato (primi 500 char):\n%s", prompt[:500])
+    if len(prompt) > 4000:
+        logger.warning("⚠️ Prompt molto lungo: %d caratteri", len(prompt))
 
-    def build_prompt(self, action: str, lore: Dict[str, Any], user_feedback: Optional[str] = None) -> str:
-        lore_str = self.summarize_lore(lore)
-        prompt = NARRATIVE_PROMPT_TEMPLATE.format(
-            action=action,
-            lore=lore_str,
-            user_feedback=user_feedback or "Nessun feedback specifico."
+    for attempt in range(3):
+        try:
+            resp = requests.post(
+                OLLAMA_URL,
+                json={"model": model, "prompt": prompt, "stream": False},
+                headers=HEADERS,
+                timeout=(10, 720)
+            )
+            if resp.status_code != 200:
+                logger.error(" Ollama ha risposto con %d:\n%s", resp.status_code, resp.text)
+            resp.raise_for_status()
+            try:
+                data = resp.json()
+            except json.JSONDecodeError:
+                logger.error(" Risposta non in formato JSON valido:\n%s", resp.text)
+                raise RuntimeError("Risposta Ollama non è in formato JSON valido.")
+            return data.get("response", "").strip()
+
+        except requests.RequestException as err:
+            logger.error(" Tentativo %d fallito con %s (%s)", attempt + 1, model, err, exc_info=True)
+
+    return None
+
+
+def ask_llm_with_fallback(prompt: str) -> str:
+    response = ask_local_llm(prompt, model=DEFAULT_MODEL)
+    if response:
+        return response
+
+    logger.warning("💡 Fallback attivato: riprovo con modello '%s'", FALLBACK_MODEL)
+    response = ask_local_llm(prompt, model=FALLBACK_MODEL)
+    if response:
+        return response
+
+    Path("llm_debug").mkdir(exist_ok=True)
+    Path("llm_debug/failed_prompt.txt").write_text(prompt, encoding="utf-8")
+    raise RuntimeError("Errore critico: LLM non ha risposto nemmeno con fallback.")
+
+
+# ===============================
+#  Costruzione del prompt
+# ===============================
+
+logger = logging.getLogger(__name__)
+
+def build_prompt(domain_text: str, problem_text: str, error_message: str, validation: Optional[dict] = None, lore: Optional[dict] = None) -> str:
+    prompt_path = Path("prompts/reflection_prompt.txt")
+    
+    if prompt_path.exists():
+        template = prompt_path.read_text(encoding="utf-8")
+    else:
+        logger.warning("Template reflection_prompt.txt mancante. Uso fallback minimale.")
+        template = (
+            "### DOMAIN FILE:\n{domain}\n\n"
+            "### PROBLEM FILE:\n{problem}\n\n"
+            "### ERROR MESSAGE:\n{error_message}\n\n"
+            "### SUGGESTED FIX:\nFornisci una nuova versione corretta dei file."
+            "\n=== DOMAIN START ===\n<...>\n=== DOMAIN END ==="
+            "\n=== PROBLEM START ===\n<...>\n=== PROBLEM END ==="
         )
-        logger.debug("Built prompt for action '%s': %s...", action, prompt[:200])
-        return prompt
 
-    def ask_about_step(
-        self,
-        action: str,
-        lore: Dict[str, Any],
-        user_feedback: Optional[str] = None
-    ) -> Dict[str, Any]:
-        prompt = self.build_prompt(action, lore, user_feedback)
+    # Costruzione note aggiuntive per LLM
+    notes = "\n\n---\nOBIETTIVO:\n"
+    notes += (
+        "- Correggere i file PDDL affinché siano validi, completi e semanticamente coerenti con la pianificazione classica.\n"
+        "- NON inventare predicati, oggetti o tipi non presenti nei file originali.\n"
+        "- Mantenere la struttura delle azioni esistenti (nomi, parametri, logica) dove possibile.\n"
+        "- Aggiungere un commento con `;` alla fine di ogni riga PDDL per spiegare la funzione della riga.\n"
+        "- Includere tutte le sezioni obbligatorie: :types, :predicates, :objects, :init, :goal.\n"
+        "- Includere solo modifiche minime e mirate per rendere i file validi.\n"
+        "- NON rimuovere i commenti `;` già presenti se corretti.\n"
+        "- Se vengono aggiunte nuove azioni, includere un commento descrittivo.\n"
+        "- Rispettare la formattazione canonica del PDDL: indentazione, ordine e struttura.\n"
+    )
+
+    # Errori rilevati dal validatore
+    if isinstance(validation, dict):
+        if validation.get("undefined_objects_in_goal"):
+            notes += "\nOggetti mancanti nella sezione :goal:\n- " + "\n- ".join(validation["undefined_objects_in_goal"])
+        if validation.get("undefined_predicates_in_goal"):
+            notes += "\nPredicati non definiti usati nel :goal:\n- " + "\n- ".join(validation["undefined_predicates_in_goal"])
+        if validation.get("undefined_predicates_in_init"):
+            notes += "\nPredicati non definiti usati nell' :init:\n- " + "\n- ".join(validation["undefined_predicates_in_init"])
+        if validation.get("semantic_errors"):
+            notes += "\nErrori semantici rilevati:\n" + "\n".join(f"- {err}" for err in validation["semantic_errors"])
+        if validation.get("missing_sections"):
+            notes += "\nSezioni PDDL mancanti:\n- " + "\n- ".join(validation["missing_sections"])
+        if validation.get("domain_mismatch"):
+            notes += f"\nIncoerenza nei nomi del dominio: {validation['domain_mismatch']}"
+
+    # Lore originale (se fornita)
+    if lore:
         try:
-            response = ask_ollama(prompt, model=self.model_name)
-            logger.debug("LLM response (truncated): %s...", response[:200])
+            lore_json = json.dumps(lore, indent=2, ensure_ascii=False)
+            notes += "\n\n---\nLORE ORIGINALE:\n" + lore_json
         except Exception as e:
-            logger.error("Error invoking LLM for action '%s': %s", action, e, exc_info=True)
-            return {
-                "narration": f"Errore generazione narrazione per '{action}'",
-                "follow_up_question": "Vuoi proseguire con il passo successivo?",
-                "lore_update": {},
-            }
+            logger.warning("Impossibile serializzare il lore: %s", e)
 
-        parsed = self.parse_response(response)
-        narration = parsed.get("narration") or f"Nessuna narrazione per '{action}'"
-        question = parsed.get("follow_up_question") or "Vuoi proseguire con il passo successivo?"
-        lore_update = parsed.get("lore_update") or {}
+    # Errori noti ricorrenti
+    if "unhashable type: 'list'" in error_message:
+        notes += "\n\nNota tecnica: evitare l'uso di liste annidate nella sezione :init."
 
-        logger.debug(
-            "Parsed result for action '%s': narration='%s', question='%s', lore_update=%s",
-            action,
-            narration[:50],
-            question,
-            json.dumps(lore_update)[:100]
+    # Componi il prompt finale
+    return template.format(
+        domain=domain_text.strip(),
+        problem=problem_text.strip(),
+        error_message=error_message.strip() + notes,
+        validation=json.dumps(validation, indent=2, ensure_ascii=False) if validation else ""
+    )
+
+
+
+
+# ===============================
+#  Raffinamento dei file
+# ===============================
+def refine_pddl(
+    domain_path: str,
+    problem_path: str,
+    error_message: str,
+    lore: Optional[dict] = None,
+    validation: Optional[dict] = None
+) -> str:
+    domain_raw = read_text_file(domain_path)
+    problem_raw = read_text_file(problem_path)
+
+    if not domain_raw or not problem_raw:
+        raise ValueError("❌ File PDDL vuoti o mancanti.")
+
+    # Se non passato esplicitamente, fai la validazione qui
+    if validation is None and lore is not None:
+        validation = validate_pddl(domain_raw, problem_raw, lore)
+
+    if validation and validation.get("valid_syntax", True) and not validation.get("semantic_errors"):
+        logger.info("✅ Nessun errore significativo, refine non necessario.")
+        return (
+            "=== DOMAIN START ===\n" + domain_raw + "\n=== DOMAIN END ===\n"
+            "=== PROBLEM START ===\n" + problem_raw + "\n=== PROBLEM END ==="
         )
 
-        return {
-            "narration": narration,
-            "follow_up_question": question,
-            "lore_update": lore_update,
-        }
+    prompt = build_prompt(domain_raw, problem_raw, error_message, validation, lore)
+    return ask_llm_with_fallback(prompt)
 
-    def parse_response(self, response: str) -> Dict[str, Any]:
-        result: Dict[str, Any] = {}
-        try:
-            result["narration"] = extract_between(
-                response, "=== NARRATION ===", "=== QUESTION ==="
-            ).strip()
-        except Exception:
-            logger.warning("Failed to parse 'narration' from response", exc_info=True)
-            result["narration"] = ""
+# ===============================
+# 💾 Raffina e salva
+# ===============================
+def refine_and_save(domain_path: str, problem_path: str, error_message: str, output_dir: str, lore: Optional[dict] = None) -> tuple[Optional[str], Optional[str]]:
+    from core.utils import get_unique_filename
 
-        try:
-            result["follow_up_question"] = extract_between(
-                response, "=== QUESTION ===", "=== LORE UPDATE ==="
-            ).strip()
-        except Exception:
-            logger.warning("Failed to parse 'follow_up_question' from response", exc_info=True)
-            result["follow_up_question"] = ""
+    os.makedirs(output_dir, exist_ok=True)
 
-        try:
-            lore_json = extract_between(response, "=== LORE UPDATE ===", "") or "{}"
-            result["lore_update"] = json.loads(lore_json.strip())
-        except Exception:
-            logger.warning("Failed to parse 'lore_update' as JSON: %s", lore_json, exc_info=True)
-            result["lore_update"] = {}
+    try:
+        suggestion_raw = refine_pddl(domain_path, problem_path, error_message, lore)
+    except Exception as err:
+        err_msg = f"❌ Errore durante il raffinamento: {str(err)}"
+        logger.error(err_msg, exc_info=True)
+        save_text_file(os.path.join(output_dir, "refinement_error.txt"), err_msg)
+        return None, None
 
-        return result
+    if DEBUG_LLM:
+        save_text_file(os.path.join(output_dir, "llm_raw_output.txt"), suggestion_raw)
 
-    def respond_to_feedback(self, user_message: str, state: Dict[str, Any]) -> Dict[str, Any]:
-        prompt = f"""
-📜 Current narration:
-{state['latest_step'].get('narration', '')}
+    domain_suggestion = extract_between(suggestion_raw, "=== DOMAIN START ===", "=== DOMAIN END ===")
+    problem_suggestion = extract_between(suggestion_raw, "=== PROBLEM START ===", "=== PROBLEM END ===")
 
-💬 User feedback:
-{user_message}
+    if domain_suggestion is None or problem_suggestion is None:
+        logger.error("❌ Delimitatori mancanti nell'output LLM.")
 
-📖 Lore:
-{json.dumps(state.get('lore', {}), indent=2, ensure_ascii=False)}
+    if lore:
+        validation = validate_pddl(domain_suggestion or "", problem_suggestion or "", lore)
+        save_text_file(os.path.join(output_dir, "validation.json"), json.dumps(validation, indent=2))
 
-🎯 Update the narration and/or lore accordingly.
-Respond with this format:
+    if not domain_suggestion or not domain_suggestion.strip().lower().startswith("(define"):
+        logger.warning("⚠️ DOMAIN non valido. Output salvato.")
+        save_text_file(os.path.join(output_dir, "refinement_error.txt"), "Dominio non valido o mancante")
+        return None, None
 
-=== UPDATED NARRATION ===
-<new version>
+    domain_path_out = get_unique_filename(output_dir, "llm_domain")
+    save_text_file(domain_path_out, domain_suggestion.strip())
 
-=== LORE UPDATE ===
-<JSON>
-"""
-        try:
-            response = ask_ollama(prompt, model=self.model_name)
-            logger.debug("Feedback LLM response: %s", response[:200])
-        except Exception as e:
-            logger.error("Error during respond_to_feedback: %s", e, exc_info=True)
-            return {}
+    problem_path_out = None
+    if problem_suggestion and problem_suggestion.strip().lower().startswith("(define"):
+        problem_path_out = get_unique_filename(output_dir, "llm_problem")
+        save_text_file(problem_path_out, problem_suggestion.strip())
 
-        try:
-            new_narration = extract_between(response, "=== UPDATED NARRATION ===", "=== LORE UPDATE ===").strip()
-        except Exception:
-            logger.warning("Failed to extract UPDATED NARRATION", exc_info=True)
-            new_narration = state["latest_step"].get("narration", "")
-
-        try:
-            lore_update = extract_between(response, "=== LORE UPDATE ===", "") or "{}"
-            lore_update = json.loads(lore_update.strip())
-        except Exception:
-            logger.warning("Failed to extract LORE UPDATE from feedback response", exc_info=True)
-            lore_update = {}
-
-        return {
-            "latest_step": {
-                **state["latest_step"],
-                "narration": new_narration
-            },
-            "lore_update": lore_update
-        }
-
-    def summarize_lore(self, lore: Dict[str, Any]) -> str:
-        try:
-            s = json.dumps(lore, indent=2, ensure_ascii=False)
-            logger.debug("Lore summary length: %d chars", len(s))
-            return s
-        except Exception as e:
-            logger.error("Error serializing lore: %s", e, exc_info=True)
-            return "{}"
-
-    def update_lore(self, original_lore: Dict[str, Any], lore_update: Dict[str, Any]) -> Dict[str, Any]:
-        def recursive_update(base: Dict[str, Any], updates: Dict[str, Any]) -> Dict[str, Any]:
-            for key, value in updates.items():
-                if isinstance(value, dict):
-                    base[key] = recursive_update(base.get(key, {}), value)
-                else:
-                    base[key] = value
-            return base
-
-        try:
-            updated = recursive_update(original_lore.copy(), lore_update)
-            logger.debug("Lore updated with keys: %s", list(lore_update.keys()))
-            return updated
-        except Exception as e:
-            logger.error("Error updating lore: %s", e, exc_info=True)
-            return original_lore
+    logger.info("✅ Raffinamento completato e salvato.")
+    return domain_suggestion, problem_suggestion

@@ -12,14 +12,14 @@ You are a creative assistant helping expand a fantasy quest.
 
 ---
 
-Your output **must** be in this format:
+📝 Your response must follow **exactly** this format:
 
 === NARRATION ===
-<Narrative description of this action, immersive, 2-3 sentences>
+(A vivid and immersive description of the action above. 2–4 sentences. Stay in-universe.)
 
 === QUESTION ===
-<A follow-up question to enrich this step (e.g., "Does the sword have powers?")>
+(Ask a creative follow-up question to the user to further expand the world.)
 
 === LORE UPDATE ===
-<If relevant, provide JSON representing additions to the lore>
+(Provide a valid JSON object with new or updated lore elements. If there's nothing to update, return an empty JSON: {{}}.)
 """

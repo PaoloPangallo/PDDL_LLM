@@ -3849,3 +3849,1221 @@ ValueError: Checkpointer requires one or more of the following 'configurable' ke
 2025-07-12 11:04:21,105 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752311030352', 'lore': 'example_lore.json'} form=[]
 2025-07-12 11:04:21,185 [DEBUG] ← RESPONSE GET /narrative/stream status=200
 [2025-07-12 11:04:21,234] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 11:35:52,832 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 11:35:52,887 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 11:35:52,943 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:35:52,966 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 11:35:52,970 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:35:52,977 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 11:35:56,154 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 11:35:56,182 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 11:35:56,243 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:35:56,247 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 11:35:56,257 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:35:56,264 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 11:37:55,876 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 11:37:55,933 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 11:37:55,981 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:37:56,002 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 11:37:56,003 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:37:56,032 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 11:37:58,819 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:37:58,828 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:37:58,979 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 11:37:58,980 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 11:38:00,282 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 11:38:00,320 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 11:38:00,373 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 11:38:00,375 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 11:38:00,393 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:38:00,407 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 11:38:00,445 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 11:38:00,477 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 11:38:06,762 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752313086738', 'lore': 'example_lore.json'} form=[]
+2025-07-12 11:38:06,909 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 11:38:07,302] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 11:39:39,390] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 11:40:56,611] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 11:42:58,599 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 11:42:58,651 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 11:42:58,715 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:42:58,745 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:42:58,747 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 11:42:58,768 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 11:43:00,815 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 11:43:00,866 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 11:43:00,967 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:43:00,969 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 11:43:00,986 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:43:00,997 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 11:43:04,518 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:43:04,528 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:43:04,536 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 11:43:04,537 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 11:43:07,322 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752313387299', 'lore': 'example_lore.json'} form=[]
+2025-07-12 11:43:07,471 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 11:43:07,840] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 11:44:25,862] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 11:46:05,244] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 11:47:09,681 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 11:47:09,736 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 11:47:09,807 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:47:09,824 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:47:09,834 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 11:47:09,853 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 11:47:12,747 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:47:12,770 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:47:12,780 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 11:47:12,783 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 11:47:14,636 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 11:47:14,676 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 11:47:14,742 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 11:47:14,743 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 11:47:14,764 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:47:14,780 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 11:47:14,845 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 11:47:14,866 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 11:47:18,179 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752313638155', 'lore': 'example_lore.json'} form=[]
+2025-07-12 11:47:18,362 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 11:47:18,790] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 11:48:31,453] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 11:49:44,259] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 11:51:18,885] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 11:52:55,247] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 11:54:37,519] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 11:57:32,858 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 11:57:32,901 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 11:57:32,941 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:57:32,957 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:57:32,978 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 11:57:32,996 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 11:57:34,173 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 11:57:34,177 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 11:57:34,201 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:57:34,209 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:57:34,213 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 11:57:34,222 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 11:57:36,439 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 11:57:36,451 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 11:57:36,507 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:57:36,508 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 11:57:36,514 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:57:36,516 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 11:57:42,558 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 11:57:42,566 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 11:57:42,575 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 11:57:42,576 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 11:57:44,316 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752314264293', 'lore': 'example_lore.json'} form=[]
+2025-07-12 11:57:44,430 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 11:57:44,892] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:02:16,199 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:02:16,225 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:02:16,250 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:02:16,266 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:02:16,281 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:02:16,289 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:02:19,822 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:02:19,855 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:02:19,890 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:02:19,892 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:02:19,903 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:02:19,907 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 12:02:22,769 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:02:22,774 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:02:22,778 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 12:02:22,781 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 12:02:26,154 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752314546143', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:02:26,283 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:02:26,493] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:04:33,248 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:04:33,274 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:04:33,293 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:04:33,306 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:04:33,317 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:04:33,332 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:04:35,569 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:04:35,577 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:04:35,612 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:04:35,613 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:04:35,622 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:04:35,626 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 12:04:40,768 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:04:40,780 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:04:40,782 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 12:04:40,784 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 12:04:42,164 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752314682147', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:04:42,258 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:04:42,505] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:05:55,704 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:05:55,737 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:05:55,763 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:05:55,773 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:05:55,775 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:05:55,782 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:05:57,774 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:05:57,798 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:05:57,831 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:05:57,832 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:05:57,837 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:05:57,842 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 12:06:00,022 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:06:00,029 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 12:06:00,030 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 12:06:00,033 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:06:02,736 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752314762727', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:06:02,805 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:06:02,973] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:08:16,684 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:08:16,712 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:08:16,743 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:08:16,754 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:08:17,002 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:08:17,009 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:08:19,110 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:08:19,129 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:08:19,156 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:08:19,157 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:08:19,162 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:08:19,164 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 12:08:21,199 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:08:21,206 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 12:08:21,207 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 12:08:21,209 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:08:25,679 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752314905665', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:08:25,796 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:08:25,954] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:08:44,714] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:09:31,713] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:10:18,757] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:11:12,648 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:11:12,679 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:11:12,710 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:11:12,723 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:11:12,730 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:11:12,744 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:11:14,776 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:11:14,788 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:11:14,820 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:11:14,821 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:11:14,826 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:11:14,830 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 12:11:16,853 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:11:16,854 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 12:11:16,867 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 12:11:16,874 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:11:20,550 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752315080534', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:11:20,652 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:11:20,789] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:12:04,824] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:12:50,002] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:13:51,294 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:13:51,330 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:13:51,363 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:13:51,375 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:13:51,405 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:13:51,417 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:13:53,764 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:13:53,790 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:13:53,822 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:13:53,823 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:13:53,829 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:13:53,832 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 12:13:57,960 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752315237946', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:13:58,071 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:13:58,257] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:14:46,485] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:15:43,937 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:15:43,963 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:15:43,984 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:15:43,998 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:15:44,016 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:15:44,027 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:15:46,085 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:15:46,101 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:15:46,133 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:15:46,134 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:15:46,142 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:15:46,148 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 12:15:49,941 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752315349884', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:15:49,991 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:15:50,126] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:16:35,981] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:17:22,294 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:17:22,317 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:17:22,340 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:17:22,352 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:17:22,362 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:17:22,370 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:17:24,388 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:17:24,407 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:17:24,433 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:17:24,434 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:17:24,438 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:17:24,439 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 12:17:28,304 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752315448294', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:17:28,431 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:17:28,594] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:18:19,621] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:26:08,542 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:26:08,568 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:26:08,908 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:26:08,918 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:26:08,929 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:26:08,938 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:26:09,192 [DEBUG] → REQUEST GET /favicon.ico args={} form=[]
+2025-07-12 12:26:09,193 [DEBUG] ← RESPONSE GET /favicon.ico status=404
+2025-07-12 12:26:09,204 [DEBUG] → REQUEST GET /favicon.ico args={} form=[]
+2025-07-12 12:26:09,204 [DEBUG] ← RESPONSE GET /favicon.ico status=404
+2025-07-12 12:26:12,405 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:26:12,419 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:26:12,438 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:26:12,439 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:26:12,444 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:26:12,448 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 12:26:16,137 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752315976115', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:26:16,238 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:26:16,442] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:27:08,050] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:27:34,262 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:27:34,273 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:27:34,296 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 12:27:34,299 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 12:35:40,039 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:35:40,062 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:35:40,078 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:35:40,089 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:35:40,090 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:35:40,095 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:35:42,478 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:35:42,524 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:35:42,548 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:35:42,549 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:35:42,559 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:35:42,567 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 12:35:46,650 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:35:46,659 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:35:46,661 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 12:35:46,663 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 12:35:48,839 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752316548185', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:35:48,928 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:35:49,223] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:35:56,897 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752316548185', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:35:56,929 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:35:57,052] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 12:37:23,052 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 12:37:23,075 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 12:37:23,091 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:37:23,102 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:37:23,103 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 12:37:23,109 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 12:37:25,049 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 12:37:25,057 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 12:37:25,085 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 12:37:25,085 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 12:37:25,091 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 12:37:25,092 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 12:37:29,108 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752316648441', 'lore': 'example_lore.json'} form=[]
+2025-07-12 12:37:29,168 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 12:37:29,337] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:37:47,405] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:38:35,685] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 12:39:18,067] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 13:38:43,871 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 13:38:43,889 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 13:38:43,905 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:38:43,912 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:38:43,919 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 13:38:43,925 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 13:38:46,684 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 13:38:46,691 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 13:38:46,711 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:38:46,712 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 13:38:46,717 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:38:46,718 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 13:38:51,746 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:38:51,752 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:38:51,756 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 13:38:51,757 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 13:38:53,037 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752320332977', 'lore': 'example_lore.json'} form=[]
+2025-07-12 13:38:53,087 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 13:38:53,244] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:39:43,949] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:40:31,850] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 13:41:47,581 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 13:41:47,603 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 13:41:47,618 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:41:47,624 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:41:47,627 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 13:41:47,634 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 13:41:52,556 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 13:41:52,563 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 13:41:52,589 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:41:52,590 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 13:41:52,592 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:41:52,593 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 13:41:58,582 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:41:58,587 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:41:58,594 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 13:41:58,594 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 13:42:00,083 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752320519612', 'lore': 'example_lore.json'} form=[]
+2025-07-12 13:42:00,121 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 13:42:00,262] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:42:39,518] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:43:21,276] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:44:09,697] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:44:51,419] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:45:33,871] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 13:47:39,918 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 13:47:39,939 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 13:47:39,957 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:47:39,966 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:47:40,008 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 13:47:40,012 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 13:47:42,842 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 13:47:42,852 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 13:47:42,869 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:47:42,870 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 13:47:42,873 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:47:42,874 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 13:47:47,683 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:47:47,690 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:47:47,693 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 13:47:47,694 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 13:47:49,302 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752320869575', 'lore': 'example_lore.json'} form=[]
+2025-07-12 13:47:49,363 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 13:47:49,509] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:48:32,476] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:49:13,620] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:49:54,754] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:50:31,313] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:51:21,783] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 13:54:32,863 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 13:54:32,886 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 13:54:32,903 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:54:32,915 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:54:32,929 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 13:54:32,936 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 13:54:35,838 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 13:54:35,847 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 13:54:35,870 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:54:35,871 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 13:54:35,878 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:54:35,879 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 13:54:40,179 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752321279494', 'lore': 'example_lore.json'} form=[]
+2025-07-12 13:54:40,247 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 13:54:40,351] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 13:54:44,906 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 13:54:44,912 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 13:54:44,925 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 13:54:44,926 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 13:54:46,998 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752321286539', 'lore': 'example_lore.json'} form=[]
+2025-07-12 13:54:47,033 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 13:54:47,102] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:55:59,338] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 13:56:10,057 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752321286539', 'lore': 'example_lore.json', 'feedback': 'ciao'} form=[]
+2025-07-12 13:56:10,098 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 13:56:10,134] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:57:05,641] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:57:54,185] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:58:46,333] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 13:59:36,084] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:00:18,890] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 14:02:09,990 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 14:02:10,010 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 14:02:10,026 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:02:10,032 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:02:10,041 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 14:02:10,047 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 14:02:12,036 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 14:02:12,056 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 14:02:12,077 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:02:12,077 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 14:02:12,080 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:02:12,081 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 14:02:16,052 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:02:16,059 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:02:16,063 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 14:02:16,064 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 14:02:17,321 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752321737553', 'lore': 'example_lore.json'} form=[]
+2025-07-12 14:02:17,392 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 14:02:17,522] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:02:59,691] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:03:47,705] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:04:34,521] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:05:26,761] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 14:06:25,435 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 14:06:25,458 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 14:06:25,479 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:06:25,489 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:06:25,497 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 14:06:25,503 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 14:06:27,786 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 14:06:27,798 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 14:06:27,820 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:06:27,821 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 14:06:27,825 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:06:27,827 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 14:06:31,354 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:06:31,359 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:06:31,363 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 14:06:31,368 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 14:06:32,892 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752321992669', 'lore': 'example_lore.json'} form=[]
+2025-07-12 14:06:32,946 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 14:06:33,063] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:07:37,192] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:08:42,551] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 14:11:09,870 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 14:11:09,891 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 14:11:09,906 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:11:09,914 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:11:10,027 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 14:11:10,034 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 14:11:11,918 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 14:11:11,932 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 14:11:11,950 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:11:11,951 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 14:11:11,953 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:11:11,954 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 14:11:16,350 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:11:16,356 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:11:16,364 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 14:11:16,365 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 14:11:17,505 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752322277889', 'lore': 'example_lore.json'} form=[]
+2025-07-12 14:11:17,570 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 14:11:17,691] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:12:00,123] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:12:19,413] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:13:06,905] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:13:52,786] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:14:39,211] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 14:16:06,171 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 14:16:06,192 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 14:16:06,214 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:16:06,222 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:16:06,230 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 14:16:06,237 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 14:16:08,271 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 14:16:08,280 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 14:16:08,301 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:16:08,306 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 14:16:08,306 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:16:08,312 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 14:16:12,229 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:16:12,240 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 14:16:12,240 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 14:16:12,250 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:16:13,461 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752322573609', 'lore': 'example_lore.json'} form=[]
+2025-07-12 14:16:13,519 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 14:16:13,639] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:17:11,163] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:17:56,918] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:18:42,955] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:19:33,755] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:20:21,343] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 14:24:42,518 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 14:24:42,540 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 14:24:42,558 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:24:42,567 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:24:42,611 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 14:24:42,641 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 14:24:47,222 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:24:47,223 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 14:24:47,223 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 14:24:47,236 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 14:24:48,087 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 14:24:48,107 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 14:24:48,126 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 14:24:48,127 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 14:24:48,135 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:24:48,141 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 14:24:48,179 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 14:24:48,188 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 14:24:51,754 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752323091112', 'lore': 'example_lore.json'} form=[]
+2025-07-12 14:24:51,795 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 14:24:51,898] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:25:34,318] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:26:28,411] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:27:20,997] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 14:28:13,378 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 14:28:13,396 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 14:28:13,416 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 14:28:13,416 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 14:28:13,417 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 14:28:13,423 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 14:28:13,497 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 14:28:13,506 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 14:28:16,940 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752323296261', 'lore': 'example_lore.json'} form=[]
+2025-07-12 14:28:16,994 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 14:28:17,108] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:29:01,035] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:29:25,873] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:30:30,993] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+[2025-07-12 14:31:27,686] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 15:33:39,473 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 15:33:39,499 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 15:33:39,528 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:33:39,540 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:33:39,554 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 15:33:39,562 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 15:33:42,328 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:33:42,336 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:33:42,345 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 15:33:42,346 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 15:33:44,246 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 15:33:44,264 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 15:33:44,300 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 15:33:44,301 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 15:33:44,316 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:33:44,324 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 15:33:44,350 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 15:33:44,358 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 15:33:49,255 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752327228459', 'lore': 'example_lore.json'} form=[]
+2025-07-12 15:33:49,395 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+2025-07-12 15:37:11,849 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 15:37:11,877 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 15:37:11,909 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:37:11,921 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:37:11,931 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 15:37:11,944 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 15:37:13,929 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 15:37:13,953 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 15:37:13,998 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:37:14,000 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 15:37:14,009 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:37:14,012 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 15:37:18,267 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752327437780', 'lore': 'example_lore.json'} form=[]
+2025-07-12 15:37:18,424 [ERROR] Exception on /narrative/stream [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 920, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 939, in finalize_request
+    response = self.make_response(rv)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1212, in make_response
+    raise TypeError(
+TypeError: The view function for 'narrative.narrative_stream' did not return a valid response. The function either returned None or ended without a return statement.
+2025-07-12 15:37:18,449 [ERROR] Errore interno: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-07-12 15:37:18,450 [DEBUG] ← RESPONSE GET /narrative/stream status=500
+2025-07-12 15:39:20,359 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 15:39:20,390 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 15:39:20,426 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:39:20,437 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 15:39:20,439 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:39:20,445 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 15:39:24,310 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 15:39:24,334 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 15:39:24,376 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:39:24,378 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 15:39:24,387 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:39:24,392 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 15:39:28,334 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:39:28,345 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:39:28,355 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 15:39:28,356 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 15:39:29,493 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752327568925', 'lore': 'example_lore.json'} form=[]
+2025-07-12 15:39:29,629 [ERROR] Exception on /narrative/stream [GET]
+Traceback (most recent call last):
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 920, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 939, in finalize_request
+    response = self.make_response(rv)
+  File "/mnt/c/Users/paolo/PROGETTOIAPDDL/.venv/lib/python3.10/site-packages/flask/app.py", line 1212, in make_response
+    raise TypeError(
+TypeError: The view function for 'narrative.narrative_stream' did not return a valid response. The function either returned None or ended without a return statement.
+2025-07-12 15:39:29,641 [ERROR] Errore interno: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2025-07-12 15:39:29,643 [DEBUG] ← RESPONSE GET /narrative/stream status=500
+2025-07-12 15:41:07,697 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 15:41:07,724 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 15:41:07,757 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:41:07,766 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:41:07,842 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 15:41:07,852 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 15:41:17,146 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 15:41:17,182 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 15:41:17,236 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:41:17,238 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 15:41:17,245 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:41:17,248 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 15:41:21,229 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:41:21,240 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 15:41:21,241 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:41:21,241 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 15:41:22,359 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752327682239', 'lore': 'example_lore.json'} form=[]
+2025-07-12 15:41:22,503 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 15:41:22,921] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 15:47:30,065 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 15:47:30,088 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 15:47:30,112 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:47:30,123 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:47:30,134 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 15:47:30,144 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 15:47:31,924 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 15:47:31,956 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 15:47:32,004 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:47:32,005 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 15:47:32,012 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:47:32,014 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 15:47:37,750 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:47:37,757 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:47:37,775 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 15:47:37,776 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 15:47:39,046 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752328059442', 'lore': 'example_lore.json'} form=[]
+2025-07-12 15:47:39,174 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 15:47:39,488] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 15:53:09,714 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 15:53:09,744 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 15:53:09,776 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:53:09,788 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:53:09,802 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 15:53:09,813 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 15:53:11,682 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 15:53:11,707 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 15:53:11,752 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:53:11,755 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 15:53:11,760 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:53:11,764 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 15:53:16,407 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752328396681', 'lore': 'example_lore.json'} form=[]
+2025-07-12 15:53:16,549 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 15:53:16,925] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 15:53:21,371 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:53:21,382 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:53:21,402 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 15:53:21,404 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 15:53:24,742 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752328403900', 'lore': 'example_lore.json'} form=[]
+2025-07-12 15:53:24,793 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 15:53:24,876] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 15:57:14,450 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 15:57:14,482 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 15:57:14,526 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:57:14,538 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:57:14,551 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 15:57:14,562 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 15:57:18,683 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 15:57:18,710 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 15:57:18,760 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:57:18,763 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 15:57:18,768 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:57:18,771 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 15:57:23,680 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752328642969', 'lore': 'example_lore.json'} form=[]
+2025-07-12 15:57:23,821 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 15:57:24,144] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 15:57:31,250 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 15:57:31,260 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 15:57:31,270 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 15:57:31,274 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 15:57:33,555 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752328653287', 'lore': 'example_lore.json'} form=[]
+2025-07-12 15:57:33,615 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 15:57:33,701] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:01:06,223 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 16:01:06,258 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 16:01:06,292 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:01:06,309 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 16:01:06,318 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 16:01:06,331 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 16:01:08,386 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 16:01:08,411 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 16:01:08,459 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:01:08,460 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 16:01:08,467 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:01:08,469 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 16:01:11,615 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752328872054', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:01:11,755 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:01:12,174] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:01:20,431 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:01:20,441 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:01:20,450 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:01:20,451 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:01:21,734 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752328881128', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:01:21,782 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:01:21,862] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:06:06,213 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 16:06:06,236 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 16:06:06,259 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:06:06,271 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:06:06,284 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 16:06:06,291 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 16:06:08,238 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 16:06:08,259 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 16:06:08,298 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:06:08,301 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 16:06:08,304 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:06:08,307 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 16:06:12,583 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:06:12,592 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:06:12,598 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:06:12,599 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:06:13,792 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752329174193', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:06:13,942 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:06:14,221] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:12:12,705 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 16:12:12,749 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 16:12:12,789 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:12:12,800 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:12:12,820 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 16:12:12,830 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 16:12:14,469 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 16:12:14,493 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 16:12:14,558 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:12:14,559 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 16:12:14,570 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:12:14,576 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 16:12:20,332 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:12:20,350 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:12:20,359 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:12:20,362 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:12:21,429 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752329541856', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:12:21,521 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:12:21,761] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:16:17,507 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 16:16:17,551 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 16:16:17,603 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:16:17,618 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:16:17,637 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 16:16:17,649 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 16:16:19,104 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 16:16:19,112 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 16:16:19,143 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:16:19,152 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 16:16:19,153 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:16:19,161 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 16:16:21,551 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 16:16:21,567 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 16:16:21,604 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:16:21,606 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 16:16:21,612 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:16:21,614 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 16:16:26,913 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:16:26,922 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:16:26,928 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:16:26,929 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:16:29,752 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752329788935', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:16:29,867 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:16:30,159] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:22:10,950 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 16:22:10,972 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 16:22:10,995 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:22:11,006 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:22:11,018 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 16:22:11,025 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 16:22:15,004 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 16:22:15,035 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 16:22:15,090 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:22:15,094 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 16:22:15,102 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:22:15,107 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 16:22:18,868 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:22:18,883 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:22:18,903 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:22:18,904 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:22:19,925 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330139691', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:22:20,046 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:22:20,353] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:23:43,058 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330139691', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:23:43,146 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:23:43,262] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:24:17,799 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330139691', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:24:17,850 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:24:17,879] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:25:00,370 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330139691', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:25:00,424 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:25:00,456] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:25:41,404 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330139691', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:25:41,517 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:25:41,570] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:26:21,276 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330139691', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:26:21,327 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:26:21,367] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:27:17,981 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330139691', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:27:18,045 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:27:18,078] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:27:56,011 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330139691', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:27:56,087 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:27:56,129] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:29:16,762 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330139691', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:29:16,824 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:29:17,094] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:29:23,166 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 16:29:23,199 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 16:29:23,251 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:29:23,267 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 16:29:23,269 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:29:23,279 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 16:29:26,730 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 16:29:26,752 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 16:29:26,819 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:29:26,821 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 16:29:26,828 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:29:26,832 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 16:29:47,132 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:29:47,215 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:29:47,340] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:31:04,782 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:31:04,859 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:31:04,916] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:31:38,816 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:31:38,896 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:31:38,991] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:31:58,365 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:31:58,412 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:31:58,442] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:45:27,633 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:45:29,207 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:45:29,614] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:46:31,911 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:46:31,972 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:46:32,000] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:47:10,684 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:47:10,775 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:47:10,820] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:47:45,025 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:47:45,103 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:47:45,147] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:48:21,783 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:48:21,833 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:48:21,882] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:49:00,642 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:49:00,702 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:49:00,736] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:50:02,852 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:50:02,957 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:50:03,312] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:50:37,131 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:50:37,212 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:50:37,259] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:51:23,512 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:51:23,595 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:51:23,630] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:52:00,727 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:52:00,787 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:52:00,823] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:52:39,075 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:52:39,134 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 16:52:39,175] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:53:43,359 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752330587281', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:53:43,360 [DEBUG] ← RESPONSE GET /narrative/stream status=404
+2025-07-12 16:53:49,311 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 16:53:49,338 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 16:53:49,368 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:53:49,377 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:53:49,396 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 16:53:49,404 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 16:53:51,555 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 16:53:51,578 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 16:53:51,621 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:53:51,623 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 16:53:51,630 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:53:51,635 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 16:53:53,791 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:53:53,800 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:53:53,803 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:53:53,805 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:53:56,047 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 16:53:56,053 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 16:53:56,082 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:53:56,083 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:53:56,095 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:53:56,106 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 16:53:56,133 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 16:53:56,145 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 16:54:00,672 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332040885', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:54:00,785 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 16:54:01,356] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:54:33,159 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332040885', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:54:33,266 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 16:54:33,373] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:55:59,826 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 16:55:59,882 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 16:55:59,927 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:55:59,931 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:55:59,939 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:55:59,950 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 16:56:00,062 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 16:56:00,074 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=200
+2025-07-12 16:56:11,490 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 16:56:11,512 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 16:56:11,548 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:56:11,548 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:56:11,561 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:56:11,567 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 16:56:11,600 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 16:56:11,609 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 16:56:24,498 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:56:24,500 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:56:24,545 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:56:24,551 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:56:24,552 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:56:24,556 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:56:27,836 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:56:27,837 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:56:27,848 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 16:56:27,859 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 16:56:27,872 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 16:56:27,873 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 16:56:31,850 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:56:31,959 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 16:56:32,392] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:57:07,525 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:57:07,602 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 16:57:07,669] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:57:41,889 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:57:41,960 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 16:57:42,012] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:58:15,937 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:58:16,023 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 16:58:16,076] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:58:57,753 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:58:57,795 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 16:58:57,816] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 16:59:35,848 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 16:59:35,914 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 16:59:35,963] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:00:06,453 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:00:06,512 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:00:06,550] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:00:38,673 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:00:38,754 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:00:38,806] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:01:16,922 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:01:17,013 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:01:17,067] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:01:54,663 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:01:54,705 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:01:54,827] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:02:23,198 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:02:23,277 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:02:23,313] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:06:57,054 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:06:57,166 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:06:57,296] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:07:03,370 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 17:07:03,405 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 17:07:03,443 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:07:03,457 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:07:03,463 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 17:07:03,475 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 17:07:21,021 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:07:21,048 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:07:21,073] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:07:42,548 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:07:42,591 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:07:42,616] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:08:02,052 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:08:02,099 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:08:02,117] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:08:24,900 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:08:24,937 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:08:24,960] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:08:50,250 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:08:50,289 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:08:50,317] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:09:17,385 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:09:17,429 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:09:17,441] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:09:36,669 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:09:36,695 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=200
+[2025-07-12 17:09:36,730] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:10:16,936 [DEBUG] → REQUEST GET /narrative/stream_internal args={'thread_id': 'narrative-1752332191473', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:10:16,943 [DEBUG] ← RESPONSE GET /narrative/stream_internal status=404
+2025-07-12 17:10:19,082 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 17:10:19,112 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 17:10:19,131 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:10:19,140 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:10:19,156 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 17:10:19,164 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 17:10:22,839 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 17:10:22,856 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 17:10:22,875 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:10:22,876 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 17:10:22,881 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:10:22,882 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 17:10:24,526 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:10:24,535 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:10:24,536 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:10:24,540 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:10:27,573 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333026848', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:10:27,635 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:10:27,784] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:10:52,024 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333026848', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:10:52,059 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:10:52,081] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:11:14,779 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333026848', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:11:14,803 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:11:14,816] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:11:38,924 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333026848', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:11:38,940 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:11:38,950] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:12:05,142 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333026848', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:12:05,167 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:12:05,185] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:12:31,514 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333026848', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:12:31,544 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:12:31,559] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:12:57,701 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333026848', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:12:57,721 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:12:57,731] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:13:27,232 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333026848', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:13:27,251 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:13:27,268] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:15:08,680 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 17:15:08,712 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 17:15:08,736 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:15:08,747 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:15:08,755 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 17:15:08,770 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 17:15:10,844 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 17:15:10,869 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 17:15:10,889 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:15:10,889 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 17:15:10,921 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:15:10,924 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 17:15:15,087 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:15:15,094 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:15:15,095 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:15:15,095 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:15:18,142 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333318691', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:15:18,198 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:15:18,357] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:17:01,983 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 17:17:02,010 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 17:17:02,027 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:17:02,037 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:17:02,047 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 17:17:02,058 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 17:17:06,520 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:17:06,525 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:17:06,534 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:17:06,535 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:17:07,588 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 17:17:07,612 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 17:17:07,634 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:17:07,634 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:17:07,644 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:17:07,648 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 17:17:07,660 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 17:17:07,669 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 17:18:01,113 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 17:18:01,137 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 17:18:01,153 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:18:01,161 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:18:01,175 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 17:18:01,184 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 17:18:03,203 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:18:03,214 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:18:03,217 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:18:03,231 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:18:04,770 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 17:18:04,793 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 17:18:04,833 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:18:04,834 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:18:04,846 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:18:04,858 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 17:18:04,884 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 17:18:04,897 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 17:20:34,948 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 17:20:35,074 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 17:20:35,106 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:20:35,116 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:20:35,121 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 17:20:35,133 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 17:20:37,782 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:20:37,792 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:20:37,794 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:20:37,794 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:20:38,698 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 17:20:38,760 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 17:20:38,817 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:20:38,818 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:20:38,828 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:20:38,833 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 17:20:38,865 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 17:20:38,873 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 17:20:47,288 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 17:20:47,301 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 17:20:47,319 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:20:47,320 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:20:47,326 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:20:47,330 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 17:20:47,366 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 17:20:47,380 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 17:23:16,424 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 17:23:16,443 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 17:23:16,457 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:23:16,465 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:23:16,506 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 17:23:16,510 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 17:23:23,913 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 17:23:23,922 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 17:23:23,938 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:23:23,939 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 17:23:23,943 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:23:23,946 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 17:23:25,503 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:23:25,508 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:23:25,514 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:23:25,515 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:24:11,467 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 17:24:11,489 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 17:24:11,503 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:24:11,504 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:24:11,506 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:24:11,515 [DEBUG] ← RESPONSE GET /static/style.css status=200
+2025-07-12 17:24:11,542 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 17:24:11,550 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 17:24:15,026 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 17:24:15,038 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 17:24:15,050 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:24:15,054 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:24:15,065 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 17:24:15,071 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 17:24:18,132 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 17:24:18,134 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 17:24:18,152 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:24:18,153 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 17:24:18,159 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:24:18,161 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=304
+2025-07-12 17:24:20,623 [DEBUG] → REQUEST POST /narrative/start args={} form=[]
+[2025-07-12 17:24:20,868] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:25:15,541 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:25:15,543 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:25:15,546 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:25:15,558 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:25:16,893 [DEBUG] → REQUEST POST /narrative/start args={} form=[]
+[2025-07-12 17:25:17,040] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:25:29,813 [DEBUG] → REQUEST GET /narrative/start args={} form=[]
+2025-07-12 17:25:29,815 [DEBUG] ← RESPONSE GET /narrative/start status=405
+2025-07-12 17:25:51,146 [DEBUG] ← RESPONSE POST /narrative/start status=200
+2025-07-12 17:25:51,166 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333916992', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:25:51,210 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:25:51,271] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:26:19,587 [DEBUG] ← RESPONSE POST /narrative/start status=200
+2025-07-12 17:26:19,608 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752333916992', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:26:19,651 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:26:19,679] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:29:30,699 [DEBUG] → REQUEST GET / args={} form=[]
+2025-07-12 17:29:30,724 [DEBUG] ← RESPONSE GET / status=200
+2025-07-12 17:29:30,747 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:29:30,757 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:29:30,765 [DEBUG] → REQUEST GET /static/js/pipeline.js args={} form=[]
+2025-07-12 17:29:30,771 [DEBUG] ← RESPONSE GET /static/js/pipeline.js status=304
+2025-07-12 17:29:32,710 [DEBUG] → REQUEST GET /narrative/ args={} form=[]
+2025-07-12 17:29:32,727 [DEBUG] ← RESPONSE GET /narrative/ status=200
+2025-07-12 17:29:32,751 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:29:32,752 [DEBUG] → REQUEST GET /static/js/narrative.js args={} form=[]
+2025-07-12 17:29:32,756 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:29:32,761 [DEBUG] ← RESPONSE GET /static/js/narrative.js status=200
+2025-07-12 17:29:34,529 [DEBUG] → REQUEST GET /static/style.css args={} form=[]
+2025-07-12 17:29:34,530 [DEBUG] → REQUEST GET /.well-known/appspecific/com.chrome.devtools.json args={} form=[]
+2025-07-12 17:29:34,532 [DEBUG] ← RESPONSE GET /.well-known/appspecific/com.chrome.devtools.json status=404
+2025-07-12 17:29:34,546 [DEBUG] ← RESPONSE GET /static/style.css status=304
+2025-07-12 17:29:37,572 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752334177372', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:29:37,628 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:29:37,762] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:30:13,226 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752334177372', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:30:13,263 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:30:13,282] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b
+2025-07-12 17:30:42,114 [DEBUG] → REQUEST GET /narrative/stream args={'thread_id': 'narrative-1752334177372', 'lore': 'example_lore.json'} form=[]
+2025-07-12 17:30:42,168 [DEBUG] ← RESPONSE GET /narrative/stream status=200
+[2025-07-12 17:30:42,201] INFO: 📤 Invio prompt a Ollama con modello: llama3:8b

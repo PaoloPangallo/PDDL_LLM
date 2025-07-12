@@ -1,146 +1,193 @@
 // static/js/narrative.js
-// Streaming real-time LLM responses (SSE)
-document.addEventListener("DOMContentLoaded", () => {
-  const loreSelect = document.getElementById("lore-select");
-  const startBtn   = document.getElementById("start-narrative");
-  const stopBtn    = document.getElementById("stop-narrative");
-  const spinner    = document.getElementById("start-spinner");
-  const statusTxt  = document.getElementById("status-text");
-  const log        = document.getElementById("narrative-log");
-  const rawDebug   = document.getElementById("raw-debug");
-  const form       = document.getElementById("narrative-form");
-  const feedbackIn = document.getElementById("feedback-input");
+// Streaming real-time LLM responses (SSE) – versione robusta
 
+document.addEventListener("DOMContentLoaded", () => {
+  /* ---------- CACHE DOM ---------- */
+  const loreSelect  = document.getElementById("lore-select");
+  const startBtn    = document.getElementById("start-narrative");
+  const stopBtn     = document.getElementById("stop-narrative");
+  const spinner     = document.getElementById("start-spinner");
+  const statusTxt   = document.getElementById("status-text");
+  const log         = document.getElementById("narrative-log");
+  const rawDebug    = document.getElementById("raw-debug");
+  const form        = document.getElementById("narrative-form");
+  const feedbackIn  = document.getElementById("feedback-input");
+
+  /* ---------- STATE ---------- */
   let threadId = null;
   let source   = null;
 
-  function append(text, cls = "narration") {
+  /* ---------- UI helpers ---------- */
+  const showForm  = () => { form.classList.remove("d-none"); form.style.display = "flex"; feedbackIn.focus(); };
+  const hideForm  = () => { form.classList.add("d-none");   form.style.display = "none"; };
+  const clearUI   = () => { log.innerHTML = ""; rawDebug.innerHTML = ""; feedbackIn.value = ""; };
+
+  /** Append a message to log */
+  function append(msg, type = "log") {
     const p = document.createElement("p");
-    p.className = cls === "question"
-      ? "mb-2 text-muted fst-italic"
-      : "mb-2";
-    p.textContent = text;
+    p.className = {
+      narration: "narration mb-2",
+      question : "question mb-2 text-muted fst-italic",
+      tech     : "small text-secondary mb-1",
+      log      : "mb-2"
+    }[type] || "mb-2";
+
+    p.innerHTML = (typeof msg === "object")
+      ? `<pre class="m-0">${JSON.stringify(msg, null, 2)}</pre>`
+      : msg;
+
     log.appendChild(p);
     log.scrollTop = log.scrollHeight;
   }
 
-  function handleChunk(event) {
-    let payload;
-    try {
-      payload = JSON.parse(event.data);
-    } catch {
-      payload = event.data;
-    }
+  /* ---------- Handle each SSE event ---------- */
+  function handleEvt(evtType, payload) {
+    switch (evtType) {
+      case "loadplan":
+        handleLoadPlan(payload);
+        break;
 
-    // raw debug
-    if (rawDebug) {
-      const d = document.createElement("details");
-      d.className = "small text-secondary";
-      const summary = document.createElement("summary");
-      summary.textContent = `[${event.type}]`;
-      d.appendChild(summary);
-      const pre = document.createElement("pre");
-      pre.textContent = JSON.stringify(payload, null, 2);
-      d.appendChild(pre);
-      rawDebug.appendChild(d);
-      rawDebug.scrollTop = rawDebug.scrollHeight;
-    }
+      case "narrateStep":
+      case "narratestep":
+        append(`⚙️ Step ${payload.step} in corso…`, "tech");
+        break;
 
-    if (event.type === 'narration') {
-      const narration = typeof payload === 'string' ? payload : payload.narration;
-      if (narration) append(`🗣️ ${narration}`, 'narration');
-    }
+      case "narration":
+        append(`🗣️ ${payload.narration}`, "narration");
+        break;
 
-    if (event.type === 'question') {
-      const question = typeof payload === 'string' ? payload : payload.question;
-      if (question) append(`❓ ${question}`, 'question');
-    }
+      case "question":
+        append(`❓ ${payload.question}`, "question");
+        showForm();
+        break;
 
-    if (event.type === 'step') {
-      const step = typeof payload === 'string' ? payload : payload.step;
-      if (step) append(`➡️ Step in corso: ${step}`, 'question');
-    }
+      case "chatfeedback":
+        append(payload.message || "💬 Puoi inviare un feedback ora.", "question");
+        showForm();
+        break;
 
-    if (event.type === 'append') {
-      const action = typeof payload === 'string' ? payload : payload.action;
-      if (action) append(`📌 Step arricchito: ${action}`, 'narration');
-    }
+      case "append":
+      case "appendtoplan":
+        append(`📌 Step arricchito: ${payload.action}`, "narration");
+        hideForm();
+        break;
 
-    if (event.type === 'done') {
-      append('✅ Avventura completata.', 'narration');
-      updateUIOnEnd();
-    }
+      case "done":
+        append(payload.message || "✅ Avventura completata.", "log");
+        updateUIEnd();
+        break;
 
-    if (event.type === 'error') {
-      append('❌ Errore nella narrazione.', 'question');
-      updateUIOnEnd();
+      case "error":
+        append(payload.message || "❌ Errore nella narrazione.", "question");
+        updateUIEnd();
+        break;
+
+      default:
+        if (window.showTechEvents) append(`⚙️ Evento tecnico: ${evtType}`, "tech");
     }
   }
 
-  function closeStream() {
-    if (source) {
-      source.close();
-      source = null;
-    }
+  /* ---------- LoadPlan pretty print ---------- */
+  function handleLoadPlan(payload) {
+    if (payload.lore?.description) append(`📘 <strong>Lore</strong>: ${payload.lore.description}`, "question");
+
+    const steps = payload.plan_steps || [];
+    append(`📦 Piano caricato con ${steps.length} step:`, "log");
+    steps.forEach(s => append(`🔹 [${s.step}] ${s.action} (costo: ${s.step_cost}, cumulativo: ${s.cumulative_cost})`, "log"));
   }
 
-  function updateUIOnStart() {
-    startBtn.disabled = true;
-    spinner.classList.remove('d-none');
-    statusTxt.textContent = '⏳ Caricamento…';
-    statusTxt.classList.remove('d-none');
-    stopBtn.classList.remove('d-none');
-    form.classList.remove('d-none');
-    log.innerHTML = '';
-    rawDebug.innerHTML = '';
-    feedbackIn.value = '';
-  }
+  /* ---------- SSE Open ---------- */
+  function startStream(extraFeedback = "") {
+    if (source) source.close();
 
-  function updateUIOnEnd() {
-    startBtn.disabled = false;
-    spinner.classList.add('d-none');
-    statusTxt.classList.add('d-none');
-    stopBtn.classList.add('d-none');
-    form.classList.add('d-none');
-  }
+    threadId = threadId || `narrative-${Date.now()}`;
+    const params = new URLSearchParams({ thread_id: threadId, lore: loreSelect.value });
+    if (extraFeedback) params.set("feedback", extraFeedback);
 
-  function startStream(feedback) {
-    closeStream();
-    const lore = loreSelect.value;
-    const params = new URLSearchParams({ thread_id: threadId, lore });
-    if (feedback) params.set('feedback', feedback);
     source = new EventSource(`/narrative/stream?${params}`);
-    ['narration','question','append','step','done','error'].forEach(evt => {
-      source.addEventListener(evt, handleChunk);
+
+    source.addEventListener("message", (e) => {            // fallback generico
+      console.warn("Evento generico non gestito:", e.data);
     });
-    source.onerror = () => {
-      closeStream();
-      updateUIOnEnd();
-    };
+
+    // Gestione di tutti gli eventi previsti
+    [
+      "LoadPlan","NarrateStep","Narration","Question",
+      "ChatFeedback","Append","AppendToPlan",
+      "Done","Error","NarrateStep","ApplyLoreUpdate",
+      "NextStep","step"
+    ].forEach(name => {
+      source.addEventListener(name, e => {
+        // normalizza in minuscolo per semplicità
+        let payload;
+        try { payload = JSON.parse(e.data); } catch { payload = e.data; }
+        handleEvt(name.toLowerCase(), payload);
+      });
+    });
+
+    source.onerror = () => { console.error("SSE errore/chiuso"); updateUIEnd(); };
   }
 
-  startBtn.addEventListener('click', () => {
-    if (!loreSelect.value) {
-      alert('Seleziona una lore.');
-      return;
-    }
+  /* ---------- UI helpers ---------- */
+  function updateUIStart() {
+    startBtn.disabled = true;
+    spinner.classList.remove("d-none");
+    statusTxt.classList.remove("d-none");
+    stopBtn.classList.remove("d-none");
+    hideForm();
+    clearUI();
+  }
+  function updateUIEnd() {
+    startBtn.disabled = false;
+    spinner.classList.add("d-none");
+    statusTxt.classList.add("d-none");
+    stopBtn.classList.add("d-none");
+    hideForm();
+  }
+
+  /* ---------- BUTTONS ---------- */
+  startBtn.addEventListener("click", () => {
+    if (!loreSelect.value) return alert("Seleziona una lore.");
     threadId = `narrative-${Date.now()}`;
-    updateUIOnStart();
+    document.body.dataset.threadId = threadId;
+    updateUIStart();
     startStream();
   });
 
-  stopBtn.addEventListener('click', () => {
-    append('✋ Narrazione interrotta.');
-    closeStream();
-    updateUIOnEnd();
+  stopBtn.addEventListener("click", () => {
+    append("✋ Narrazione interrotta.", "question");
+    source?.close();
+    updateUIEnd();
   });
 
-  form.addEventListener('submit', e => {
+  /* ---------- FEEDBACK FORM ---------- */
+  form.addEventListener("submit", async e => {
     e.preventDefault();
     const fb = feedbackIn.value.trim();
     if (!fb) return;
-    append(`🧠 ${fb}`, 'question');
-    feedbackIn.value = '';
-    startStream(fb);
+
+    append(`🧠 ${fb}`, "question");
+    hideForm(); feedbackIn.value = "";
+
+    try {
+      const res = await fetch("/narrative/message", {
+        method : "POST",
+        headers: { "Content-Type": "application/json" },
+        body   : JSON.stringify({ thread_id: threadId, feedback: fb })
+      });
+      const json = await res.json();
+
+      if (json.done) {
+        append("✅ Narrazione terminata.", "log");
+        updateUIEnd();
+      } else {
+        // riprendi lo stream senza extra feedback
+        startStream();
+      }
+    } catch (err) {
+      console.error(err);
+      append("❌ Errore nell'invio del feedback.", "question");
+      updateUIEnd();
+    }
   });
 });

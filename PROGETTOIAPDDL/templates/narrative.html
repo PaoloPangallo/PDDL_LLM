@@ -5,7 +5,8 @@
 <main class="container my-5">
   <h1 class="mb-4">🎭 Narrazione Interattiva</h1>
 
-  <div class="row mb-4">
+  <!-- Selezione lore e bottoni di controllo -->
+  <div class="row mb-4 align-items-end">
     <div class="col-md-6">
       <label for="lore-select" class="form-label">📘 Seleziona Lore</label>
       <select id="lore-select" class="form-select">
@@ -15,28 +16,36 @@
         {% endfor %}
       </select>
     </div>
-    <div class="col-md-6 text-end align-self-end">
-      <button id="start-narrative" class="btn btn-primary">
-        <span id="start-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+    <div class="col-md-6 text-end">
+      <button id="start-narrative" class="btn btn-primary me-2">
+        <span id="start-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
         🚀 Inizia Avventura
       </button>
-      <button id="stop-narrative" class="btn btn-outline-danger d-none ms-2">
+      <button id="stop-narrative" class="btn btn-outline-danger d-none">
         ✋ Ferma
       </button>
     </div>
   </div>
 
-  <div id="status-text" class="mb-2 text-info d-none">
+  <!-- Stato caricamento -->
+  <div id="status-text" class="mb-3 text-info d-none">
     ⏳ In attesa di risposta…
   </div>
 
+  <!-- Contenitore piano -->
+  <div id="plan-container" class="border rounded p-3 bg-white mb-4 d-none" style="max-height:200px; overflow-y:auto;">
+    <!-- Popolato da JS -->
+  </div>
+
+  <!-- Log narrativo -->
   <div id="narrative-log"
-       class="border rounded p-3 bg-white mb-4"
-       style="height: 300px; overflow-y: auto;"
+       class="border rounded p-3 bg-light shadow-sm mb-4"
+       style="height: 350px; overflow-y: auto;"
        aria-live="polite" aria-atomic="false">
     <div class="text-muted">📖 Nessuna narrazione ancora iniziata…</div>
   </div>
 
+  <!-- Form feedback -->
   <form id="narrative-form" class="input-group d-none" autocomplete="off">
     <input type="text" id="feedback-input" class="form-control"
            placeholder="Scrivi un suggerimento o modifica…">
@@ -45,14 +54,40 @@
     </button>
   </form>
 
-  <!-- Pannello opzionale per JSON raw -->
+  <!-- Toggle eventi tecnici -->
+  <div class="form-check form-switch mb-2">
+    <input class="form-check-input" type="checkbox" id="toggle-tech-events" checked>
+    <label class="form-check-label" for="toggle-tech-events">Mostra eventi tecnici</label>
+  </div>
+
+  <!-- Info sessione thread -->
+  <div class="text-end mt-2 small text-muted" id="thread-id-badge">
+    <!-- Aggiornato via JS -->
+  </div>
+
+  <!-- Debug raw -->
   <details class="mt-4">
     <summary>🛠️ Debug raw chunks</summary>
-    <pre id="raw-debug" class="bg-light p-3" style="max-height:200px;overflow:auto"></pre>
+    <pre id="raw-debug" class="bg-light p-3" style="max-height: 200px; overflow: auto;"></pre>
   </details>
 </main>
 {% endblock %}
 
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='js/narrative.js') }}" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Thread ID badge
+  const badge = document.getElementById("thread-id-badge");
+  const tid = document.body.dataset.threadId;
+  if (badge && tid) badge.textContent = `🧵 Thread ID: ${tid}`;
+
+  // Toggle eventi tecnici
+  const toggle = document.getElementById("toggle-tech-events");
+  window.showTechEvents = toggle.checked;
+  toggle.addEventListener('change', () => {
+    window.showTechEvents = toggle.checked;
+  });
+});
+</script>
 {% endblock %}
