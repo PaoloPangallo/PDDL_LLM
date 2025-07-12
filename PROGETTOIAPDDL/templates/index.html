@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}QuestMaster – Pipeline PDDL (Streaming){% endblock %}
+
+{% block content %}
+<main class="container my-5">
+  <h1 class="mb-4">⚙️ Pipeline Automatica PDDL (Streaming)</h1>
+
+  <div class="row mb-3 align-items-end">
+    <div class="col-md-6">
+      <label for="lore-select" class="form-label">📘 Seleziona Lore</label>
+      <select id="lore-select" class="form-select" aria-label="Seleziona il file di lore">
+        <option disabled selected>— Scegli una lore —</option>
+        {% for file in lore_files %}
+          <option value="{{ file }}">{{ file }}</option>
+        {% endfor %}
+      </select>
+    </div>
+   <div class="col-md-6 text-md-end">
+  <div class="form-check mb-2 text-start text-md-end">
+    <input class="form-check-input" type="checkbox" value="" id="reset-checkbox">
+    <label class="form-check-label" for="reset-checkbox">
+      🧹 Reset memoria (nuova run)
+    </label>
+  </div>
+  <button id="run-from-scratch" class="btn btn-primary w-100 w-md-auto" aria-label="Avvia la pipeline">
+    ⚡ Avvia Pipeline
+  </button>
+</div>
+
+  <!-- Log della chat / pipeline -->
+  <div id="chat-log"
+       class="border rounded p-3 mb-4 bg-white"
+       style="height:300px;overflow-y:auto"
+       aria-label="Log della conversazione">
+    <div class="text-muted">💬 Pronto per eseguire la pipeline…</div>
+  </div>
+
+  <!-- Qui potrai inserire eventuali link per il download dei file generati -->
+  <div id="download-links" class="mb-4"></div>
+
+  <!-- Dettagli a fisarmonica -->
+  <div class="accordion" id="pipeline-details">
+    <!-- Prompt -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingPrompt">
+        <button class="accordion-button" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapsePrompt"
+                aria-expanded="true" aria-controls="collapsePrompt">
+          📝 Prompt generato
+        </button>
+      </h2>
+      <div id="collapsePrompt" class="accordion-collapse collapse show"
+           aria-labelledby="headingPrompt" data-bs-parent="#pipeline-details">
+        <div class="accordion-body p-0">
+          <pre id="prompt-content" class="m-3"></pre>
+        </div>
+      </div>
+    </div>
+    <!-- Raw -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingRaw">
+        <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapseRaw"
+                aria-expanded="false" aria-controls="collapseRaw">
+          📥 Raw response
+        </button>
+      </h2>
+      <div id="collapseRaw" class="accordion-collapse collapse"
+           aria-labelledby="headingRaw" data-bs-parent="#pipeline-details">
+        <div class="accordion-body p-0">
+          <pre id="raw-content" class="m-3"></pre>
+        </div>
+      </div>
+    </div>
+    <!-- Validation -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingValidation">
+        <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapseValidation"
+                aria-expanded="false" aria-controls="collapseValidation">
+          📋 Validation
+        </button>
+      </h2>
+      <div id="collapseValidation" class="accordion-collapse collapse"
+           aria-labelledby="headingValidation" data-bs-parent="#pipeline-details">
+        <div class="accordion-body p-0">
+          <pre id="validation-content" class="m-3"></pre>
+        </div>
+      </div>
+    </div>
+    <!-- Refine -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingRefine">
+        <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapseRefine"
+                aria-expanded="false" aria-controls="collapseRefine">
+          🔧 Refine feedback
+        </button>
+      </h2>
+      <div id="collapseRefine" class="accordion-collapse collapse"
+           aria-labelledby="headingRefine" data-bs-parent="#pipeline-details">
+        <div class="accordion-body p-0">
+          <pre id="refine-content" class="m-3"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Timeline Valutazioni -->
+<div class="mt-4">
+  <h3 class="section-title">📋 Tutte le Validazioni</h3>
+
+  <div id="validation-timeline" class="accordion" role="region"></div>
+</div>
+
+<!-- Timeline Refine -->
+<div class="mt-4">
+<h3 class="section-title">🔧 Iterazioni di Refine</h3>
+  <div id="refine-timeline" class="row row-cols-1 row-cols-md-2 g-3"></div>
+</div>
+
+
+<a href="{{ url_for('narrative.narrative_page') }}" class="btn btn-outline-dark mt-3">
+  🎮 Vai alla Fase 2 – Narrazione Interattiva
+</a>
+
+
+
+
+  <!-- Form di feedback umano -->
+  <form id="chatbot-form" class="mt-4 d-none" autocomplete="off" aria-label="Invia un feedback umano">
+    <div class="input-group">
+      <input
+        type="text"
+        id="user-input"
+        class="form-control"
+        placeholder="Scrivi un feedback per raffinare..."
+        autocomplete="off"
+        aria-label="Campo di input feedback"
+      />
+      <button type="submit" class="btn btn-secondary" id="feedback-submit" aria-label="Invia feedback">
+        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="feedback-spinner"></span>
+        <span id="feedback-text">Invia feedback</span>
+      </button>
+    </div>
+  </form>
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/pipeline.js') }}" defer></script>
+{% endblock %}

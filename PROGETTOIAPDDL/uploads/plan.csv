@@ -1,0 +1,17 @@
+step,action,step_cost,cumulative_cost
+1,load pkg1 truck-1 city-a,1.0,1.0
+2,move truck-1 city-a trap-city,5.0,6.0
+3,load pkg5 truck-1 trap-city,1.0,7.0
+4,load pkg3 truck-1 trap-city,1.0,8.0
+5,move truck-1 trap-city city-a,5.0,13.0
+6,unload pkg3 truck-1 city-a,2.0,15.0
+7,move truck-1 city-a city-c,5.0,20.0
+8,unload pkg5 truck-1 city-c,2.0,22.0
+9,move truck-1 city-c city-e,5.0,27.0
+10,unload pkg1 truck-1 city-e,2.0,29.0
+11,load pkg4 truck-1 city-e,1.0,30.0
+12,move truck-1 city-e city-b,5.0,35.0
+13,unload pkg4 truck-1 city-b,2.0,37.0
+14,load pkg2 truck-1 city-b,1.0,38.0
+15,move truck-1 city-b city-d,5.0,43.0
+16,unload pkg2 truck-1 city-d,2.0,45.0

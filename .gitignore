@@ -1,0 +1,19 @@
+venv.zip
+.venv.zip
+
+# Ignora i log di questmaster
+**/questmaster.log
+
+# Python bytecode e cache
+PROGETTOIAPDDL//_pycache_/
+*.py[cod]
+
+# Virtualenv
+venv/
+
+# Session DB e log
+PROGETTOIAPDDL/memory/
+questmaster.log
+
+# Uploads (file utente)
+PROGETTOIAPDDL/static/uploads/

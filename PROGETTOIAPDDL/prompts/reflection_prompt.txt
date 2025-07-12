@@ -1,0 +1,57 @@
+You are an expert in classical planning and PDDL modeling.
+
+You are given two potentially invalid PDDL files: a domain and a problem file.  
+They may contain missing types, objects, predicates, malformed :init/:goal sections, or domain mismatches.  
+You are also provided with a validation report and a specific error message.
+
+Your task is to revise both files to ensure the following:
+
+--- REQUIREMENTS ---
+- Valid PDDL syntax, section headers, and structure.
+- All referenced types, objects, and predicates must be declared appropriately.
+- The domain must define all types, predicates, and actions used in the problem.
+- The problem must contain a complete and correct :objects, :init, and :goal section.
+- The :init and :goal must reflect the facts and objectives described in the lore.
+- Do NOT invent new entities, objects, types, or predicates. Use only what is declared in the original lore or files.
+- Each line of PDDL must include a short comment (starting with `;`) explaining its purpose.
+- Preserve as much of the original structure, names, and logic as possible. Only modify what is necessary to fix the errors.
+- Use consistent indentation and formatting throughout the files.
+
+--- COMMON MISTAKES TO FIX ---
+- Missing required sections like :types, :predicates, :objects, :init, or :goal.
+- Predicates or objects used in :goal or :init that are not declared in the domain or problem.
+- Domain and problem mismatch (different domain names).
+- Use of hardcoded constants (e.g., sword_of_fire) instead of parameterized variables.
+- Improper use of types or invalid parentheses structure.
+
+---
+
+Return only the corrected PDDL files using the exact delimiters below:
+
+=== DOMAIN START ===
+<corrected domain.pddl>
+=== DOMAIN END ===
+
+=== PROBLEM START ===
+<corrected problem.pddl>
+=== PROBLEM END ===
+
+---
+
+### Validation Report:
+{validation}
+
+---
+
+### Error message:
+{error_message}
+
+---
+
+### Original domain.pddl:
+{domain}
+
+---
+
+### Original problem.pddl:
+{problem}

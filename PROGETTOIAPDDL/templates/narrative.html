@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}QuestMaster – Narrazione Interattiva{% endblock %}
+
+{% block content %}
+<main class="container my-5">
+  <h1 class="mb-4">🎭 Narrazione Interattiva</h1>
+
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <label for="lore-select" class="form-label">📘 Seleziona Lore</label>
+      <select id="lore-select" class="form-select">
+        <option selected disabled>— Scegli una lore —</option>
+        {% for file in lore_files %}
+          <option value="{{ file }}">{{ file }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-6 text-end align-self-end">
+      <button id="start-narrative" class="btn btn-primary">
+        <span id="start-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        🚀 Inizia Avventura
+      </button>
+      <button id="stop-narrative" class="btn btn-outline-danger d-none ms-2">
+        ✋ Ferma
+      </button>
+    </div>
+  </div>
+
+  <div id="status-text" class="mb-2 text-info d-none">
+    ⏳ In attesa di risposta…
+  </div>
+
+  <div id="narrative-log"
+       class="border rounded p-3 bg-white mb-4"
+       style="height: 300px; overflow-y: auto;"
+       aria-live="polite" aria-atomic="false">
+    <div class="text-muted">📖 Nessuna narrazione ancora iniziata…</div>
+  </div>
+
+  <form id="narrative-form" class="input-group d-none" autocomplete="off">
+    <input type="text" id="feedback-input" class="form-control"
+           placeholder="Scrivi un suggerimento o modifica…">
+    <button class="btn btn-secondary" type="submit">
+      💬 Invia feedback
+    </button>
+  </form>
+
+  <!-- Pannello opzionale per JSON raw -->
+  <details class="mt-4">
+    <summary>🛠️ Debug raw chunks</summary>
+    <pre id="raw-debug" class="bg-light p-3" style="max-height:200px;overflow:auto"></pre>
+  </details>
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/narrative.js') }}" defer></script>
+{% endblock %}

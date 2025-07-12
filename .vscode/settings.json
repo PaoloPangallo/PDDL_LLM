@@ -1,0 +1,10 @@
+{
+  "python.linting.enabled": false,
+  "python.analysis.indexing": false,
+  "python.analysis.openFilesOnly": true,
+  "python.analysis.extraPaths": [
+    "./PROGETTOIAPDDL",
+    "./PROGETTOIAPDDL",
+    "./PROGETTOIAPDDL"
+  ]
+}

@@ -1,0 +1,309 @@
+/* =========================================
+   General
+   ========================================= */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+/* =========================================
+   Chat Container
+   ========================================= */
+.chat-container {
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+/* =========================================
+   Chat Log
+   ========================================= */
+.chat-log {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: .5rem;
+  height: 400px;
+  overflow-y: auto;
+  padding: 1rem;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* =========================================
+   Messages
+   ========================================= */
+.chat-message {
+  display: inline-block;
+  margin-bottom: .75rem;
+  line-height: 1.4;
+  max-width: 80%;
+  padding: .5rem .75rem;
+  border-radius: 1rem;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* User messages (right aligned) */
+.chat-message.user {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  margin-left: auto;
+}
+
+/* Bot messages (left aligned) */
+.chat-message.bot {
+  background-color: #cff4fc;
+  color: #055160;
+  margin-right: auto;
+}
+
+/* System messages (centered italic) */
+.chat-message.system-message {
+  background-color: #fff3cd;
+  color: #664d03;
+  text-align: center;
+  font-style: italic;
+  margin: 0 auto 1rem;
+  display: block;
+}
+
+/* Pre blocks inside chat */
+.chat-message pre {
+  background-color: #212529;
+  color: #f8f9fa;
+  padding: .5rem;
+  border-radius: .375rem;
+  overflow-x: auto;
+  margin: .5rem 0 0;
+}
+
+/* =========================================
+   Download Links
+   ========================================= */
+.download-link {
+  display: inline-block;
+  margin: .5rem .5rem 0 0;
+  font-weight: 600;
+  color: #0d6efd;
+}
+.download-link:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   Form Controls Overrides
+   (use Bootstrap classes where possible)
+   ========================================= */
+
+/* Ensure the lore select and input fill available space */
+.chat-controls .form-select,
+.chat-form .form-control {
+  width: 100%;
+}
+
+/* Pipeline button override to match theme */
+#run-from-scratch {
+  margin-top: .5rem;
+}
+
+/* Accordion blocks */
+.accordion .accordion-button {
+  font-size: 1rem;
+  font-weight: 500;
+}
+.accordion .accordion-body pre {
+  background-color: #f1f3f5;
+  color: #212529;
+}
+
+/* Small adjustments */
+.detail-block {
+  margin-bottom: 1rem;
+}
+
+
+/* =========================================
+   General improvements
+   ========================================= */
+/* Font monospace per i blocchi di codice */
+.chat-message pre,
+.accordion-body pre {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Fade-in per ogni nuovo messaggio */
+.chat-message {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.3s forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   Custom scrollbar (WebKit/Blink)
+   ========================================= */
+.chat-log::-webkit-scrollbar {
+  width: 8px;
+}
+.chat-log::-webkit-scrollbar-track {
+  background: #f1f3f5;
+  border-radius: 4px;
+}
+.chat-log::-webkit-scrollbar-thumb {
+  background-color: #adb5bd;
+  border-radius: 4px;
+  border: 2px solid #f1f3f5;
+}
+.chat-log::-webkit-scrollbar-thumb:hover {
+  background-color: #868e96;
+}
+
+/* =========================================
+   Download links container
+   ========================================= */
+.download-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.download-link {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #0d6efd;
+  border-radius: 0.375rem;
+  background: #e7f1ff;
+  transition: background 0.2s, color 0.2s;
+}
+.download-link:hover {
+  background: #0d6efd;
+  color: #fff;
+}
+
+/* =========================================
+   Pipeline details accordion
+   ========================================= */
+.accordion-button {
+  background-color: #f8f9fa;
+  color: #212529;
+  transition: background-color 0.2s;
+}
+.accordion-button:not(.collapsed):hover,
+.accordion-button:focus {
+  background-color: #e2e6ea;
+}
+.accordion-body {
+  background: #ffffff;
+  border-top: 1px solid #dee2e6;
+}
+
+/* =========================================
+   Form & controls spacing
+   ========================================= */
+.chat-controls,
+.chat-form {
+  gap: 0.75rem;
+}
+#run-from-scratch {
+  margin-top: 1rem;
+}
+
+/* =========================================
+   Custom styling per il checkbox di reset
+   ========================================= */
+#reset-checkbox {
+  cursor: pointer;
+  accent-color: #0d6efd; /* colore blu coerente con il tema */
+}
+.form-check-label {
+  font-weight: 500;
+  user-select: none;
+}
+
+
+/* =========================================
+   Responsive tweaks
+   ========================================= */
+@media (max-width: 576px) {
+  .chat-message {
+    max-width: 100%;
+  }
+  .download-links {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* =========================================
+   Miscellaneous
+   ========================================= */
+/* Ensure all links are styled consistently */
+a {
+  color: #0d6efd;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}     
+
+
+/* Timeline Validazioni */
+#validation-timeline .accordion-item {
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
+}
+
+#validation-timeline .accordion-button {
+  background-color: #f1f3f5;
+  color: #0c5460;
+  font-weight: 600;
+}
+
+#validation-timeline .accordion-button:not(.collapsed) {
+  background-color: #e3f2fd;
+}
+
+#validation-timeline .accordion-body pre {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  margin: 0;
+}
+
+
+/* Timeline Refine */
+#refine-timeline .card {
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#refine-timeline .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+#refine-timeline .card-header {
+  background-color: #f1f3f5;
+  font-weight: 600;
+  color: #0c5460;
+  border-bottom: 1px solid #dee2e6;
+}
+
+#refine-timeline pre {
+  background-color: #f8f9fa;
+  color: #212529;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  margin-bottom: 0.5rem;
+}
+
+
