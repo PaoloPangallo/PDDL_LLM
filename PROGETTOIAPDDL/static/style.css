@@ -7,6 +7,11 @@ body {
   color: #212529;
 }
 
+pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* =========================================
    Chat Container
    ========================================= */
@@ -18,7 +23,7 @@ body {
 /* =========================================
    Chat Log
    ========================================= */
-.chat-log {
+#chat-log {
   background: #ffffff;
   border: 1px solid #dee2e6;
   border-radius: .5rem;
@@ -57,7 +62,8 @@ body {
 }
 
 /* System messages (centered italic) */
-.chat-message.system-message {
+/* .chat-message.system-message */
+.chat-message.system {
   background-color: #fff3cd;
   color: #664d03;
   text-align: center;
@@ -75,11 +81,17 @@ body {
   overflow-x: auto;
   margin: .5rem 0 0;
 }
+.chat-message pre,
+.accordion-body pre {
+  overflow-x: auto;
+  white-space: pre-wrap !important;   /* forza l’andata a capo */
+  word-break: break-word;
+}
 
 /* =========================================
    Download Links
    ========================================= */
-.download-link {
+#download-link {
   display: inline-block;
   margin: .5rem .5rem 0 0;
   font-weight: 600;
@@ -130,6 +142,8 @@ body {
   font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
   font-size: 0.875rem;
   line-height: 1.4;
+  white-space: pre-wrap !important;
+  word-break: break-word;
 }
 
 /* Fade-in per ogni nuovo messaggio */
@@ -221,11 +235,14 @@ body {
   cursor: pointer;
   accent-color: #0d6efd; /* colore blu coerente con il tema */
 }
-.form-check-label {
+.form-check-input {              
+  margin-right: .35rem;
+}
+.form-check-label {              
+  padding-left: 0;
   font-weight: 500;
   user-select: none;
 }
-
 
 /* =========================================
    Responsive tweaks
@@ -251,3 +268,15 @@ a:hover {
   text-decoration: underline;
 }     
 
+#custom-story-wrap {
+  margin-bottom: 1rem;
+}
+
+#live-edit-panel {
+  margin-top: 1.5rem;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+#live-edit-panel textarea {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}

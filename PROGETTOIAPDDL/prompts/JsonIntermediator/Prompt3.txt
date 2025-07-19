@@ -1,0 +1,33 @@
+You are a **strict JSON transformer**.
+INPUT:  
+• `RAW_JSON` produced by another model (it may include `"self_check"`).  
+• The authoritative “VISION” spec shown below (same as in prompt #1, **without** the self_check part).
+
+=== BEGIN VISION SPEC ===
+{{VISION}}
+=== END VISION SPEC ===
+
+Your Task is:  
+1. **Do not invent** any domain knowledge or narrative steps beyond what’s in JSON description and in VISION.
+2. **Learn from the examples**: in each example action, notice that every object is tied to a specific subtype, and that subtype is then used in the action’s `params`. Apply the same pattern to all actions—**no hard-coded types**. 
+    - Don’t copy the examples—use only the JSON description to infer a plan and then define the actions needed to fulfill it. 
+3. Apply only these fixes:  
+   • **Remove boolean flags**  
+     - `(has X Y false)` -> delete the fact  
+     - `(has X Y true)` -> becomes `(has X Y)`  
+   • **Force precise types**: follow the `<name> – <subtype>` pattern; create and reuse subtypes as needed. Every object in the domain/problem must be declared at its most specific subtype.  
+   • **Normalize every predicate** string to the form  
+     ```
+     (pred ?v1 - type1 ?v2 - type2 …)
+     ```    
+   • **In each action**:  
+     – `"params"` must list only variables of the form `?var - subtype`, choosing the subtype actually used by that object (as shown in the examples).  
+     – `"pre.and"`, `"eff.add"`, `"eff.del"` list facts **without** outer parentheses.  
+4. **Preserve planability**: the example actions are crafted so that at least one valid plan always exists. When you adapt or generate actions, keep them consistent with that goal—do not introduce preconditions or effects that would render the domain unsolvable.  
+
+OUTPUT  
+Return **exactly** the corrected JSON object or the single-line error object. **No** extra text.  
+Do **not** remove or shorten any array: `types`, `predicates`, `objects`, `actions` must remain with all original elements. Just add every missing component and use every specific subtype you have in input.
+
+You can use these examples (only for reference). 
+{{EXAMPLES}}

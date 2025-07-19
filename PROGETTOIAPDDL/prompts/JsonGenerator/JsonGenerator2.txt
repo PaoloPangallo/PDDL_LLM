@@ -1,0 +1,105 @@
+You are a **planning-domain architect**.
+
+TASK  
+1. Read the STORY.  
+2. Infer every step the protagonist must take.  
+3. Output **one** JSON object following the EXACT “VISION” schema below, plus a final `"self_check"` block.
+
+==================================================
+STORY:
+{{STORY}}
+==================================================
+
+### “VISION” SCHEMA  (include these keys in the order shown)
+
+STEP 1 – “NARRATIVE_REFLECTION”  
+STEP 2 – “PLAN_OUTLINE”  
+STEP 3 – “INIT_GOAL”  
+STEP 4 – “PREDICATES”  
+STEP 5 – “OBJECTS_AND_TYPES”  
+STEP 6 – “ACTIONS_PDDL”  
+STEP 7 – “VISION_JSON”  *(the consolidated JSON for later steps)*
+
+⚠️ **CONSTRAINTS**  
+1. *No generic types* — every object ends with a concrete subtype (e.g., `oak_door – door_wooden`).  
+2. Every predicate appearing in INIT or GOAL must also appear in at least one action *precondition* **and** *effect*.  
+3. Include `(connected Lx Ly)` facts so the agent can traverse the entire map.  
+4. INTERNAL checklist (do **not** output this list):  
+   a. Each variable used in effects is declared in parameters.  
+   b. No constant names appear inside parameter lists.  
+   c. Every action adds at least one fact.  
+5. After building **STEP 6**, append:  
+   ```jsonc
+   "self_check": {
+     "undefined_predicates": [],
+     "orphan_actions": [],
+     "unused_types": [],
+     "comment": "OK if all arrays empty"
+   }
+• If any array is non-empty, regenerate a coherent answer instead of returning partial output.
+
+DELIVERABLE
+Emit exactly one JSON object (steps 1-7 + self_check).
+No markdown, explanations, or extra text. Only the JSON, matching this spec:
+```jsonc
+    {
+    "description": "string",
+    "trama": "string",
+    "domain": {
+        "name": "domain_name",
+        "types": [
+        "type1",
+        "type2 - type1",
+        "type3 - type2",
+        "type4 - type1",
+        "..."
+        ],
+        "predicates": [
+        "(pred1 ?var1 - type1 ?var2 - type2)",
+        "(pred2 ?var3 - type3)",
+        "(pred3 ?var1 - type1 ?var4 - type4)",
+        "..."
+        ],
+        "objects": [
+        { "name": "constant1", "type": "type1" },
+        { "name": "constant2", "type": "type2" },
+        { "name": "constant3", "type": "type3" },
+        "..."
+        ],
+        "actions": [
+        {
+            "name": "action1",
+            "params": ["?var1 - type1", "?var2 - type2"],
+            "pre":  { "and": ["pred1 ?var1 ?var2"] },
+            "eff":  { "add": ["pred2 ?var2"], "del": ["pred1 ?var1 ?var2"] }
+        },
+        {
+            "name": "action2",
+            "params": ["?var3 - type3", "?var4 - type4"],
+            "pre":  { "and": ["pred3 ?var3 ?var4"] },
+            "eff":  { "add": ["pred1 ?var3 ?var4"], "del": [] }
+        },
+        "..."
+        ]
+    },
+    "problem": {
+        "name": "problem_name",
+        "domain": "domain_name",
+        "objects": [
+        "constant1 - type1",
+        "constant2 - type2",
+        "constant3 - type3",
+        "..."
+        ],
+        "init": [
+        "pred1 constant1 constant2",
+        "pred3 constant3 constant4",
+        "..."
+        ],
+        "goal": [
+        "pred2 constant2",
+        "pred1 constant3 constant4",
+        "..."
+        ]
+    }
+}

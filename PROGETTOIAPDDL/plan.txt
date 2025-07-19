@@ -1,0 +1,7 @@
+(travelto arin portmurias sunlitcliffs)
+(defeatmonster arin livingstonegolems sunlitcliffs corallockpick)
+(travelto arin sunlitcliffs templeoftides)
+(collectitem arin emeraldofdawn templeoftides)
+(travelto arin templeoftides shadowedmarsh)
+(travelto arin shadowedmarsh portmurias)
+; cost = 6 (unit cost)

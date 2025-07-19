@@ -1,0 +1,76 @@
+You are an expert in writing PDDL files.  Based on the information below, produce **exactly** two PDDL blocks: DOMAIN and PROBLEM.
+
+--- CONTEXT ---
+📝 DOMAIN DESCRIPTION:
+{DESCRIPTION}
+
+🚀 INITIAL STATE:
+{INIT}
+
+🎯 GOAL CONDITIONS:
+{GOAL}
+
+{BRANCHING}{DEPTH}{ACTIONS}{FEW_SHOT}
+
+{JSON}
+
+--- OUTPUT FORMAT ---
+=== DOMAIN START ===
+(define (domain <DOMAIN_NAME>)
+  (:requirements :strips :typing)  ; STRIPS + typing only
+  (:types ; Declare **all** types you will use below (including those for objects, predicates, and actions).
+    <TYPE_1> - <SPECIFIC_TYPE_1>   ; list every type once, with its hierarchy
+    <TYPE_2> - <SPECIFIC_TYPE_2>
+    … 
+  )
+  (:predicates ; Define every predicate using variables and their types.
+    (<PREDICATE_1> ?ARG1 - <SPECIFIC_TYPE_ARG1> ?ARG2 - <SPECIFIC_TYPE_ARG2>)
+    <PREDICATE_2> ?ARGX - <SPECIFIC_TYPE_ARGX>
+    … 
+  )
+  ;— ACTIONS —
+  (:action <ACTION_NAME1>
+    :parameters (?VAR1 - <SPECIFIC_TYPE_VAR1> ?VAR2 - <SPECIFIC_TYPE_VAR2>)
+    :precondition (and 
+      (<PREDICATE_1> ?VAR1 ?VAR2)
+      (<PREDICATE_2> ?VARA ?VARB)
+      …
+    )
+    :effect (and 
+      (not (<PREDICATE_1> ?VAR1 ?VAR2)) ; if the action negate a predicate
+      (<PREDICATE_3> ?VARC ?VARD)
+      …
+    )
+  )
+  … (repeat for each action) …
+)
+=== DOMAIN END ===
+
+=== PROBLEM START ===
+(define (problem <PROBLEM_NAME>)
+  (:domain <DOMAIN_NAME>)
+  (:objects ; List **all** concrete objects with their types under :objects.
+    OBJ1 - <SPECIFIC_TYPE_OBJ1>
+    OBJ2 - <SPECIFIC_TYPE_OBJ2>
+    … 
+  )
+  (:init
+    <ALL_INITIAL_FACTS>      ; one fact per line is fine
+  )
+  (:goal (and
+    <ALL_GOAL_FACTS>         ; conjunctive list of goal facts
+  ))
+)
+=== PROBLEM END ===
+
+--- RULES & CONSTRAINTS ---
+1. **Types completeness**: Every `<TYPE_*>` used anywhere (predicates or action parameters) **must** appear in the `:types` section.  
+2. **Variables and constants**:  
+   - In DOMAIN use only `?`-prefixed variables.  
+   - In PROBLEM list only constants (no `?`).  
+3. **Requirements**: include **only** `:strips` and `:typing`.  
+4. **Sections**: do not add sections beyond the two blocks above.  
+5. **No extra text**: output **only** the two delimited blocks—no explanations, JSON, or commentary beyond `;`-comments inside PDDL.  
+6. **Semantic coherence**:  
+   - If an action refers to a predicate or constant, ensure its type matches exactly the one declared.  
+   - Do not leave any type or predicate undefined.  

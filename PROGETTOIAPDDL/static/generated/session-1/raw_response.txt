@@ -1,83 +1,39 @@
-Here are the PDDL files for the given quest scenario:
+Based on the provided JSON input, which does not contain any specific information about domain name, types, predicates, objects, init, goal, actions, etc., I will create a generic PDDL structure that follows the rules and format you've outlined. Since there is no specific data in the JSON for these elements, I will generate placeholder content that reflects typical usage but does not conflict with your requirements or detailed rules.
 
-=== DOMAIN START ===
-(define (domain hero-quest)
-  (:requirements :strips)
-  
-  ; Predicates
+===DOMAIN===
+```lisp
+(define (domain example-domain)
+  (:requirements :strips :typing)
+  (:types t1 t2 t3)
   (:predicates
-    (at ?agent - agent ?location - location)
-    (on-ground ?object - object ?location - location)
-    (sleeping ?monster - monster)
-    (carrying ?agent - agent ?object - object)
-    (defeated ?monster - monster)
-  )
-  
-  ; Actions
-  (:action move
-    :parameters (?a - agent ?o - object ?l1 - location ?l2 - location)
-    :preconditions (and
-      (at ?a ?l1)
-      (on-ground ?o ?l1)
-    )
-    :effects (and
-      (not (at ?a ?l1))
-      (at ?a ?l2)
-    )
-  )
-  
-  (:action pick-up
-    :parameters (?a - agent ?o - object ?l - location)
-    :preconditions (and
-      (at ?a ?l)
-      (on-ground ?o ?l)
-    )
-    :effects (and
-      (not (on-ground ?o ?l))
-      (carrying ?a ?o)
-    )
-  )
-  
-  (:action defeat
-    :parameters (?a - agent ?m - monster ?l - location)
-    :preconditions (and
-      (at ?a ?l)
-      (carrying ?a ?o)
-      (sleeping ?m)
-    )
-    :effects (and
-      (not (sleeping ?m))
-      (defeated ?m)
-    )
-  )
+    (p1 ?x - t1)
+    (p2 ?x - t1 ?y - t2)
+    (p3 ?z - t3))
+  (:action act1
+    :parameters (?x - t1 ?y - t2)
+    :precondition (and (p2 ?x ?y))
+    :effect (and (p1 ?x) (not (p2 ?x ?y))))
+  (:action act2
+    :parameters (?z - t3)
+    :precondition (and (p3 ?z))
+    :effect (and (not (p3 ?z))))
 )
-=== DOMAIN END ===
+```
 
-=== PROBLEM START ===
-(define (problem hero-quest-problem)
-  (:domain hero-quest)
-  
-  ; Objects
+===PROBLEM===
+```lisp
+(define (problem example-problem)
+  (:domain example-domain)
   (:objects
-    hero
-    tower_of_varnak village
-    sword_of_fire ice_dragon
-  )
-  
-  ; Initial State
+    a1 a2 - t1
+    b1 - t2
+    c1 c2 - t3)
   (:init
-    (at hero village)
-    (on-ground sword_of_fire tower_of_varnak)
-    (sleeping ice_dragon)
-  )
-  
-  ; Goal Conditions
-  (:goal
-    (and
-      (at hero tower_of_varnak)
-      (carrying hero sword_of_fire)
-      (defeated ice_dragon)
-    )
-  )
+    (p2 a1 b1)
+    (p3 c1)
+    (p3 c2))
+  (:goal (and (p1 a1) (not (p3 c2))))
 )
-=== PROBLEM END ===
+```
+
+This PDDL content is generic and based on the structure you've provided, using placeholders for domain name, types, predicates, objects, init, goal, actions. Adjustments can be made if specific details from your JSON input are available to replace these placeholders.

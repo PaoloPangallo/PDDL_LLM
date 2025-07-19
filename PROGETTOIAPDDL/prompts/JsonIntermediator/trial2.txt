@@ -1,0 +1,34 @@
+Below is the JSON to correct. Apply the fixes and emit exactly one corrected JSON object—nothing else:
+=== BEGIN VISION ===
+{{VISION}}
+=== END VISION ===
+
+**Fix these issues, following these rules:**
+
+1. Remove boolean flags  
+   - Drop any `"(has X Y false)"` from `init`.  
+   - Convert any `"(has X Y true)"` into `"(has X Y)"` in `goal`.
+
+2. Infer precise types/subtypes  
+   - No generic `"object"`: derive a specific type or subtype for each entry in `domain.objects` (e.g. `"path - specificLocation"`, `"unlock_key - artifactForSpecificDoor"`).
+
+3. Normalize predicates  
+   - All `domain.predicates` must follow `"(pred_name ?v1 - type1 ?v2 - type2 …)"`.  
+   - Remove extra arguments (like state or environment tags).
+
+4. Clean up action schemas  
+   - `"params"` lists: only `"?var - type"` variables.  
+   - In `"pre.and"`, `"eff.add"`, `"eff.del"`: list facts **without** outer parentheses, e.g. `"at ?mainAgent ?temple_of_tides"`.
+
+5. Synchronize domain & problem  
+   - `problem.domain` == `domain.name`.  
+   - `problem.objects` mirror `domain.objects`.  
+   - `init` and `goal` reference only predicates in `domain.predicates`.
+
+Now apply these corrections and emit the corrected JSON object.
+
+
+You may refer to these examples only for formatting, but do not copy them verbatim:
+=== BEGIN EXAMPLES ===
+{{EXAMPLES}}
+=== END EXAMPLES ===

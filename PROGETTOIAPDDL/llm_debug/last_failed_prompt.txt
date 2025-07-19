@@ -1,52 +1,942 @@
-You are a PDDL refinement assistant.
-The following feedback was provided by a human:
+You are a **strict JSON transformer**.
+INPUT:  
+• `RAW_JSON` produced by another model (it may include `"self_check"`).  
+• The authoritative “VISION” spec shown below (same as in prompt #1, **without** the self_check part).
 
-💬 "=== DOMAIN REFINED === (define (domain quest-domain)   ; :types section   (:types      ; List of types in this domain     agent     location     object     monster)    ; :predicates section   (:predicates      ; Predicates used in this domain     (at ?a - agent ?l - location) ; a is at location l     (on-ground ?o - object ?l - location) ; o is on ground at location l     (sleeping ?m - monster) ; m is sleeping     (carrying ?a - agent ?o - object) ; a is carrying o     (defeated ?m - monster)) ; m is defeated    ; :action section   (:action      travel-to     ; Parameters of the action     (?a - agent ?l1 - location ?l2 - location)     ; Preconditions for the action to be executed     (:precondition        (at ?a ?l1) ; a is at l1       (not (at ?a ?l2))) ; a is not already at l2      ; Effects of the action     (:effect        (at ?a ?l2) ; a becomes at l2))    (:action      pick-up     (?a - agent ?o - object ?l - location)     (:precondition        (on-ground ?o ?l) ; o is on ground at l       (at ?a ?l)) ; a is at l      (:effect        (carrying ?a ?o))) ; a becomes carrying o))    (:action      defeat-monster     (?a - agent ?m - monster ?l - location)     (:precondition        (at ?a ?l) ; a is at l       (sleeping ?m) ; m is sleeping       (carrying ?a sword_of_fire)) ; a is carrying sword of fire      (:effect        (defeated ?m))) ; m becomes defeated)    (:action      defeat-monster     (?a - agent ?m - monster)     (:precondition        (at ?a ?l) ; a is at l       (sleeping ?m) ; m is sleeping       (carrying ?a sword_of_fire)) ; a is carrying sword of fire      (:effect        (defeated ?m))) ; m becomes defeated)    (:action      travel-to     (?a - agent ?l - location)     (:precondition        (at ?a ?l1) ; a is at l1       (not (at ?a ?l))) ; a is not already at l      (:effect        (at ?a ?l))) ; a becomes at l))    (:action      pick-up     (?a - agent ?o - object)     (:precondition        (on-ground ?o) ; o is on ground       (at ?a)) ; a is at      (:effect        (carrying ?a ?o))) ; a becomes carrying o))    (:action      pick-up     (?a - agent ?o - object ?l - location)     (:precondition        (on-ground ?o ?l) ; o is on ground at l       (at ?a ?l)) ; a is at l      (:effect        (carrying ?a ?o))) ; a becomes carrying o))    (:action      defeat-monster     (?a - agent ?m - monster)     (:precondition        (at ?a) ; a is at       (sleeping ?m) ; m is sleeping       (carrying ?a sword_of_fire)) ; a is carrying sword of fire      (:effect        (defeated ?m))) ; m becomes defeated)    (:action      defeat-monster     (?a - agent ?m - monster)     (:precondition        (at ?a) ; a is at       (sleeping ?m) ; m is sleeping       (carrying ?a sword_of_fire)) ; a is carrying sword of fire      (:effect        (defeated ?m))) ; m becomes defeated)  === PROBLEM REFINED === (define (problem quest-problem)   ; :domain section   (:domain quest-domain)    ; :objects section   (:objects      hero - agent     tower_of_varnak - location     sword_of_fire - object     ice_dragon - monster     village - location)    ; :init section   (:init      (at hero village) ; hero starts at village     (on-ground sword_of_fire tower_of_varnak) ; sword of fire is on ground at tower_of_varnak     (sleeping ice_dragon)) ; ice dragon is sleeping    ; :goal section   (:goal      (and        (at hero tower_of_varnak) ; hero becomes at tower_of_varnak       (carrying hero sword_of_fire) ; hero becomes carrying sword of fire       (defeated ice_dragon)))) ; ice dragon becomes defeated"
-
-Here are the current files:
-
-=== DOMAIN START ===
-
-=== DOMAIN END ===
-
-=== PROBLEM START ===
-
-=== PROBLEM END ===
-
-Validation Summary:
+=== BEGIN VISION SPEC ===
 {
-  "valid_syntax": false,
-  "missing_sections": [
-    "(:objects"
-  ],
-  "undefined_predicates_in_goal": [
-    "carrying",
-    "defeated"
-  ],
-  "undefined_predicates_in_init": [],
-  "undefined_objects_in_goal": [
-    "hero",
-    "tower_of_varnak",
-    "hero",
-    "sword_of_fire",
-    "ice_dragon"
-  ],
-  "mismatched_lore_entities": [],
-  "domain_mismatch": null,
-  "semantic_errors": [
-    "\u274c Init mismatch: '(at hero village)' not found in problem. \ud83d\udee0 Aggiungi questa tupla nella sezione (:init).",
-    "\u274c Init mismatch: '(on-ground sword_of_fire tower_of_varnak)' not found in problem. \ud83d\udee0 Aggiungi questa tupla nella sezione (:init).",
-    "\u274c Init mismatch: '(sleeping ice_dragon)' not found in problem. \ud83d\udee0 Aggiungi questa tupla nella sezione (:init).",
-    "\u274c Action 'travel-to' is missing ':parameters'.",
-    "\u274c Action 'pick-up' is missing ':parameters'.",
-    "\u274c Action 'defeat-monster' is missing ':parameters'."
-  ]
+  "description": "The quest involves a hero who starts in the village. In order to complete the mission, the hero must: 1. Travel from the village to the Tower of Varnak. 2. Pick up the Sword of Fire, which is located at the Tower of Varnak. 3. Reach the Ice Dragon's location. 4. Defeat the Ice Dragon using the Sword of Fire. To defeat the Ice Dragon, the hero must be in the same location as the dragon and must be carrying the Sword of Fire. The Ice Dragon is initially sleeping.",
+  "trama": "The hero must travel to the Tower of Varnak, pick up the Sword of Fire, reach the Ice Dragon's location, and defeat the Ice Dragon using the Sword of Fire.",
+  "domain": {
+    "name": "quest-domain",
+    "types": [
+      "location",
+      "agent",
+      "object",
+      "monster",
+      "door",
+      "wooden",
+      "stone"
+    ],
+    "predicates": [
+      "(at ?agent ?location)",
+      "(on-ground ?object ?location)",
+      "(sleeping ?monster)",
+      "(defeated ?monster)",
+      "(carrying ?agent ?object)",
+      "(connected ?location ?location)"
+    ],
+    "objects": [
+      {
+        "name": "hero",
+        "type": "agent"
+      },
+      {
+        "name": "tower_of_varnak",
+        "type": "location"
+      },
+      {
+        "name": "sword_of_fire",
+        "type": "object"
+      },
+      {
+        "name": "ice_dragon",
+        "type": "monster"
+      },
+      {
+        "name": "village",
+        "type": "location"
+      }
+    ],
+    "actions": [
+      {
+        "name": "travel",
+        "params": [
+          "?agent",
+          "?location"
+        ],
+        "pre": {
+          "and": [
+            "(at ?agent ?location1)",
+            "(connected ?location1 ?location2)"
+          ]
+        },
+        "eff": {
+          "add": [
+            "(at ?agent ?location2)"
+          ],
+          "del": [
+            "(at ?agent ?location1)"
+          ]
+        }
+      },
+      {
+        "name": "pick-up",
+        "params": [
+          "?agent",
+          "?object",
+          "?location"
+        ],
+        "pre": {
+          "and": [
+            "(at ?agent ?location)",
+            "(on-ground ?object ?location)"
+          ]
+        },
+        "eff": {
+          "add": [
+            "(carrying ?agent ?object)"
+          ],
+          "del": []
+        }
+      },
+      {
+        "name": "defeat",
+        "params": [
+          "?agent",
+          "?monster",
+          "?object"
+        ],
+        "pre": {
+          "and": [
+            "(at ?agent ?location)",
+            "(sleeping ?monster)",
+            "(carrying ?agent ?object)"
+          ]
+        },
+        "eff": {
+          "add": [
+            "(defeated ?monster)"
+          ],
+          "del": [
+            "(sleeping ?monster)"
+          ]
+        }
+      }
+    ]
+  },
+  "problem": {
+    "name": "quest-problem",
+    "domain": "quest-domain",
+    "objects": [
+      "hero - agent",
+      "tower_of_varnak - location",
+      "sword_of_fire - object",
+      "ice_dragon - monster",
+      "village - location"
+    ],
+    "init": [
+      "(at hero village)",
+      "(on-ground sword_of_fire tower_of_varnak)",
+      "(sleeping ice_dragon)"
+    ],
+    "goal": [
+      "(at hero tower_of_varnak)",
+      "(carrying hero sword_of_fire)",
+      "(defeated ice_dragon)"
+    ]
+  },
+  "self_check": {
+    "undefined_predicates": [],
+    "orphan_actions": [],
+    "unused_types": [],
+    "comment": "OK if all arrays empty"
+  }
+}
+=== END VISION SPEC ===
+
+Your Task is:  
+1. **Do not invent** any domain knowledge or narrative steps beyond what’s in JSON description and in VISION.
+2. **Learn from the examples**: in each example action, notice that every object is tied to a specific subtype, and that subtype is then used in the action’s `params`. Apply the same pattern to all actions—**no hard-coded types**. 
+    - Don’t copy the examples—use only the JSON description to infer a plan and then define the actions needed to fulfill it. 
+3. Apply only these fixes:  
+   • **Remove boolean flags**  
+     - `(has X Y false)` -> delete the fact  
+     - `(has X Y true)` -> becomes `(has X Y)`  
+   • **Force precise types**: follow the `<name> – <subtype>` pattern; create and reuse subtypes as needed. Every object in the domain/problem must be declared at its most specific subtype.  
+   • **Normalize every predicate** string to the form  
+     ```
+     (pred ?v1 - type1 ?v2 - type2 …)
+     ```    
+   • **In each action**:  
+     – `"params"` must list only variables of the form `?var - subtype`, choosing the subtype actually used by that object (as shown in the examples).  
+     – `"pre.and"`, `"eff.add"`, `"eff.del"` list facts **without** outer parentheses.  
+4. **Preserve planability**: the example actions are crafted so that at least one valid plan always exists. When you adapt or generate actions, keep them consistent with that goal—do not introduce preconditions or effects that would render the domain unsolvable.  
+
+OUTPUT  
+Return **exactly** the corrected JSON object or the single-line error object. **No** extra text.  
+Do **not** remove or shorten any array: `types`, `predicates`, `objects`, `actions` must remain with all original elements. Just add every missing component and use every specific subtype you have in input.
+
+You can use these examples (only for reference). 
+{
+  "description": "Explorer robot XR-17 must reach the Central Charging Station with critically low power. It faces a sealed security door, an electromagnetic interference zone, and a patrolling security drone. It has multiple options for bypassing obstacles and recharging, each with different risks and requirements.",
+  "trama": "Under flickering overhead lights, explorer robot XR-17’s power reserves dip below 5% as it completes its sweep of Sector A3 in the Helios Dynamics plant. Its only hope is to reach the Central Charging Station—yet the route is anything but straightforward. The Sealed Security Door: At the mouth of the main corridor stands a reinforced blast-door, its control panel fried by a recent surge. XR-17 can either reroute power and bypass the blown fuses—a delicate 30-second procedure that risks a short-circuit and sudden shutdown—or detour through the Warehouse’s maintenance tunnel, hack the terminal to retrieve the access code (adding 45 seconds and requiring the drone guard there to be neutralized first). The Electromagnetic Interference Zone: Beyond the door, a 20-meter stretch of corridor crackles with unstable EM fields that drain 10% battery every 15 seconds. XR-17 must choose: sprint through at top speed in 15 seconds, enduring the energy bleed, or hunt down a magnetic shielding coil in the Warehouse (or hope the emergency battery picked up earlier includes integrated shielding), sacrificing time for protection. The Patrolling Security Drone: Halfway along, a mobile quad-copter drone sweeps the hallway. XR-17 can engage its stealth subroutine—silently navigating for 5 seconds but at risk of triggering its low-power reboot—or overload the drone’s optics with a timed EMP burst, disabling it permanently in 10 seconds at the cost of extra battery draw. Arrival at the Charging Station: At last, XR-17 arrives at the Central Charging Station, its battery critically low. Two charging options remain: HyperCharge Dock: a 30-second rapid boost, vulnerable to the plant’s unstable power grid (which may brown-out without warning). Battery Swap Module: a 45-second mechanical exchange that requires having already secured the emergency battery, but guarantees a full 100% recharge regardless of external conditions. Only once XR-17 completes its chosen recharge procedure can it restore contact with Central Command and prepare for its next mission.",
+  "domain": {
+    "name": "xr17-recharge-mission",
+    "types": [
+      "entity",
+      "robot_type - entity",
+      "door_type - entity",
+      "panel_type - entity",
+      "drone_type - entity",
+      "location_type - entity",
+      "terminal_type - entity",
+      "zone_type - entity",
+      "battery_type - entity",
+      "dock_type - entity",
+      "module_type - entity",
+      "start_location_type",
+      "door_cleared_location_type",
+      "warehouse_entrance_location_type",
+      "emi_cleared_location_type",
+      "drone_cleared_location_type",
+      "battery_pickup_location_type",
+      "charging_station_location_type"
+    ],
+    "predicates": [
+      "(at ?x - entity ?l - location_type)",
+      "(panel_damaged ?p - panel_type)",
+      "(door_sealed ?d - door_type)",
+      "(door_open ?d - door_type)",
+      "(door_bypassed ?d - door_type)",
+      "(entered_warehouse)",
+      "(active ?d - drone_type)",
+      "(drone_neutralized ?d - drone_type)",
+      "(terminal_available ?t - terminal_type)",
+      "(access_code_obtained)",
+      "(in_emi_zone ?z - zone_type)",
+      "(not_shielded)",
+      "(battery_lowered)",
+      "(has_shielding)",
+      "(drone_patrolling ?d - drone_type)",
+      "(battery_sufficient_stealth)",
+      "(drone_eluded ?d - drone_type)",
+      "(battery_sufficient_emp)",
+      "(drone_disabled ?d - drone_type)",
+      "(emergency_battery_collected)",
+      "(battery_available ?b - battery_type)",
+      "(dock_available ?d - dock_type)",
+      "(battery_critical)",
+      "(battery_full)",
+      "(contact_established)",
+      "(module_available ?m - module_type)"
+    ],
+    "objects": [
+      {
+        "name": "xr_17",
+        "type": "robot_type"
+      },
+      {
+        "name": "security_door",
+        "type": "door_type"
+      },
+      {
+        "name": "control_panel",
+        "type": "panel_type"
+      },
+      {
+        "name": "warehouse_drone_guard",
+        "type": "drone_type"
+      },
+      {
+        "name": "warehouse_terminal",
+        "type": "terminal_type"
+      },
+      {
+        "name": "emi_zone",
+        "type": "zone_type"
+      },
+      {
+        "name": "patrolling_drone",
+        "type": "drone_type"
+      },
+      {
+        "name": "emergency_battery_pack",
+        "type": "battery_type"
+      },
+      {
+        "name": "hypercharge_dock",
+        "type": "dock_type"
+      },
+      {
+        "name": "battery_swap_module",
+        "type": "module_type"
+      },
+      {
+        "name": "start_loc",
+        "type": "start_location_type"
+      },
+      {
+        "name": "door_cleared_loc",
+        "type": "door_cleared_location_type"
+      },
+      {
+        "name": "warehouse_entrance_loc",
+        "type": "warehouse_entrance_location_type"
+      },
+      {
+        "name": "emi_cleared_loc",
+        "type": "emi_cleared_location_type"
+      },
+      {
+        "name": "drone_cleared_loc",
+        "type": "drone_cleared_location_type"
+      },
+      {
+        "name": "battery_pickup_loc",
+        "type": "battery_pickup_location_type"
+      },
+      {
+        "name": "central_charging_station_loc",
+        "type": "charging_station_location_type"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bypass_Door_Reroute",
+        "params": [
+          "?robot - robot_type",
+          "?door - door_type",
+          "?panel - panel_type",
+          "?start_loc - start_location_type",
+          "?door_cleared_loc - door_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?start_loc",
+            "panel_damaged ?panel",
+            "door_sealed ?door"
+          ]
+        },
+        "eff": {
+          "add": [
+            "door_open ?door",
+            "at ?robot ?door_cleared_loc",
+            "door_bypassed ?door"
+          ],
+          "del": [
+            "door_sealed ?door",
+            "panel_damaged ?panel",
+            "at ?robot ?start_loc"
+          ]
+        }
+      },
+      {
+        "name": "Detour_Through_Warehouse",
+        "params": [
+          "?robot - robot_type",
+          "?door - door_type",
+          "?start_loc - start_location_type",
+          "?warehouse_entrance_loc - warehouse_entrance_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?start_loc",
+            "door_sealed ?door"
+          ]
+        },
+        "eff": {
+          "add": [
+            "at ?robot ?warehouse_entrance_loc",
+            "entered_warehouse"
+          ],
+          "del": [
+            "at ?robot ?start_loc"
+          ]
+        }
+      },
+      {
+        "name": "Neutralize_Warehouse_Drone",
+        "params": [
+          "?robot - robot_type",
+          "?drone - drone_type",
+          "?location - warehouse_entrance_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "active ?drone",
+            "entered_warehouse"
+          ]
+        },
+        "eff": {
+          "add": [
+            "drone_neutralized ?drone"
+          ],
+          "del": [
+            "active ?drone"
+          ]
+        }
+      },
+      {
+        "name": "Retrieve_Access_Code",
+        "params": [
+          "?robot - robot_type",
+          "?drone - drone_type",
+          "?terminal - terminal_type",
+          "?location - warehouse_entrance_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "drone_neutralized ?drone",
+            "terminal_available ?terminal"
+          ]
+        },
+        "eff": {
+          "add": [
+            "access_code_obtained"
+          ],
+          "del": [
+            "terminal_available ?terminal"
+          ]
+        }
+      },
+      {
+        "name": "Open_Door_With_Code",
+        "params": [
+          "?robot - robot_type",
+          "?door - door_type",
+          "?location - location_type",
+          "?door_cleared_loc - door_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "access_code_obtained",
+            "door_sealed ?door"
+          ]
+        },
+        "eff": {
+          "add": [
+            "door_open ?door",
+            "at ?robot ?door_cleared_loc",
+            "door_bypassed ?door"
+          ],
+          "del": [
+            "door_sealed ?door",
+            "access_code_obtained",
+            "at ?robot ?location"
+          ]
+        }
+      },
+      {
+        "name": "Sprint_Through_EMI",
+        "params": [
+          "?robot - robot_type",
+          "?zone - zone_type",
+          "?door_cleared_loc - door_cleared_location_type",
+          "?emi_cleared_loc - emi_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?door_cleared_loc",
+            "in_emi_zone ?zone",
+            "not_shielded"
+          ]
+        },
+        "eff": {
+          "add": [
+            "at ?robot ?emi_cleared_loc",
+            "battery_lowered"
+          ],
+          "del": [
+            "at ?robot ?door_cleared_loc"
+          ]
+        }
+      },
+      {
+        "name": "Hunt_Magnetic_Shielding",
+        "params": [
+          "?robot - robot_type",
+          "?location - warehouse_entrance_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "entered_warehouse",
+            "not_shielded"
+          ]
+        },
+        "eff": {
+          "add": [
+            "has_shielding",
+            "at ?robot ?location"
+          ],
+          "del": [
+            "not_shielded"
+          ]
+        }
+      },
+      {
+        "name": "Traverse_EMI_With_Shielding",
+        "params": [
+          "?robot - robot_type",
+          "?zone - zone_type",
+          "?door_cleared_loc - door_cleared_location_type",
+          "?emi_cleared_loc - emi_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?door_cleared_loc",
+            "in_emi_zone ?zone",
+            "has_shielding"
+          ]
+        },
+        "eff": {
+          "add": [
+            "at ?robot ?emi_cleared_loc"
+          ],
+          "del": [
+            "at ?robot ?door_cleared_loc"
+          ]
+        }
+      },
+      {
+        "name": "Engage_Stealth",
+        "params": [
+          "?robot - robot_type",
+          "?drone - drone_type",
+          "?location - emi_cleared_location_type",
+          "?drone_cleared_loc - drone_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "drone_patrolling ?drone",
+            "battery_sufficient_stealth"
+          ]
+        },
+        "eff": {
+          "add": [
+            "drone_eluded ?drone",
+            "at ?robot ?drone_cleared_loc"
+          ],
+          "del": [
+            "drone_patrolling ?drone",
+            "at ?robot ?location"
+          ]
+        }
+      },
+      {
+        "name": "EMP_Burst",
+        "params": [
+          "?robot - robot_type",
+          "?drone - drone_type",
+          "?location - emi_cleared_location_type",
+          "?drone_cleared_loc - drone_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "drone_patrolling ?drone",
+            "battery_sufficient_emp"
+          ]
+        },
+        "eff": {
+          "add": [
+            "drone_disabled ?drone",
+            "at ?robot ?drone_cleared_loc",
+            "battery_lowered"
+          ],
+          "del": [
+            "drone_patrolling ?drone",
+            "at ?robot ?location"
+          ]
+        }
+      },
+      {
+        "name": "Collect_Emergency_Battery",
+        "params": [
+          "?robot - robot_type",
+          "?battery - battery_type",
+          "?location - battery_pickup_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "battery_available ?battery"
+          ]
+        },
+        "eff": {
+          "add": [
+            "emergency_battery_collected"
+          ],
+          "del": [
+            "battery_available ?battery"
+          ]
+        }
+      },
+      {
+        "name": "Use_HyperCharge",
+        "params": [
+          "?robot - robot_type",
+          "?dock - dock_type",
+          "?station - charging_station_location_type",
+          "?drone_cleared_loc - drone_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?drone_cleared_loc",
+            "dock_available ?dock",
+            "battery_critical"
+          ]
+        },
+        "eff": {
+          "add": [
+            "battery_full",
+            "contact_established",
+            "at ?robot ?station"
+          ],
+          "del": [
+            "battery_critical",
+            "at ?robot ?drone_cleared_loc"
+          ]
+        }
+      },
+      {
+        "name": "Use_Battery_Swap",
+        "params": [
+          "?robot - robot_type",
+          "?module - module_type",
+          "?station - charging_station_location_type",
+          "?battery - battery_type",
+          "?drone_cleared_loc - drone_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?drone_cleared_loc",
+            "module_available ?module",
+            "emergency_battery_collected",
+            "battery_critical"
+          ]
+        },
+        "eff": {
+          "add": [
+            "battery_full",
+            "contact_established",
+            "at ?robot ?station"
+          ],
+          "del": [
+            "battery_critical",
+            "emergency_battery_collected",
+            "at ?robot ?drone_cleared_loc"
+          ]
+        }
+      }
+    ]
+  },
+  "problem": {
+    "name": "xr17_recharge_mission_problem",
+    "domain": "xr17-recharge-mission",
+    "objects": [
+      "xr_17 - robot_type",
+      "security_door - door_type",
+      "control_panel - panel_type",
+      "warehouse_drone_guard - drone_type",
+      "warehouse_terminal - terminal_type",
+      "emi_zone - zone_type",
+      "patrolling_drone - drone_type",
+      "emergency_battery_pack - battery_type",
+      "hypercharge_dock - dock_type",
+      "battery_swap_module - module_type",
+      "start_loc - start_location_type",
+      "door_cleared_loc - door_cleared_location_type",
+      "warehouse_entrance_loc - warehouse_entrance_location_type",
+      "emi_cleared_loc - emi_cleared_location_type",
+      "drone_cleared_loc - drone_cleared_location_type",
+      "battery_pickup_loc - battery_pickup_location_type",
+      "central_charging_station_loc - charging_station_location_type"
+    ],
+    "init": [
+      "at xr_17 start_loc",
+      "panel_damaged control_panel",
+      "door_sealed security_door",
+      "active warehouse_drone_guard",
+      "terminal_available warehouse_terminal",
+      "in_emi_zone emi_zone",
+      "not_shielded",
+      "drone_patrolling patrolling_drone",
+      "battery_sufficient_stealth",
+      "battery_sufficient_emp",
+      "battery_available emergency_battery_pack",
+      "dock_available hypercharge_dock",
+      "module_available battery_swap_module",
+      "battery_critical"
+    ],
+    "goal": [
+      "at xr_17 central_charging_station_loc",
+      "battery_full",
+      "contact_established"
+    ]
+  },
+  "branching": {
+    "min": 1,
+    "max": 2
+  }
 }
 
-Now rewrite both files fixing the issues. Output in the format:
-=== DOMAIN START ===
-...domain.pddl...
-=== DOMAIN END ===
-=== PROBLEM START ===
-...problem.pddl...
-=== PROBLEM END ===
+{
+  "description": "The cyber-hacker must infiltrate Halcyon Corp's neon skyscraper to steal the prototype AI core, but only after either disabling the city's CCTV grid or bribing an insider. After securing the AI core, the hacker must escape through either the rooftop helipad or the underground metro tunnels and deliver it to the safehouse.",
+  "trama": "Under the glow of rain-slicked neon alleys, the hacker starts in their safehouse. First they choose how to breach the fortress: ride to the network hub and hack the CCTV grid, or slip into Glitterbar and bribe an insider for an override code. Only once cameras are down or credentials in hand can they move into the skyscraper and hack the mainframe. Then—and only then—may they extract the AI core. Finally, with the core in hand, they escape via metro or rooftop helipad back to the safehouse and deliver it.",
+  "domain": {
+    "name": "cyber-heist-mission",
+    "types": [
+      "entity",
+      "agent           - entity",
+      "npc             - entity",
+      "security_system - object",
+      "credential      - object",
+      "device          - object",
+      "artifact        - object",
+      "location",
+      "house           - location"
+    ],
+    "predicates": [
+      "(at ?x - entity ?l - location)",
+      "(connected ?from - location ?to - location)",
+      "(hacked ?o - object)",
+      "(has ?h - agent ?o - object)",
+      "(delivered ?o - object)"
+    ],
+    "objects": [
+      { "name": "hacker",         "type": "agent"           },
+      { "name": "insider",        "type": "npc"             },
+      { "name": "cctv_grid",      "type": "security_system" },
+      { "name": "override_code",  "type": "credential"      },
+      { "name": "mainframe",      "type": "device"          },
+      { "name": "ai_core",        "type": "artifact"        },
+      { "name": "safehouse",      "type": "location"        },
+      { "name": "network_hub",    "type": "location"        },
+      { "name": "glitterbar",     "type": "location"        },
+      { "name": "skyscraper",     "type": "location"        },
+      { "name": "rooftop_helipad","type": "location"        },
+      { "name": "metro_tunnel",   "type": "location"        }
+    ],
+    "actions": [
+      {
+        "name": "move",
+        "params": [ "?h - agent", "?from - location", "?to - location" ],
+        "pre": { "and": [ "at ?h ?from", "connected ?from ?to" ] },
+        "eff": { "add": [ "at ?h ?to" ], "del": [ "at ?h ?from" ] }
+      },
+      {
+        "name": "hack-cctv",
+        "params": [ "?h - agent", "?g - security_system", "?l - location" ],
+        "pre": { "and": [ "at ?h ?l", "at ?g ?l" ] },
+        "eff": { "add": [ "hacked ?g" ] }
+      },
+      {
+        "name": "bribe-insider",
+        "params": [ "?h - agent", "?i - npc", "?c - credential", "?l - location" ],
+        "pre": { "and": [ "at ?h ?l", "at ?i ?l", "at ?c ?l" ] },
+        "eff": { "add": [ "has ?h ?c" ], "del": [ "at ?c ?l" ] }
+      },
+      {
+        "name": "hack-mainframe-via-cctv",
+        "params": [ "?h - agent", "?m - device", "?l - location", "?g - security_system"],
+        "pre": { "and": [ "at ?h ?l", "at ?m ?l", "hacked ?g" ] },
+        "eff": { "add": [ "hacked ?m"] }
+      },
+      {
+        "name": "hack-mainframe-via-override",
+        "params": [ "?h - agent", "?m - device", "?l - location", "?c - credential"],
+        "pre": { "and": [ "at ?h ?l", "at ?m ?l", "has ?h ?c"] },
+        "eff": { "add": [ "hacked ?m"] }
+      },
+      {
+        "name": "transfer-ai", 
+        "params": [ "?h - agent", "?o - artifact", "?l - location", "?m - device"],
+        "pre": { "and": [ "at ?h ?l", "at ?o ?l", "hacked ?m" ] },
+        "eff": { "add": [ "has ?h ?o" ], "del": [ "at ?o ?l" ] }
+      },
+      {
+        "name": "escape-rooftop",
+        "params": [ "?h - agent", "?from - location", "?to - location", "?o - artifact"],
+        "pre": { "and": [ "at ?h ?from", "connected ?from ?to", "has ?h ?o" ] },
+        "eff": { "add": [ "at ?h ?to" ], "del": [ "at ?h ?from" ] }
+      },
+      {
+        "name": "escape-metro",
+        "params": [ "?h - agent", "?from - location", "?to - location", "?o - artifact"],
+        "pre": { "and": [ "at ?h ?from", "connected ?from ?to", "has ?h ?o" ] },
+        "eff": { "add": [ "at ?h ?to" ], "del": [ "at ?h ?from" ] }
+      },
+      {
+        "name": "deliver-ai",
+        "params": [ "?h - agent", "?o - artifact", "?c - house"],
+        "pre": { "and": [ "at ?h ?c", "has ?h ?o" ] },
+        "eff": { "add": [ "delivered ?o" ] }
+      }
+    ]
+  },
+  "problem": {
+    "name": "cyber-heist-problem",
+    "domain": "cyber-heist-mission",
+    "objects": [
+      "hacker           - agent",
+      "insider          - npc",
+      "cctv_grid        - security_system",
+      "override_code    - credential",
+      "mainframe        - device",
+      "ai_core          - artifact",
+      "safehouse        - house",
+      "network_hub      - location",
+      "glitterbar       - location",
+      "skyscraper       - location",
+      "rooftop_helipad  - location",
+      "metro_tunnel     - location"
+    ],
+    "init": [
+      "at hacker safehouse",
+      "at cctv_grid network_hub",
+      "at insider glitterbar",
+      "at override_code glitterbar",
+      "at mainframe skyscraper",
+      "at ai_core skyscraper",
+      "connected safehouse network_hub",
+      "connected safehouse glitterbar",
+      "connected network_hub skyscraper",
+      "connected skyscraper network_hub",
+      "connected glitterbar skyscraper",
+      "connected skyscraper glitterbar",
+      "connected skyscraper rooftop_helipad",
+      "connected rooftop_helipad skyscraper",
+      "connected skyscraper metro_tunnel",
+      "connected metro_tunnel skyscraper",
+      "connected metro_tunnel safehouse",
+      "connected rooftop_helipad safehouse"
+    ],
+    "goal": [
+      "at hacker safehouse",
+      "delivered ai_core"
+    ]
+  },
+  "branching": {
+    "min": 1,
+    "max": 2
+  }
+}
+
+{
+  "description": "The hero must reach the Tower of Varnak and defeat the Ice Dragon, but only after exploring either the Enchanted Forest or the Dark Cave. After slaying the Ice Dragon, the hero must return to the Village and drop the Sword of Fire.",
+  "trama": "The Sword of Fire lies in the Village. The hero starts there and must pick it up before embarking on his journey. To reach the Tower of Varnak, he can go through the Enchanted Forest—home to bandits—or enter the Dark Cave, where goblins lurk. Each location can be explored or rested at (but only once per place). Exploring either forest or cave is necessary before defeating the Ice Dragon at the tower. There is no direct connection from Village to Tower. After slaying the Ice Dragon, the hero must return to the Village and drop the Sword of Fire.",
+  "domain": {
+    "name": "dragon-quest",
+    "types": [
+      "entity",
+      "agent - entity",
+      "monster - entity",
+      "normal_monster - monster",
+      "boss - monster",
+      "object - entity",
+      "weapon - object",
+      "artifact - object",
+      "location"
+    ],
+    "predicates": [
+      "(at ?x - entity ?l - location)",
+      "(has ?h - agent ?o - object)",
+      "(explored ?l - location)",
+      "(sleeping ?d - monster)",
+      "(defeated ?m - monster)",
+      "(connected ?from - location ?to - location)",
+      "(rested ?h - agent)"
+    ],
+    "objects": [
+      { "name": "hero",          "type": "agent"          },
+      { "name": "bandit",        "type": "normal_monster" },
+      { "name": "goblin",        "type": "normal_monster" },
+      { "name": "ice_dragon",    "type": "boss"           },
+      { "name": "sword_of_fire", "type": "weapon"         },
+      { "name": "forest_amulet", "type": "artifact"       },
+      { "name": "cave_shield",   "type": "artifact"       },
+      { "name": "village",       "type": "location"       },
+      { "name": "forest",        "type": "location"       },
+      { "name": "dark_cave",     "type": "location"       },
+      { "name": "tower",         "type": "location"       }
+    ],
+    "actions": [
+      { "name": "move",
+        "params": ["?h - agent","?from - location","?to - location"],
+        "pre": {"and": ["at ?h ?from","connected ?from ?to"]},
+        "eff": {"add": ["at ?h ?to"],"del": ["at ?h ?from"]}
+      },
+      { "name": "pickup",
+        "params": ["?h - agent","?w - weapon","?l - location"],
+        "pre": {"and": ["at ?h ?l","at ?w ?l"]},
+        "eff": {"add": ["has ?h ?w"],"del": ["at ?w ?l"]}
+      },
+      { "name": "drop",
+        "params": ["?h - agent","?o - object","?l - location"],
+        "pre": {"and": ["at ?h ?l","has ?h ?o"]},
+        "eff": {"add": ["at ?o ?l"],"del": ["has ?h ?o"]}
+      },
+      { "name": "explore",
+        "params": ["?h - agent","?l - location"],
+        "pre": {"and": ["at ?h ?l","not explored ?l"]},
+        "eff": {"add": ["explored ?l"]}
+      },
+      { "name": "rest",
+        "params": ["?h - agent","?l - location"],
+        "pre": {"and": ["at ?h ?l","not rested ?h"]},
+        "eff": {"add": ["rested ?h"]}
+      },
+      { "name": "defeat-monster",
+        "params": ["?h - agent","?m - normal_monster","?l - location","?w - weapon"],
+        "pre": {"and": ["at ?h ?l","at ?m ?l","has ?h ?w"]},
+        "eff": {"add": ["defeated ?m"]}
+      },
+      { "name": "loot",
+        "params": ["?h - agent","?m - normal_monster","?o - object","?l - location"],
+        "pre": {"and": ["at ?h ?l","at ?m ?l","defeated ?m","at ?o ?l"]},
+        "eff": {"add": ["has ?h ?o"],"del": ["at ?o ?l"]}
+      },
+      { "name": "defeat-dragon",
+        "params": ["?h - agent","?d - boss","?l - location","?w - weapon","?a - artifact"],
+        "pre": {"and": ["at ?h ?l","at ?d ?l","has ?h ?w","has ?h ?a"]},
+        "eff": {"add": ["defeated ?d"],"del": ["sleeping ?d"]}
+      }
+    ]
+  },
+  "problem": {
+    "name": "dragon-quest-problem",
+    "domain": "dragon-quest",
+    "objects": [
+      "hero - agent",
+      "sword_of_fire - weapon",
+      "forest_amulet - artifact",
+      "cave_shield - artifact",
+      "ice_dragon - boss",
+      "bandit - normal_monster",
+      "goblin - normal_monster",
+      "village - location",
+      "forest - location",
+      "dark_cave - location",
+      "tower - location"
+    ],
+    "init": [
+      "at hero village",
+      "at sword_of_fire village",
+      "at forest_amulet forest",
+      "at cave_shield dark_cave",
+      "at bandit forest",
+      "at goblin dark_cave",
+      "at ice_dragon tower",
+      "sleeping ice_dragon",
+      "connected village forest",
+      "connected forest village",
+      "connected village dark_cave",
+      "connected dark_cave village",
+      "connected forest tower",
+      "connected tower forest",
+      "connected dark_cave tower",
+      "connected tower dark_cave"
+    ],
+    "goal": [
+      "defeated ice_dragon",
+      "at hero village",
+      "at sword_of_fire village"
+    ]
+  }
+}

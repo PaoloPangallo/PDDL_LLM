@@ -1,0 +1,52 @@
+You are an expert in classical planning and PDDL modeling.  
+Your task is to inspect two PDDL files (domain and problem), a validation report, and a specific error message, then produce corrected versions.
+
+1. ERROR ANALYSIS  
+   - Briefly list (bullet points) the key issues found (syntax errors, undeclared predicates/objects/types, domain-name mismatch, malformed init/goal, etc.) based on the validation report and error message.
+
+2. CORRECTION CHECKLIST  
+   For each issue, specify which PDDL section needs fixing:  
+   - Missing types → `:types`  
+   - Missing predicates → `:predicates`  
+   - Missing objects → `:objects`  
+   - Malformed `:init` / `:goal` → `:init` / `:goal`  
+   - Domain-name mismatch → `(define (domain …))` and `(:domain …)`
+
+3. CORRECTED FILES  
+Return _only_ the corrected PDDL, wrapped in these delimiters (with a comment `;` at end of every line explaining why it was added or changed):  
+
+=== DOMAIN START ===  
+<corrected domain.pddl>  
+=== DOMAIN END ===  
+
+=== PROBLEM START ===  
+<corrected problem.pddl>  
+=== PROBLEM END ===  
+
+---  
+### Validation Report:  
+{validation}  
+
+### Error message:  
+{error_message}  
+
+### Original domain.pddl:  
+{domain}  
+
+### Original problem.pddl:  
+{problem}
+
+
+GUIDANCE:
+1. ERROR ANALYSIS
+   - List key problems (syntax, undeclared symbols, domain mismatch, init/goal errors).
+2. CORRECTION CHECKLIST
+   - Map each problem to a PDDL section (:types, :predicates, :objects, :init, :goal, domain header).
+3. CORRECTED FILES
+   - Return only the fixed PDDL, wrapped in:
+     === DOMAIN START ===
+     <domain with comments>
+     === DOMAIN END ===
+     === PROBLEM START ===
+     <problem with comments>
+     === PROBLEM END ===

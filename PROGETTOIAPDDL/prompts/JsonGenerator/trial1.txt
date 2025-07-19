@@ -1,0 +1,107 @@
+Read the following story carefully:
+{{STORY}}
+
+**STEP 1 – NARRATIVE REFLECTION**  
+• In a short paragraph, summarize the main plot and the protagonist’s objectives.  
+• Point out any logical constraints or forced sequences (e.g., “must retrieve the key before opening the door”).
+
+**STEP 2 – PLAN OUTLINE**  
+• List in plain‐language every step needed from start to finish (one action per line), following the logic identified above.  
+• Still not PDDL: just action titles and brief notes on preconditions and effects in English (e.g., “Move from L1 to L2; prereq: Hero at L1; effect: Hero at L2”).
+
+**STEP 3 – INIT / GOAL STATES**  
+• **INIT**: Translate the plan outline elements into PDDL facts, removing any redundancy or contradictions (e.g., `at hero village`). Don't forget to connect the path thath the agent must follow to reach goal (connected from to). Don't use varibles (e.g, ?var) in init section. 
+• **GOAL**: List predicates that must hold at the end (e.g., `has hero key`, `at hero castle`).
+
+**STEP 4 – PREDICATES**  
+• Enumerate **all** predicates used (in INIT, GOAL, and outline), giving their signature and a brief description.  
+  - Example: `at(?entity, ?location)`: “the entity is at the given location.”
+
+**STEP 5 – OBJECTS & TYPE SPECIALIZATION**  
+• List every object or agent as `name – type`. Use specific typer for each object: in that way the pddl generator can refer to a specific object without using costants. 
+• For each type, specify any needed sub-types (e.g., `agent_jumping – agent` for those who must jump to cross gaps).  
+• This ensures that the PDDL planner can’t “skip” states: more restrictive types force the correct action usage.
+
+**STEP 6 – ACTION DEFINITIONS (PDDL)**  
+For each distinct action in your plan:  
+  - **Name**  
+  - **Parameters** (e.g., `?h – agent`, `?l1 – location`, ...). In this section must be present every parameter you use for preconditions and effetcs.  
+  - **Preconditions** (PDDL list)  
+  - **Effects** (PDDL `:add` and `:del` lists)
+
+**STEP 7 – VISION JSON FOR FUTURE STEPS**  
+First, ensure you’ve defined all the types and subtypes for every object you use (e.g., agent - entity, etc.). Then verify and add any missing types.
+Now, output **exactly one** JSON object matching this spec:
+```jsonc
+    {
+    "description": "string",
+    "trama": "string",
+    "domain": {
+        "name": "domain_name",
+        "types": [
+        "type1",
+        "type2 - type1",
+        "type3 - type2",
+        "type4 - type1",
+        "..."
+        ],
+        "predicates": [
+        "(pred1 ?var1 - type1 ?var2 - type2)",
+        "(pred2 ?var3 - type3)",
+        "(pred3 ?var1 - type1 ?var4 - type4)",
+        "..."
+        ],
+        "objects": [
+        { "name": "constant1", "type": "type1" },
+        { "name": "constant2", "type": "type2" },
+        { "name": "constant3", "type": "type3" },
+        "..."
+        ],
+        "actions": [
+        {
+            "name": "action1",
+            "params": ["?var1 - type1", "?var2 - type2"],
+            "pre":  { "and": ["pred1 ?var1 ?var2"] },
+            "eff":  { "add": ["pred2 ?var2"], "del": ["pred1 ?var1 ?var2"] }
+        },
+        {
+            "name": "action2",
+            "params": ["?var3 - type3", "?var4 - type4"],
+            "pre":  { "and": ["pred3 ?var3 ?var4"] },
+            "eff":  { "add": ["pred1 ?var3 ?var4"], "del": [] }
+        },
+        "..."
+        ]
+    },
+    "problem": {
+        "name": "problem_name",
+        "domain": "domain_name",
+        "objects": [
+        "constant1 - type1",
+        "constant2 - type2",
+        "constant3 - type3",
+        "..."
+        ],
+        "init": [
+        "pred1 constant1 constant2",
+        "pred3 constant3 constant4",
+        "..."
+        ],
+        "goal": [
+        "pred2 constant2",
+        "pred1 constant3 constant4",
+        "..."
+        ]
+    }
+}
+
+---
+
+#### Why this workflow?
+
+- **Narrative reflection** ensures the LLM “understands” the story logic and won’t skip essential steps.  
+- **Outline before PDDL** separates creative planning from technical formalization, reducing consistency errors.  
+- **Predicates & type specialization** define tight constraints (e.g., only `agent_jumping` can cross a chasm), preventing illegal state transitions.  
+- **Separating objects/types from INIT/GOAL** avoids contradictions between domain definitions and initial facts.
+
+With this workflow, the LLM first produces a “human-level” coherent plan, then a clean, ordered formalization into PDDL, minimizing ambiguity and state-skipping.```

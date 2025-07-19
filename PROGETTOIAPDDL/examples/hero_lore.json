@@ -1,0 +1,122 @@
+{
+  "description": "The hero must reach the Tower of Varnak and defeat the Ice Dragon, but only after exploring either the Enchanted Forest or the Dark Cave. After slaying the Ice Dragon, the hero must return to the Village and drop the Sword of Fire.",
+  "trama": "The Sword of Fire lies in the Village. The hero starts there and must pick it up before embarking on his journey. To reach the Tower of Varnak, he can go through the Enchanted Forest—home to bandits—or enter the Dark Cave, where goblins lurk. Each location can be explored or rested at (but only once per place). Exploring either forest or cave is necessary before defeating the Ice Dragon at the tower. There is no direct connection from Village to Tower. After slaying the Ice Dragon, the hero must return to the Village and drop the Sword of Fire.",
+  "domain": {
+    "name": "dragon-quest",
+    "types": [
+      "entity",
+      "agent - entity",
+      "monster - entity",
+      "normal_monster - monster",
+      "boss - monster",
+      "object - entity",
+      "weapon - object",
+      "artifact - object",
+      "location"
+    ],
+    "predicates": [
+      "(at ?x - entity ?l - location)",
+      "(has ?h - agent ?o - object)",
+      "(explored ?l - location)",
+      "(sleeping ?d - monster)",
+      "(defeated ?m - monster)",
+      "(connected ?from - location ?to - location)",
+      "(rested ?h - agent)"
+    ],
+    "objects": [
+      { "name": "hero",          "type": "agent"          },
+      { "name": "bandit",        "type": "normal_monster" },
+      { "name": "goblin",        "type": "normal_monster" },
+      { "name": "ice_dragon",    "type": "boss"           },
+      { "name": "sword_of_fire", "type": "weapon"         },
+      { "name": "forest_amulet", "type": "artifact"       },
+      { "name": "cave_shield",   "type": "artifact"       },
+      { "name": "village",       "type": "location"       },
+      { "name": "forest",        "type": "location"       },
+      { "name": "dark_cave",     "type": "location"       },
+      { "name": "tower",         "type": "location"       }
+    ],
+    "actions": [
+      { "name": "move",
+        "params": ["?h - agent","?from - location","?to - location"],
+        "pre": {"and": ["at ?h ?from","connected ?from ?to"]},
+        "eff": {"add": ["at ?h ?to"],"del": ["at ?h ?from"]}
+      },
+      { "name": "pickup",
+        "params": ["?h - agent","?w - weapon","?l - location"],
+        "pre": {"and": ["at ?h ?l","at ?w ?l"]},
+        "eff": {"add": ["has ?h ?w"],"del": ["at ?w ?l"]}
+      },
+      { "name": "drop",
+        "params": ["?h - agent","?o - object","?l - location"],
+        "pre": {"and": ["at ?h ?l","has ?h ?o"]},
+        "eff": {"add": ["at ?o ?l"],"del": ["has ?h ?o"]}
+      },
+      { "name": "explore",
+        "params": ["?h - agent","?l - location"],
+        "pre": {"and": ["at ?h ?l","not explored ?l"]},
+        "eff": {"add": ["explored ?l"]}
+      },
+      { "name": "rest",
+        "params": ["?h - agent","?l - location"],
+        "pre": {"and": ["at ?h ?l","not rested ?h"]},
+        "eff": {"add": ["rested ?h"]}
+      },
+      { "name": "defeat-monster",
+        "params": ["?h - agent","?m - normal_monster","?l - location","?w - weapon"],
+        "pre": {"and": ["at ?h ?l","at ?m ?l","has ?h ?w"]},
+        "eff": {"add": ["defeated ?m"]}
+      },
+      { "name": "loot",
+        "params": ["?h - agent","?m - normal_monster","?o - object","?l - location"],
+        "pre": {"and": ["at ?h ?l","at ?m ?l","defeated ?m","at ?o ?l"]},
+        "eff": {"add": ["has ?h ?o"],"del": ["at ?o ?l"]}
+      },
+      { "name": "defeat-dragon",
+        "params": ["?h - agent","?d - boss","?l - location","?w - weapon","?a - artifact"],
+        "pre": {"and": ["at ?h ?l","at ?d ?l","has ?h ?w","has ?h ?a"]},
+        "eff": {"add": ["defeated ?d"],"del": ["sleeping ?d"]}
+      }
+    ]
+  },
+  "problem": {
+    "name": "dragon-quest-problem",
+    "domain": "dragon-quest",
+    "objects": [
+      "hero - agent",
+      "sword_of_fire - weapon",
+      "forest_amulet - artifact",
+      "cave_shield - artifact",
+      "ice_dragon - boss",
+      "bandit - normal_monster",
+      "goblin - normal_monster",
+      "village - location",
+      "forest - location",
+      "dark_cave - location",
+      "tower - location"
+    ],
+    "init": [
+      "at hero village",
+      "at sword_of_fire village",
+      "at forest_amulet forest",
+      "at cave_shield dark_cave",
+      "at bandit forest",
+      "at goblin dark_cave",
+      "at ice_dragon tower",
+      "sleeping ice_dragon",
+      "connected village forest",
+      "connected forest village",
+      "connected village dark_cave",
+      "connected dark_cave village",
+      "connected forest tower",
+      "connected tower forest",
+      "connected dark_cave tower",
+      "connected tower dark_cave"
+    ],
+    "goal": [
+      "defeated ice_dragon",
+      "at hero village",
+      "at sword_of_fire village"
+    ]
+  }
+}

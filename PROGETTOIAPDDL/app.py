@@ -1,15 +1,19 @@
-# run.py o main.py (entrypoint)
-
 from optimize_app import optimize_before_launch
 from routes.app_factory import QuestMasterApp
 from config import DevConfig
+from urllib.parse import unquote
+from werkzeug.serving import WSGIRequestHandler
+import logging
 
-# 🛠️ Ottimizzazione leggera prima di creare l'app Flask
-
-# 🚀 Crea e avvia l'app
 app = QuestMasterApp.create(DevConfig)
+
+class PercentStripFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        if isinstance(record.msg, str):
+            record.msg = record.msg.replace("%", "")
+        return True
+
+logging.getLogger().addFilter(PercentStripFilter())
 
 if __name__ == "__main__":
     app.run(debug=app.config.get("DEBUG", False))
-# Note: In a production environment, you would typically use a WSGI server like Gunicorn or uWSGI to run the app.
-# This script is intended for development purposes and may not be suitable for production use as is.

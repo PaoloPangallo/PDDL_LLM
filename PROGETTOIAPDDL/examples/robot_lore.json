@@ -1,0 +1,507 @@
+{
+  "description": "Explorer robot XR-17 must reach the Central Charging Station with critically low power. It faces a sealed security door, an electromagnetic interference zone, and a patrolling security drone. It has multiple options for bypassing obstacles and recharging, each with different risks and requirements.",
+  "trama": "Under flickering overhead lights, explorer robot XR-17’s power reserves dip below 5% as it completes its sweep of Sector A3 in the Helios Dynamics plant. Its only hope is to reach the Central Charging Station—yet the route is anything but straightforward. The Sealed Security Door: At the mouth of the main corridor stands a reinforced blast-door, its control panel fried by a recent surge. XR-17 can either reroute power and bypass the blown fuses—a delicate 30-second procedure that risks a short-circuit and sudden shutdown—or detour through the Warehouse’s maintenance tunnel, hack the terminal to retrieve the access code (adding 45 seconds and requiring the drone guard there to be neutralized first). The Electromagnetic Interference Zone: Beyond the door, a 20-meter stretch of corridor crackles with unstable EM fields that drain 10% battery every 15 seconds. XR-17 must choose: sprint through at top speed in 15 seconds, enduring the energy bleed, or hunt down a magnetic shielding coil in the Warehouse (or hope the emergency battery picked up earlier includes integrated shielding), sacrificing time for protection. The Patrolling Security Drone: Halfway along, a mobile quad-copter drone sweeps the hallway. XR-17 can engage its stealth subroutine—silently navigating for 5 seconds but at risk of triggering its low-power reboot—or overload the drone’s optics with a timed EMP burst, disabling it permanently in 10 seconds at the cost of extra battery draw. Arrival at the Charging Station: At last, XR-17 arrives at the Central Charging Station, its battery critically low. Two charging options remain: HyperCharge Dock: a 30-second rapid boost, vulnerable to the plant’s unstable power grid (which may brown-out without warning). Battery Swap Module: a 45-second mechanical exchange that requires having already secured the emergency battery, but guarantees a full 100% recharge regardless of external conditions. Only once XR-17 completes its chosen recharge procedure can it restore contact with Central Command and prepare for its next mission.",
+  "domain": {
+    "name": "xr17-recharge-mission",
+    "types": [
+      "entity",
+      "robot_type - entity",
+      "door_type - entity",
+      "panel_type - entity",
+      "drone_type - entity",
+      "location_type - entity",
+      "terminal_type - entity",
+      "zone_type - entity",
+      "battery_type - entity",
+      "dock_type - entity",
+      "module_type - entity",
+      "start_location_type",
+      "door_cleared_location_type",
+      "warehouse_entrance_location_type",
+      "emi_cleared_location_type",
+      "drone_cleared_location_type",
+      "battery_pickup_location_type",
+      "charging_station_location_type"
+    ],
+    "predicates": [
+      "(at ?x - entity ?l - location_type)",
+      "(panel_damaged ?p - panel_type)",
+      "(door_sealed ?d - door_type)",
+      "(door_open ?d - door_type)",
+      "(door_bypassed ?d - door_type)",
+      "(entered_warehouse)",
+      "(active ?d - drone_type)",
+      "(drone_neutralized ?d - drone_type)",
+      "(terminal_available ?t - terminal_type)",
+      "(access_code_obtained)",
+      "(in_emi_zone ?z - zone_type)",
+      "(not_shielded)",
+      "(battery_lowered)",
+      "(has_shielding)",
+      "(drone_patrolling ?d - drone_type)",
+      "(battery_sufficient_stealth)",
+      "(drone_eluded ?d - drone_type)",
+      "(battery_sufficient_emp)",
+      "(drone_disabled ?d - drone_type)",
+      "(emergency_battery_collected)",
+      "(battery_available ?b - battery_type)",
+      "(dock_available ?d - dock_type)",
+      "(battery_critical)",
+      "(battery_full)",
+      "(contact_established)",
+      "(module_available ?m - module_type)"
+    ],
+    "objects": [
+      {
+        "name": "xr_17",
+        "type": "robot_type"
+      },
+      {
+        "name": "security_door",
+        "type": "door_type"
+      },
+      {
+        "name": "control_panel",
+        "type": "panel_type"
+      },
+      {
+        "name": "warehouse_drone_guard",
+        "type": "drone_type"
+      },
+      {
+        "name": "warehouse_terminal",
+        "type": "terminal_type"
+      },
+      {
+        "name": "emi_zone",
+        "type": "zone_type"
+      },
+      {
+        "name": "patrolling_drone",
+        "type": "drone_type"
+      },
+      {
+        "name": "emergency_battery_pack",
+        "type": "battery_type"
+      },
+      {
+        "name": "hypercharge_dock",
+        "type": "dock_type"
+      },
+      {
+        "name": "battery_swap_module",
+        "type": "module_type"
+      },
+      {
+        "name": "start_loc",
+        "type": "start_location_type"
+      },
+      {
+        "name": "door_cleared_loc",
+        "type": "door_cleared_location_type"
+      },
+      {
+        "name": "warehouse_entrance_loc",
+        "type": "warehouse_entrance_location_type"
+      },
+      {
+        "name": "emi_cleared_loc",
+        "type": "emi_cleared_location_type"
+      },
+      {
+        "name": "drone_cleared_loc",
+        "type": "drone_cleared_location_type"
+      },
+      {
+        "name": "battery_pickup_loc",
+        "type": "battery_pickup_location_type"
+      },
+      {
+        "name": "central_charging_station_loc",
+        "type": "charging_station_location_type"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bypass_Door_Reroute",
+        "params": [
+          "?robot - robot_type",
+          "?door - door_type",
+          "?panel - panel_type",
+          "?start_loc - start_location_type",
+          "?door_cleared_loc - door_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?start_loc",
+            "panel_damaged ?panel",
+            "door_sealed ?door"
+          ]
+        },
+        "eff": {
+          "add": [
+            "door_open ?door",
+            "at ?robot ?door_cleared_loc",
+            "door_bypassed ?door"
+          ],
+          "del": [
+            "door_sealed ?door",
+            "panel_damaged ?panel",
+            "at ?robot ?start_loc"
+          ]
+        }
+      },
+      {
+        "name": "Detour_Through_Warehouse",
+        "params": [
+          "?robot - robot_type",
+          "?door - door_type",
+          "?start_loc - start_location_type",
+          "?warehouse_entrance_loc - warehouse_entrance_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?start_loc",
+            "door_sealed ?door"
+          ]
+        },
+        "eff": {
+          "add": [
+            "at ?robot ?warehouse_entrance_loc",
+            "entered_warehouse"
+          ],
+          "del": [
+            "at ?robot ?start_loc"
+          ]
+        }
+      },
+      {
+        "name": "Neutralize_Warehouse_Drone",
+        "params": [
+          "?robot - robot_type",
+          "?drone - drone_type",
+          "?location - warehouse_entrance_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "active ?drone",
+            "entered_warehouse"
+          ]
+        },
+        "eff": {
+          "add": [
+            "drone_neutralized ?drone"
+          ],
+          "del": [
+            "active ?drone"
+          ]
+        }
+      },
+      {
+        "name": "Retrieve_Access_Code",
+        "params": [
+          "?robot - robot_type",
+          "?drone - drone_type",
+          "?terminal - terminal_type",
+          "?location - warehouse_entrance_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "drone_neutralized ?drone",
+            "terminal_available ?terminal"
+          ]
+        },
+        "eff": {
+          "add": [
+            "access_code_obtained"
+          ],
+          "del": [
+            "terminal_available ?terminal"
+          ]
+        }
+      },
+      {
+        "name": "Open_Door_With_Code",
+        "params": [
+          "?robot - robot_type",
+          "?door - door_type",
+          "?location - location_type",
+          "?door_cleared_loc - door_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "access_code_obtained",
+            "door_sealed ?door"
+          ]
+        },
+        "eff": {
+          "add": [
+            "door_open ?door",
+            "at ?robot ?door_cleared_loc",
+            "door_bypassed ?door"
+          ],
+          "del": [
+            "door_sealed ?door",
+            "access_code_obtained",
+            "at ?robot ?location"
+          ]
+        }
+      },
+      {
+        "name": "Sprint_Through_EMI",
+        "params": [
+          "?robot - robot_type",
+          "?zone - zone_type",
+          "?door_cleared_loc - door_cleared_location_type",
+          "?emi_cleared_loc - emi_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?door_cleared_loc",
+            "in_emi_zone ?zone",
+            "not_shielded"
+          ]
+        },
+        "eff": {
+          "add": [
+            "at ?robot ?emi_cleared_loc",
+            "battery_lowered"
+          ],
+          "del": [
+            "at ?robot ?door_cleared_loc"
+          ]
+        }
+      },
+      {
+        "name": "Hunt_Magnetic_Shielding",
+        "params": [
+          "?robot - robot_type",
+          "?location - warehouse_entrance_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "entered_warehouse",
+            "not_shielded"
+          ]
+        },
+        "eff": {
+          "add": [
+            "has_shielding",
+            "at ?robot ?location"
+          ],
+          "del": [
+            "not_shielded"
+          ]
+        }
+      },
+      {
+        "name": "Traverse_EMI_With_Shielding",
+        "params": [
+          "?robot - robot_type",
+          "?zone - zone_type",
+          "?door_cleared_loc - door_cleared_location_type",
+          "?emi_cleared_loc - emi_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?door_cleared_loc",
+            "in_emi_zone ?zone",
+            "has_shielding"
+          ]
+        },
+        "eff": {
+          "add": [
+            "at ?robot ?emi_cleared_loc"
+          ],
+          "del": [
+            "at ?robot ?door_cleared_loc"
+          ]
+        }
+      },
+      {
+        "name": "Engage_Stealth",
+        "params": [
+          "?robot - robot_type",
+          "?drone - drone_type",
+          "?location - emi_cleared_location_type",
+          "?drone_cleared_loc - drone_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "drone_patrolling ?drone",
+            "battery_sufficient_stealth"
+          ]
+        },
+        "eff": {
+          "add": [
+            "drone_eluded ?drone",
+            "at ?robot ?drone_cleared_loc"
+          ],
+          "del": [
+            "drone_patrolling ?drone",
+            "at ?robot ?location"
+          ]
+        }
+      },
+      {
+        "name": "EMP_Burst",
+        "params": [
+          "?robot - robot_type",
+          "?drone - drone_type",
+          "?location - emi_cleared_location_type",
+          "?drone_cleared_loc - drone_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "drone_patrolling ?drone",
+            "battery_sufficient_emp"
+          ]
+        },
+        "eff": {
+          "add": [
+            "drone_disabled ?drone",
+            "at ?robot ?drone_cleared_loc",
+            "battery_lowered"
+          ],
+          "del": [
+            "drone_patrolling ?drone",
+            "at ?robot ?location"
+          ]
+        }
+      },
+      {
+        "name": "Collect_Emergency_Battery",
+        "params": [
+          "?robot - robot_type",
+          "?battery - battery_type",
+          "?location - battery_pickup_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?location",
+            "battery_available ?battery"
+          ]
+        },
+        "eff": {
+          "add": [
+            "emergency_battery_collected"
+          ],
+          "del": [
+            "battery_available ?battery"
+          ]
+        }
+      },
+      {
+        "name": "Use_HyperCharge",
+        "params": [
+          "?robot - robot_type",
+          "?dock - dock_type",
+          "?station - charging_station_location_type",
+          "?drone_cleared_loc - drone_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?drone_cleared_loc",
+            "dock_available ?dock",
+            "battery_critical"
+          ]
+        },
+        "eff": {
+          "add": [
+            "battery_full",
+            "contact_established",
+            "at ?robot ?station"
+          ],
+          "del": [
+            "battery_critical",
+            "at ?robot ?drone_cleared_loc"
+          ]
+        }
+      },
+      {
+        "name": "Use_Battery_Swap",
+        "params": [
+          "?robot - robot_type",
+          "?module - module_type",
+          "?station - charging_station_location_type",
+          "?battery - battery_type",
+          "?drone_cleared_loc - drone_cleared_location_type"
+        ],
+        "pre": {
+          "and": [
+            "at ?robot ?drone_cleared_loc",
+            "module_available ?module",
+            "emergency_battery_collected",
+            "battery_critical"
+          ]
+        },
+        "eff": {
+          "add": [
+            "battery_full",
+            "contact_established",
+            "at ?robot ?station"
+          ],
+          "del": [
+            "battery_critical",
+            "emergency_battery_collected",
+            "at ?robot ?drone_cleared_loc"
+          ]
+        }
+      }
+    ]
+  },
+  "problem": {
+    "name": "xr17_recharge_mission_problem",
+    "domain": "xr17-recharge-mission",
+    "objects": [
+      "xr_17 - robot_type",
+      "security_door - door_type",
+      "control_panel - panel_type",
+      "warehouse_drone_guard - drone_type",
+      "warehouse_terminal - terminal_type",
+      "emi_zone - zone_type",
+      "patrolling_drone - drone_type",
+      "emergency_battery_pack - battery_type",
+      "hypercharge_dock - dock_type",
+      "battery_swap_module - module_type",
+      "start_loc - start_location_type",
+      "door_cleared_loc - door_cleared_location_type",
+      "warehouse_entrance_loc - warehouse_entrance_location_type",
+      "emi_cleared_loc - emi_cleared_location_type",
+      "drone_cleared_loc - drone_cleared_location_type",
+      "battery_pickup_loc - battery_pickup_location_type",
+      "central_charging_station_loc - charging_station_location_type"
+    ],
+    "init": [
+      "at xr_17 start_loc",
+      "panel_damaged control_panel",
+      "door_sealed security_door",
+      "active warehouse_drone_guard",
+      "terminal_available warehouse_terminal",
+      "in_emi_zone emi_zone",
+      "not_shielded",
+      "drone_patrolling patrolling_drone",
+      "battery_sufficient_stealth",
+      "battery_sufficient_emp",
+      "battery_available emergency_battery_pack",
+      "dock_available hypercharge_dock",
+      "module_available battery_swap_module",
+      "battery_critical"
+    ],
+    "goal": [
+      "at xr_17 central_charging_station_loc",
+      "battery_full",
+      "contact_established"
+    ]
+  },
+  "branching": {
+    "min": 1,
+    "max": 2
+  }
+}

@@ -53,16 +53,16 @@ def ask_local_llm(prompt: str, model: str) -> Optional[str]:
                 OLLAMA_URL,
                 json={"model": model, "prompt": prompt, "stream": False},
                 headers=HEADERS,
-                timeout=(10, 720)
+                timeout=(10, 3600)
             )
             if resp.status_code != 200:
                 logger.error(" Ollama ha risposto con %d:\n%s", resp.status_code, resp.text)
             resp.raise_for_status()
             try:
                 data = resp.json()
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as exc:
                 logger.error(" Risposta non in formato JSON valido:\n%s", resp.text)
-                raise RuntimeError("Risposta Ollama non è in formato JSON valido.")
+                raise RuntimeError("Risposta Ollama non è in formato JSON valido.") from exc
             return data.get("response", "").strip()
 
         except requests.RequestException as err:
@@ -89,15 +89,11 @@ def ask_llm_with_fallback(prompt: str) -> str:
 # ===============================
 #  Costruzione del prompt
 # ===============================
-from pathlib import Path
-import json
-import logging
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 def build_prompt(domain_text: str, problem_text: str, error_message: str, validation: Optional[dict] = None, lore: Optional[dict] = None) -> str:
-    prompt_path = Path("prompts/reflection_prompt.txt")
+    prompt_path = Path("prompts/reflection_agent/reflection_prompt.txt")
     
     if prompt_path.exists():
         template = prompt_path.read_text(encoding="utf-8")
@@ -161,19 +157,35 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
         validation=json.dumps(validation, indent=2, ensure_ascii=False) if validation else ""
     )
 
+def build_prompt2(domain_text: str, problem_text: str, error_message: str, validation: Optional[dict] = None, lore: Optional[dict] = None) -> str:
+    # Carica il template del prompt
+    prompt_path = Path("prompts/reflection_agent/reflection_prompt2.txt")
+    if prompt_path.exists():
+        template = prompt_path.read_text(encoding="utf-8")
+    else:
+        # Fallback minimale
+        raise FileNotFoundError(
+            f"Reflection prompt template not found at {prompt_path}."
+        )
+
+    # Contesto: original files, validation report, error message
+    filled = {
+        'domain': domain_text.strip(),
+        'problem': problem_text.strip(),
+        'error_message': error_message.strip(),
+        'validation': json.dumps(validation, indent=2, ensure_ascii=False) if validation else ""
+    }
+
+    # Inserisci le sezioni nel template
+    final_prompt = template.format(**filled)
+    return final_prompt
 
 
 
 # ===============================
 #  Raffinamento dei file
 # ===============================
-def refine_pddl(
-    domain_path: str,
-    problem_path: str,
-    error_message: str,
-    lore: Optional[dict] = None,
-    validation: Optional[dict] = None
-) -> str:
+def refine_pddl(domain_path: str, problem_path: str, error_message: str, lore: Optional[dict] = None, validation: Optional[dict] = None) -> str:
     domain_raw = read_text_file(domain_path)
     problem_raw = read_text_file(problem_path)
 
@@ -191,7 +203,7 @@ def refine_pddl(
             "=== PROBLEM START ===\n" + problem_raw + "\n=== PROBLEM END ==="
         )
 
-    prompt = build_prompt(domain_raw, problem_raw, error_message, validation, lore)
+    prompt = build_prompt2(domain_raw, problem_raw, error_message, validation, lore)
     return ask_llm_with_fallback(prompt)
 
 # ===============================

@@ -1,0 +1,41 @@
+You are a professional assistant for generating classical PDDL files (Planning Domain Definition Language).
+Your task is to produce two complete, syntactically valid and logically consistent PDDL files:
+- domain.pddl
+- problem.pddl
+
+📝 Domain description:
+{DESCRIPTION}
+
+📦 Objects:
+{OBJECTS}
+
+🚀 Initial state:
+{INIT}
+
+🎯 Goal conditions:
+{GOAL}
+
+{BRANCHING}{DEPTH}{ACTIONS}{FEW_SHOT}
+
+🔒 STRICT CONSTRAINTS — DO NOT violate these:
+1. NEVER hardcode specific objects like 'sword_of_fire' or 'ice_dragon' in the domain file.
+   → Use generic parameters like ?o - object, ?m - monster, etc.
+2. Each :action must define all required parameters explicitly and assign types correctly.
+   → Example: (:parameters (?a - agent ?o - object ?l - location))
+3. Each predicate must follow the format: (predicate ?x - type ?y - type)
+   → ❌ Wrong: (at ?a ?l) — (agent location)
+   → ✅ Correct: (at ?a - agent ?l - location)
+4. Use ONLY objects, predicates and goals listed in the lore.
+5. Use :precondition and :effect sections correctly (no plural).
+6. Use valid STRIPS-compatible syntax: :types, :predicates, :action.
+7. Use ; comments to clarify each section.
+
+Your output **MUST** follow this format exactly:
+
+=== DOMAIN START ===
+<insert domain.pddl here>
+=== DOMAIN END ===
+
+=== PROBLEM START ===
+<insert problem.pddl here>
+=== PROBLEM END ===

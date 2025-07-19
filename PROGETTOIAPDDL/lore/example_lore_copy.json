@@ -1,0 +1,20 @@
+{
+  "description": "The quest involves a hero who starts in the Village. In order to complete the mission, the hero must: 1. Travel from the Village to either the Enchanted Forest or the Dark Cave. 2. Explore the chosen location (Enchanted Forest or Dark Cave), taking the Amulet. 3. Travel from that location to the Tower of Varnak. 4. Pick up the Sword of Fire, which is located at the Tower of Varnak. 5. Reach the Ice Dragon's location. 6. Defeat the Ice Dragon using the Sword of Fire (must be in the same location as the dragon and carrying the Sword of Fire). 7. Return from the Ice Dragon's lair back to the Village. 8. Drop the Sword of Fire in the Village.",
+  "objects": [
+    "hero - agent",
+    "tower_of_varnak - location",
+    "sword_of_fire - object",
+    "ice_dragon - monster",
+    "village - location"
+  ],
+  "init": [
+    "(at hero village)",
+    "(on-ground sword_of_fire tower_of_varnak)",
+    "(sleeping ice_dragon)"
+  ],
+  "goal": [
+    "(at hero tower_of_varnak)",
+    "(carrying hero sword_of_fire)",
+    "(defeated ice_dragon)"
+  ]
+}
