@@ -112,7 +112,7 @@ class PipelineState(TypedDict):
 # ────────────────────────────────────────────────────────────────────────────────
 #  Helpers
 # ────────────────────────────────────────────────────────────────────────────────
-MAX_REFINE_ATTEMPTS = 0
+MAX_REFINE_ATTEMPTS = 2
 
 
 def is_positive_feedback(msg: str) -> bool:
@@ -350,7 +350,7 @@ def node_generate_vision(state: PipelineState) -> PipelineState:
     print("\n", lore_txt, "\n")
 
     logger.debug("%s | sending", name)
-    raw = ask_ollama(template.replace("{{STORY}}", lore_txt))
+    raw = ask_ollama(template.replace("{{STORY}}", lore_txt), "llama3.2-vision")#raw = ask_ollama(template.replace("{{STORY}}", lore_txt))
 
     vision = extract_vision(raw)
     logger.debug("%s | vision extracted keys=%s", name, list(vision.keys()))
@@ -379,7 +379,7 @@ def node_generate_spec(state: PipelineState) -> PipelineState:
     print("\n", spec_prompt[:500], "\n")
 
     logger.debug("%s | sending (prompt chars=%d)", name, len(spec_prompt))
-    raw_out = ask_ollama(spec_prompt)
+    raw_out = ask_ollama(spec_prompt, "deepseek-coder-v2:16b") #raw_out = ask_ollama(spec_prompt)
 
     clean = re.sub(r"^```(?:jsonc|json)?\n|\n```$", "", raw_out)
     try:
@@ -422,7 +422,7 @@ def node_generate_pddl(state: PipelineState) -> PipelineState:
 
         logger.debug("%s | Prompt ready (chars=%d)", name, len(final_prompt))
 
-        response = ask_ollama(prompt=final_prompt)
+        response = ask_ollama(prompt=final_prompt, model="devstral:24b") #response = ask_ollama(prompt=final_prompt)
         logger.debug("%s | Response received (chars=%d)", name, len(response))
 
         tmp = state["tmp_dir"] or ""
@@ -650,9 +650,9 @@ def validate_decision(state: PipelineState) -> str:
     
     # Lista dei file delle lore predefinite
     predefined_lore_files = [
-        "lore/example_lore.json",
-        "lore/example_lore_copy.json", 
-        "lore/example_lore2.json"
+        "lore/hero_lore.json",
+        "lore/hacker_lore.json", 
+        "lore/robot_lore.json"
     ]
     
     # Controlla se la lore corrente corrisponde a una di quelle predefinite
@@ -691,7 +691,32 @@ def feedback_branch(state: PipelineState) -> Optional[str]:
     return "Validate"
 
 def plan_branch(state: PipelineState) -> str:
-    return "ChatFeedback" if state.get("status") == "failed" else "End"
+    if state.get("status") != "failed":
+        return "End"
+    
+    current_lore_wrapper = state["lore"]
+    
+    try:
+        current_lore_json = json.loads(current_lore_wrapper["text"])
+    except (KeyError, json.JSONDecodeError):
+        return "ChatFeedback"  # Se non riesce a parsare, vai a ChatFeedback
+    
+    predefined_lore_files = [
+        "lore/hero_lore.json",
+        "lore/hacker_lore.json", 
+        "lore/robot_lore.json"
+    ]
+    
+    for lore_file in predefined_lore_files:
+        try:
+            with open(lore_file, 'r', encoding='utf-8') as f:
+                predefined_lore = json.load(f)
+            if current_lore_json == predefined_lore:
+                return "TemplateFallback"
+        except (FileNotFoundError, json.JSONDecodeError):
+            continue
+    
+    return "ChatFeedback"
 
 # ────────────────────────────────────────────────────────────────────
 #  Nodo ChatFeedback – blocca il grafo finché l’utente non risponde
@@ -846,9 +871,9 @@ def node_template_fallback(state: PipelineState) -> PipelineState:
 
     # Mapping tra file lore e corrispondenti spec
     LORE_TO_SPEC = {
-        "lore/example_lore.json": "examples/hero_lore.json",
-        "lore/example_lore_copy.json": "examples/hero_lore.json",
-        "lore/example_lore2.json": "examples/hero_lore.json"
+        "lore/hero_lore.json": "examples/hero_lore.json",
+        "lore/hacker_lore.json": "examples/hacker_lore.json",
+        "lore/robot_lore.json": "examples/robot_lore.json"
     }
 
     # Estrai il JSON dalla lore corrente
@@ -1387,22 +1412,15 @@ def reset_pipeline_state(state: PipelineState) -> dict:
             logger.warning("⚠️ [reset_pipeline_state] Errore rimozione tmp_dir: %s", e)
     
     return {
-        # Pulisci tutti i dati PDDL
         "domain": None,
         "problem": None,
         "refined_domain": None,
         "refined_problem": None,
         "validation": None,
         "tmp_dir": None,
-        
-        # Reset flag di controllo
         "_waiting_for_edit": False,
         "_resume_after_feedback": False,
-        
-        # Reset stato generale
-        "status": "reset",
-        
-        # Mantieni dati essenziali
+        "status": "reset",        
         "thread_id": thread_id,
         "lore": lore,
         "messages": messages

@@ -72,7 +72,7 @@ def ask_local_llm(prompt: str, model: str) -> Optional[str]:
 
 
 def ask_llm_with_fallback(prompt: str) -> str:
-    response = ask_local_llm(prompt, model=DEFAULT_MODEL)
+    response = ask_local_llm(prompt, model="devstral:24b")
     if response:
         return response
 

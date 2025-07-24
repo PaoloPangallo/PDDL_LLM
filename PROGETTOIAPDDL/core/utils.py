@@ -25,7 +25,7 @@ OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 #MODEL = "llama3:8b-instruct-q5_K_M"
 #MODEL = "llama3.2-vision"
 #MODEL = "devstral:24b"
-MODEL = "deepseek-coder-v2:16b"
+#MODEL = "deepseek-coder-v2:16b"
 
 
 # ----------------------------
@@ -93,7 +93,8 @@ def run_planner(session_dir: str, timeout: int = 60) -> Tuple[bool, str]:
         return False, f"❌ Errore interno: {e}"
 
 
-def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 30000) -> str:
+#def ask_ollama(prompt: str, model: str = MODEL, num_ctx: int = 30000) -> str:
+def ask_ollama(prompt: str, model: str, num_ctx: int = 30000) -> str:
     try:
         logger.info("📤 Invio prompt a Ollama con modello: %s", model)
         response = requests.post(

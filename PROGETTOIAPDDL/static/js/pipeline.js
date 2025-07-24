@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("✅ DOMContentLoaded fired, elementi caricati");
 
-  /* ───────────── helper UI ────────────────────────────────────────────── */
+  /* ───────────── helper UI ────────────────────────────────────────────── */  
   function createFileLinksContainer() {
     const container = document.createElement("div");
     container.id = "file-links";
@@ -57,8 +57,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Inserisci dopo il raw content
     const rawContainer = rawEl.closest('.card-body') || document.body;
-    rawContainer.appendChild(container);
-    return container;
+    if (pipelineDetails && pipelineDetails.parentElement) {
+      pipelineDetails.parentElement.appendChild(container); // 👈 lo metti dopo tutto
+    } else {
+      document.body.appendChild(container); // fallback
+    }
+      return container;
   }
 
   function updateFileLinks(urls = {}) {
@@ -523,30 +527,6 @@ document.addEventListener("DOMContentLoaded", () => {
       append("🎌 Streaming completato.", "system");
       closeEventSource();
     });
-
-    // es.addEventListener("error", e => {
-    //   const data = JSON.parse(e.data || "{}");
-    //   console.error("❌ Errore pipeline:", data);
-    //   append(`❌ Errore: ${data.error || 'Errore sconosciuto'}`, "bot");
-      
-    //   if (data.critical) {
-    //     pipelineActive = false;
-    //     expectingEvents = false;
-    //     closeEventSource();
-    //   }
-    // });
-
-    // es.onerror = (err) => {
-    //   console.log(`🔌 EventSource error - ReadyState: ${es.readyState}`);
-      
-    //   if (es.readyState === EventSource.CLOSED) {
-    //     console.log("EventSource chiuso normalmente");
-    //     return;
-    //   }
-      
-    //   console.error("❌ SSE ERROR:", err);
-    //   append("❌ Errore nello streaming", "bot");
-    // };
 
     es.onerror = (error) => {
       console.error("❌ EventSource error - ReadyState:", source.readyState, error);
