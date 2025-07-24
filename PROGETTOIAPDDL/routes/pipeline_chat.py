@@ -3,24 +3,20 @@ import os
 import json
 import logging
 import shutil
-import sqlite3
 from pathlib import Path
-from typing import cast, Any, Dict, Optional, Union, Generator
+from typing import cast, Any, Dict, Optional, Generator
 from flask import Blueprint, request, jsonify, url_for, Response, stream_with_context
 from flask.typing import ResponseReturnValue
 from langchain_core.messages import HumanMessage, BaseMessage
 from graphs.pddl_pipeline_graph import get_pipeline_with_memory, PipelineState
-from langgraph.types import Command, Interrupt
+from langgraph.types import Interrupt
 from langchain_core.runnables.config import RunnableConfig
-from core.utils import save_text_file, save_pipeline_state
-from db.schema import Base, GenerationSession, PipelineCheckpoint
-from sqlalchemy import create_engine, desc
+from db.schema import Base, GenerationSession
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from datetime import datetime
 
 # Cache globali per gestione unificata dello stato
 _graph_cache: Dict[str, Any] = {}
-_pipeline_states: Dict[str, Dict[str, Any]] = {}
 
 pipeline_chat_bp = Blueprint("pipeline_chat", __name__)
 logger = logging.getLogger(__name__)
@@ -32,9 +28,9 @@ if not logger.handlers:
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
 
-# Setup database
+# Setup database - SOLO per GenerationSession
 def get_db_session(thread_id: str) -> Session:
-    """Crea una sessione database per il thread specifico"""
+    """Crea una sessione database per GenerationSession"""
     db_path = f"memory/{thread_id}.db"
     os.makedirs("memory", exist_ok=True)
     
@@ -98,80 +94,30 @@ def load_lore(lore_param: Optional[str], custom_story: Optional[str] = None) -> 
     lore_dict["preset"] = True
     return lore_dict
 
-def get_pipeline_state(thread_id: str) -> Optional[Dict[str, Any]]:
-    """Ottiene lo stato corrente della pipeline dal nuovo schema"""
+def get_pipeline_state_from_langgraph(thread_id: str) -> Optional[Dict[str, Any]]:
+    """Ottiene lo stato corrente SOLO da LangGraph"""
     try:
-        db_session = get_db_session(thread_id)
-        try:
-            # Prima controlla la tabella PipelineCheckpoint
-            checkpoint = db_session.query(PipelineCheckpoint)\
-                .filter_by(thread_id=thread_id)\
-                .order_by(desc(PipelineCheckpoint.created_at))\
-                .first()
-            
-            if checkpoint:
-                # CORREZIONE: Accedi ai valori delle colonne, non alle colonne stesse
-                checkpoint_data = json.loads(str(checkpoint.checkpoint))
-                state = checkpoint_data.get("channel_values", {})
-                
-                # Aggiungi metadati dal checkpoint
-                state["_user_feedback_provided"] = checkpoint.user_feedback_provided
-                state["_last_user_feedback"] = checkpoint.last_user_feedback
-                state["_waiting_for_edit"] = checkpoint.user_feedback_provided is None
-                
-                return state
-            
-            # Fallback: controlla la tabella LangGraph se esiste
-            db_path = f"memory/{thread_id}.sqlite"
-            if os.path.exists(db_path):
-                with sqlite3.connect(db_path, check_same_thread=True) as conn:
-                    cursor = conn.execute(
-                        "SELECT name FROM sqlite_master WHERE type='table' AND name='checkpoints'"
-                    )
-                    if cursor.fetchone():
-                        cursor = conn.execute(
-                            "SELECT checkpoint FROM checkpoints ORDER BY thread_ts DESC LIMIT 1"
-                        )
-                        row = cursor.fetchone()
-                        if row:
-                            checkpoint_data = json.loads(row[0])
-                            return checkpoint_data.get("channel_values", {})
-                            
-        finally:
-            db_session.close()
+        # Ottieni il grafo con memoria esistente
+        graph = get_pipeline_with_memory(thread_id, reset=False)
+        
+        # Ottieni lo stato corrente dal checkpoint
+        config: RunnableConfig = {
+            "configurable": {"thread_id": thread_id}
+        }
+        
+        # Usa get_state per ottenere lo stato corrente
+        state_snapshot = graph.get_state(config)
+        
+        if state_snapshot and state_snapshot.values:
+            return dict(state_snapshot.values)
             
     except Exception as e:
-        logger.error("Errore lettura stato pipeline: %s", e)
+        logger.error("Errore lettura stato LangGraph: %s", e)
     
     return None
 
-def save_pipeline_checkpoint(thread_id: str, state_data: Dict[str, Any], 
-                           user_feedback_provided: bool = False, 
-                           last_user_feedback: Optional[str] = None) -> None:
-    """Salva un checkpoint della pipeline nel nuovo schema"""
-    try:
-        db_session = get_db_session(thread_id)
-        try:
-            checkpoint = PipelineCheckpoint(
-                thread_id=thread_id,
-                checkpoint=json.dumps({"channel_values": state_data}, ensure_ascii=False),
-                user_feedback_provided=user_feedback_provided,
-                last_user_feedback=last_user_feedback
-            )
-            
-            db_session.add(checkpoint)
-            db_session.commit()
-            
-            logger.info("✅ Checkpoint salvato per thread: %s", thread_id)
-            
-        finally:
-            db_session.close()
-            
-    except Exception as e:
-        logger.error("❌ Errore salvataggio checkpoint: %s", e)
-
 def update_generation_session(thread_id: str, **kwargs) -> None:
-    """Aggiorna o crea una sessione di generazione"""
+    """Aggiorna o crea una sessione di generazione - SOLO per logging/tracking"""
     try:
         db_session = get_db_session(thread_id)
         try:
@@ -200,191 +146,82 @@ def update_generation_session(thread_id: str, **kwargs) -> None:
     except Exception as e:
         logger.error("❌ Errore aggiornamento GenerationSession: %s", e)
 
-def is_pipeline_waiting_for_edit(thread_id: str) -> bool:
-    """Controlla se la pipeline è in attesa di editing dall'utente"""
+def apply_user_feedback(thread_id: str, domain: str, problem: str, user_message: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Applica il feedback dell'utente allo stato LangGraph e riprende la pipeline.
+    
+    Args:
+        thread_id: ID del thread
+        domain: Dominio PDDL modificato dall'utente
+        problem: Problema PDDL modificato dall'utente
+        user_message: Messaggio opzionale dell'utente
+    
+    Returns:
+        Risultato dell'esecuzione della pipeline
+    """
     try:
-        db_session = get_db_session(thread_id)
-        try:
-            checkpoint = db_session.query(PipelineCheckpoint)\
-                .filter_by(thread_id=thread_id)\
-                .order_by(desc(PipelineCheckpoint.created_at))\
-                .first()
+        # Ottieni il grafo con memoria
+        graph = get_pipeline_with_memory(thread_id, reset=False)
+        
+        config: RunnableConfig = {
+            "configurable": {"thread_id": thread_id}
+        }
+        
+        # Ottieni lo stato corrente
+        current_state = graph.get_state(config)
+        if not current_state or not current_state.values:
+            raise ValueError(f"Nessuno stato trovato per thread_id: {thread_id}")
+        
+        # IMPORTANTE: Salva anche i file edited su disco per compatibilità
+        state_values = dict(current_state.values)
+        tmp_dir = state_values.get("tmp_dir")
+        if tmp_dir:
+            edited_dir = os.path.join(tmp_dir, "edited")
+            os.makedirs(edited_dir, exist_ok=True)
             
-            if checkpoint:
-                # CORREZIONE: Controlla il valore booleano della colonna, non la colonna stessa
-                if not checkpoint.user_feedback_provided is None:
-                    checkpoint_data = json.loads(str(checkpoint.checkpoint))
-                    state = checkpoint_data.get("channel_values", {})
-                    
-                    # Controlla se c'è una interruzione con domain/problem
-                    if "__interrupt__" in state:
-                        interrupt_item = state["__interrupt__"]
-                        payload = None
-                        
-                        if isinstance(interrupt_item, dict) and "value" in interrupt_item:
-                            payload = interrupt_item["value"]
-                        elif isinstance(interrupt_item, (list, tuple)) and len(interrupt_item) > 0:
-                            first_item = interrupt_item[0]
-                            if isinstance(first_item, dict) and "value" in first_item:
-                                payload = first_item["value"]
-                        
-                        if payload and isinstance(payload, dict):
-                            return "domain" in payload and "problem" in payload
-                
-                return False
-                
-        finally:
-            db_session.close()
+            domain_path = os.path.join(edited_dir, "domain.pddl")
+            problem_path = os.path.join(edited_dir, "problem.pddl")
             
+            with open(domain_path, "w", encoding="utf-8") as f:
+                f.write(domain)
+            with open(problem_path, "w", encoding="utf-8") as f:
+                f.write(problem)
+            
+            logger.info("✅ PDDL editati salvati in: %s", edited_dir)
+        
+        # Prepara il nuovo stato con il feedback
+        updated_state = dict(current_state.values)
+        updated_state.update({
+            "domain": domain,           # CRITICO: Aggiorna domain nello stato
+            "problem": problem,         # CRITICO: Aggiorna problem nello stato
+            "_waiting_for_edit": False,
+            "_resume_after_feedback": True,  # Flag per indicare che stiamo riprendendo dopo feedback
+        })
+        
+        # Aggiungi messaggio utente se fornito
+        if user_message:
+            messages = updated_state.get("messages", [])
+            messages.append(HumanMessage(content=user_message))
+            updated_state["messages"] = messages
+        
+        # Aggiorna lo stato in LangGraph
+        graph.update_state(config, updated_state)
+        
+        logger.info("✅ Stato LangGraph aggiornato con PDDL editati per thread: %s", thread_id)
+        
+        # Riprendi l'esecuzione della pipeline
+        empty_state: PipelineState = cast(PipelineState, {
+            "messages": [],
+            "thread_id": thread_id
+        })
+        result = graph.invoke(empty_state, config=config)
+        
+        logger.info("✅ Pipeline ripresa dopo feedback per thread: %s", thread_id)
+        return result
+        
     except Exception as e:
-        logger.error("Errore controllo stato editing: %s", e)
-    
-    return False
-
-def get_or_create_pipeline_state(thread_id: str, lore_dict: Dict[str, Any], reset: bool = False) -> Dict[str, Any]:
-    """Ottiene pipeline esistente o ne crea una nuova SOLO se necessario"""
-    
-    # Se reset esplicito, pulisci tutto
-    if reset:
-        logger.info("🧹 Reset esplicito richiesto per thread: %s", thread_id)
-        
-        # Pulisci database personalizzato
-        db_path = f"memory/{thread_id}.db"
-        if os.path.exists(db_path):
-            os.remove(db_path)
-        
-        # Pulisci database LangGraph se esiste
-        mem_db = f"memory/{thread_id}.sqlite"
-        if os.path.exists(mem_db):
-            os.remove(mem_db)
-            
-        _graph_cache.pop(thread_id, None)
-        _pipeline_states.pop(thread_id, None)
-        
-        return {
-            "thread_id": thread_id,
-            "lore": lore_dict,
-            "messages": [],
-            "config": lore_dict,
-            "is_new": True
-        }
-    
-    # Controlla se esiste pipeline attiva
-    existing_state = get_pipeline_state(thread_id)
-    
-    if existing_state:
-        logger.info("♻️  Pipeline esistente trovata per thread: %s", thread_id)
-        return {
-            "thread_id": thread_id,
-            "lore": existing_state.get("lore", lore_dict),
-            "tmp_dir": existing_state.get("tmp_dir"),
-            "domain": existing_state.get("domain"),
-            "problem": existing_state.get("problem"),
-            "messages": [],
-            "is_new": False,
-            "existing": True
-        }
-    else:
-        logger.info("🆕 Nuova pipeline per thread: %s", thread_id)
-        return {
-            "thread_id": thread_id,
-            "lore": lore_dict,
-            "messages": [],
-            "config": lore_dict,
-            "is_new": True
-        }
-
-
-def update_pipeline_with_feedback(thread_id: str, domain: str, problem: str) -> None:
-    """Aggiorna il database con il feedback dell'utente - Versione SQLAlchemy CORRETTA"""
-    try:
-        db_session = get_db_session(thread_id)
-        try:
-            # Ottieni l'ultimo checkpoint
-            checkpoint = db_session.query(PipelineCheckpoint)\
-                .filter_by(thread_id=thread_id)\
-                .order_by(desc(PipelineCheckpoint.created_at))\
-                .first()
-            
-            if not checkpoint:
-                logger.warning("Nessun checkpoint trovato per thread: %s", thread_id)
-                
-                # Crea un nuovo checkpoint con il feedback
-                feedback_state = {
-                    "domain": domain,
-                    "problem": problem,
-                    "thread_id": thread_id,
-                    "_user_feedback_provided": True,
-                    "_waiting_for_edit": False,
-                    "messages": [{
-                        "type": "human",
-                        "content": f"User feedback - Domain: {domain}\nProblem: {problem}"
-                    }]
-                }
-                
-                new_checkpoint = PipelineCheckpoint(
-                    thread_id=thread_id,
-                    checkpoint=json.dumps({"channel_values": feedback_state}, ensure_ascii=False),
-                    user_feedback_provided=True,
-                    last_user_feedback=f"Domain: {domain}\nProblem: {problem}"
-                )
-                
-                db_session.add(new_checkpoint)
-                db_session.commit()
-                
-                logger.info("✅ Nuovo checkpoint creato con feedback per thread: %s", thread_id)
-                return
-                
-            # Aggiorna checkpoint esistente - CORREZIONE QUI
-            checkpoint_data = json.loads(str(checkpoint.checkpoint))
-            channel_values = checkpoint_data.get("channel_values", {})
-            
-            # Rimuovi l'interruzione e aggiungi il feedback
-            if "__interrupt__" in channel_values:
-                del channel_values["__interrupt__"]
-            
-            # Aggiorna domain e problem nel checkpoint
-            channel_values["domain"] = domain
-            channel_values["problem"] = problem
-            channel_values["_user_feedback_provided"] = True
-            channel_values["_waiting_for_edit"] = False
-            
-            # Crea messaggio di feedback
-            feedback_message = {
-                "type": "human",
-                "content": f"User feedback - Domain: {domain}\nProblem: {problem}"
-            }
-            
-            if "messages" not in channel_values:
-                channel_values["messages"] = []
-            channel_values["messages"].append(feedback_message)
-            
-            # CORREZIONE: Usa il metodo update() invece di assegnazione diretta
-            db_session.query(PipelineCheckpoint)\
-                .filter_by(thread_id=thread_id, id=checkpoint.id)\
-                .update({
-                    "checkpoint": json.dumps({"channel_values": channel_values}, ensure_ascii=False),
-                    "user_feedback_provided": True,
-                    "last_user_feedback": f"Domain: {domain}\nProblem: {problem}",
-                    "updated_at": datetime.utcnow()  # Aggiungi timestamp se necessario
-                })
-            
-            db_session.commit()
-            
-            # Aggiorna anche la GenerationSession
-            update_generation_session(
-                thread_id, 
-                domain=domain, 
-                problem=problem
-            )
-            
-            logger.info("✅ Checkpoint aggiornato con feedback utente per thread: %s", thread_id)
-            
-        finally:
-            db_session.close()
-            
-    except Exception as e:
-        logger.error("❌ Errore aggiornamento checkpoint: %s", e)
+        logger.error("❌ Errore applicazione feedback: %s", e)
+        raise
 
 @pipeline_chat_bp.route("/message", methods=["POST"])
 def handle_pipeline_chat() -> ResponseReturnValue:
@@ -401,21 +238,48 @@ def handle_pipeline_chat() -> ResponseReturnValue:
         # Ottieni il grafo
         graph = get_pipeline_with_memory(thread_id, reset=reset)
 
+        # ═══════ NUOVO: Reset esplicito ═══════
+        if reset:
+            logger.info("🔄 Reset esplicito richiesto per thread: %s", thread_id)
+            
+            # Pulisci cache grafo
+            _graph_cache.pop(thread_id, None)
+            
+            # Rimuovi database LangGraph
+            mem_db = f"memory/{thread_id}.sqlite"
+            if os.path.exists(mem_db):
+                os.remove(mem_db)
+                logger.info("🧹 Database LangGraph rimosso: %s", mem_db)
+            
+            # Rimuovi directory temporanee
+            tmp_dir = os.path.join("static", "uploads", thread_id)
+            if os.path.exists(tmp_dir):
+                import shutil
+                shutil.rmtree(tmp_dir)
+                logger.info("🧹 Directory temporanea rimossa: %s", tmp_dir)
+            
+            # Ottieni nuovo grafo pulito
+            graph = get_pipeline_with_memory(thread_id, reset=True)
+            
+            # Se c'è anche un messaggio o lore, procedi normalmente
+            # Altrimenti ritorna conferma di reset
+            if not data.get("message") and not data.get("lore"):
+                return jsonify({
+                    "response": "✅ Pipeline resettata con successo.",
+                    "status": "reset_completed",
+                    "thread_id": thread_id
+                })
+
         # ═══════ A) RIPRESA DOPO EDIT UTENTE ═══════
         if "domain" in data and "problem" in data:
             logger.info("✍️ Resume con domain/problem modificati")
             
-            # CHIAVE: Aggiorna il checkpoint prima di riprendere
-            update_pipeline_with_feedback(thread_id, data["domain"], data["problem"])
-            
-            # Crea stato per resume senza resettare
-            resume_state: PipelineState = cast(PipelineState, {
-                "messages": [],
-                "thread_id": thread_id,
-                "_resume_after_feedback": True
-            })
-            
-            result = graph.invoke(resume_state, config=config)
+            result = apply_user_feedback(
+                thread_id, 
+                data["domain"], 
+                data["problem"], 
+                data.get("message")
+            )
 
         # ═══════ B) GESTIONE MESSAGGI TESTUALI ═══════
         elif "message" in data:
@@ -424,7 +288,8 @@ def handle_pipeline_chat() -> ResponseReturnValue:
             user_message = HumanMessage(content=data["message"])
             message_state: PipelineState = cast(PipelineState, {
                 "messages": [user_message],
-                "thread_id": thread_id
+                "thread_id": thread_id,
+                "_explicit_reset": reset  # Passa il flag di reset
             })
             
             result = graph.invoke(message_state, config=config)
@@ -433,16 +298,20 @@ def handle_pipeline_chat() -> ResponseReturnValue:
         else:
             logger.info("⚡ Avvio pipeline completa")
             
-            # Carica lore solo per nuove pipeline
+            # Carica lore per nuove pipeline
             lore_dict = load_lore(data.get("lore"), data.get("custom_story"))
             
-            # Usa gestione unificata dello stato
-            pipeline_state = get_or_create_pipeline_state(thread_id, lore_dict, reset)
+            initial_state: PipelineState = cast(PipelineState, {
+                "thread_id": thread_id,
+                "lore": lore_dict,
+                "messages": [],
+                "config": lore_dict,
+                "_explicit_reset": reset  # Passa il flag di reset
+            })
             
-            initial_state: PipelineState = cast(PipelineState, pipeline_state)
             result = graph.invoke(initial_state, config=config)
             
-            # Salva risultato nel nuovo schema
+            # Salva risultato per tracking (opzionale)
             if result:
                 update_generation_session(
                     thread_id,
@@ -480,6 +349,91 @@ def handle_pipeline_chat() -> ResponseReturnValue:
         logger.exception("❌ Errore nella pipeline")
         return jsonify({"error": str(e)}), 500
 
+@pipeline_chat_bp.route("/feedback", methods=["POST"])
+def handle_feedback() -> ResponseReturnValue:
+    """Endpoint dedicato per ricevere e applicare feedback PDDL dall'utente"""
+    print(">>> /feedback chiamata")
+    try:
+        data: Dict[str, Any] = request.get_json(force=True) or {}
+        print(f">>> feedback payload: {data}")
+        thread_id = data.get("thread_id")
+        domain = data.get("domain")
+        problem = data.get("problem")
+        user_message = data.get("message", "")
+
+        print("\nEdited Domain:\n", domain)
+        print("\nEdited Problem:\n", problem)
+
+        if thread_id is None:
+            return jsonify({"error": "thread assente."})
+
+        # Validazione input
+        state = get_pipeline_state_from_langgraph(thread_id)
+        if state is None:
+            return jsonify({"error": "Impossibile recuperare lo stato della pipeline."}), 400
+
+        if domain is None or problem is None:
+            return jsonify({"error": "domain, problem assenti."}), 400
+        
+        tmp_dir = state.get("tmp_dir")
+        if not tmp_dir:
+            return jsonify({"error": "tmp_dir non disponibile nello stato."}), 400
+        os.makedirs(tmp_dir, exist_ok=True)
+        edited_dir = os.path.join(tmp_dir, "edited")
+        os.makedirs(edited_dir, exist_ok=True)
+
+        domain_path  = os.path.join(edited_dir, "domain.pddl")
+        problem_path = os.path.join(edited_dir, "problem.pddl")
+        with open(domain_path,  "w", encoding="utf-8") as f:
+            f.write(domain)
+        with open(problem_path, "w", encoding="utf-8") as f:
+            f.write(problem)
+        print(f"[DBG][chat_feedback] Saved edited PDDL to {domain_path} and {problem_path}")
+
+        
+        if not thread_id:
+            return jsonify({"error": "thread_id è richiesto"}), 400
+        if not domain or not problem:
+            return jsonify({"error": "domain e problem sono richiesti"}), 400
+        
+        logger.info("📝 Feedback ricevuto per thread: %s", thread_id)
+        
+        # Applica il feedback e riprendi la pipeline
+        result = apply_user_feedback(thread_id, domain, problem, user_message)
+        
+        # Estrai messaggio di risposta
+        response_text: Optional[str] = None
+        for msg in result.get("messages", []):
+            if isinstance(msg, dict) and msg.get("type") == "ai":
+                response_text = str(msg["content"])
+                break
+        
+        # Copia file generati
+        urls = copy_generated_files(result, thread_id)
+        
+        # Aggiorna GenerationSession per tracking
+        update_generation_session(
+            thread_id,
+            domain=result.get("domain"),
+            problem=result.get("problem"),
+            validation=result.get("validation"),
+            refined_domain=result.get("refined_domain"),
+            refined_problem=result.get("refined_problem")
+        )
+        
+        return jsonify({
+            "status": "feedback_applied",
+            "response": response_text or "✅ Feedback applicato con successo.",
+            "validation": result.get("validation"),
+            "refined_domain": result.get("refined_domain"),
+            "refined_problem": result.get("refined_problem"),
+            **urls
+        })
+        
+    except Exception as e:
+        logger.exception("❌ Errore applicazione feedback")
+        return jsonify({"error": str(e)}), 500
+
 @pipeline_chat_bp.route("/stream", methods=["GET"])
 def stream_pipeline() -> ResponseReturnValue:
     """Endpoint per streaming della pipeline (GET)"""
@@ -489,6 +443,7 @@ def stream_pipeline() -> ResponseReturnValue:
         lore_param = request.args.get("lore")
         custom_story = request.args.get("custom_story")
         reset = request.args.get("reset", "false").lower() == "true"
+        resume = request.args.get("resume", "false").lower() == "true"
 
         config: RunnableConfig = {
             "configurable": {"thread_id": thread_id}
@@ -496,129 +451,220 @@ def stream_pipeline() -> ResponseReturnValue:
 
         logger.info("🎬 Stream request - thread_id: %s, reset: %s", thread_id, reset)
 
-        # Controlla se pipeline è in attesa di editing
-        waiting_for_edit = is_pipeline_waiting_for_edit(thread_id)
-        
-        if waiting_for_edit and not reset:
-            logger.info("✋ Pipeline in attesa di editing, invio stato per continuare")
+        # NUOVO: Reset esplicito più aggressivo per stream
+        if reset:
+            logger.info("🔄 Reset esplicito per stream thread: %s", thread_id)
             
-            def edit_resume_stream() -> Generator[str, None, None]:
-                try:
-                    # Ottieni lo stato corrente
-                    current_state = get_pipeline_state(thread_id)
-                    if current_state and current_state.get("_user_feedback_provided"):
-                        # Feedback fornito, riprendi pipeline
-                        graph = get_pipeline_with_memory(thread_id, reset=False)
-                        
-                        resume_state: PipelineState = cast(PipelineState, {
-                            "messages": [],
-                            "thread_id": thread_id,
-                            "_resume_after_feedback": True
-                        })
-                        
-                        for chunk in graph.stream(resume_state, config=config):
-                            yield from process_stream_chunk(chunk, thread_id)
-                    else:
+            # Pulisci tutto
+            _graph_cache.pop(thread_id, None)
+            
+            # mem_db = f"memory/{thread_id}.sqlite"
+            # if os.path.exists(mem_db):
+            #     os.remove(mem_db)
+            #     logger.info("🧹 Database LangGraph rimosso per stream: %s", mem_db)
+            
+            # tmp_dir = os.path.join("static", "uploads", thread_id)
+            # if os.path.exists(tmp_dir):
+            #     import shutil
+            #     shutil.rmtree(tmp_dir)
+            #     logger.info("🧹 Directory temporanea rimossa per stream: %s", tmp_dir)
+        
+        elif not resume:
+            # Controlla se pipeline è in attesa di editing tramite LangGraph
+            current_state = get_pipeline_state_from_langgraph(thread_id)
+            waiting_for_edit = current_state and current_state.get("_waiting_for_edit", False) if current_state is not None else False
+            
+            if waiting_for_edit:
+                logger.info("✋ Pipeline in attesa di editing, invio stato corrente")
+                
+                def edit_resume_stream() -> Generator[str, None, None]:
+                    try:
+                        # FIX: Controlla che current_state non sia None
                         if current_state is None:
-                            raise ValueError("current_state mancante")
+                            yield f"event: error\ndata: {json.dumps({'message': 'Stato non disponibile'}, ensure_ascii=False)}\n\n"
+                            return
+                            
+                        # Invia i PDDL correnti per editing
                         domain = current_state.get("domain", "")
                         problem = current_state.get("problem", "")
-                        payload = {"domain": domain, "problem": problem}
+                        
+                        # Usa refined se disponibili, altrimenti originali
+                        if current_state.get("refined_domain"):
+                            domain = current_state["refined_domain"]
+                        if current_state.get("refined_problem"):
+                            problem = current_state["refined_problem"]
+                        
+                        payload = {
+                            "domain": domain,
+                            "problem": problem,
+                            "status": current_state.get("status", "waiting_for_edit")
+                        }
                         
                         yield f"event: ChatFeedback\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
-                        yield "event: PauseForFeedback\ndata: {{}}\n\n"
-                        yield "event: stream_paused\ndata: {{}}\n\n"
-                    
-                    yield "event: done\ndata: {{}}\n\n"
-                    
-                except Exception as e:
-                    logger.exception("Errore durante edit resume stream")
-                    yield f"event: error\ndata: {json.dumps({'message': str(e)}, ensure_ascii=False)}\n\n"
+                        yield "event: PauseForFeedback\ndata: {}\n\n"
+                        yield "event: stream_paused\ndata: {}\n\n"
+                        #yield "event: done\ndata: {}\n\n"
+                        
+                    except Exception as e:
+                        logger.exception("Errore durante edit resume stream")
+                        yield f"event: error\ndata: {json.dumps({'message': str(e)}, ensure_ascii=False)}\n\n"
 
-            return Response(
-                stream_with_context(edit_resume_stream()), 
-                mimetype="text/event-stream",
-                headers={'Cache-Control': 'no-cache', 'Connection': 'keep-alive'}
-            )
-
-        # Reset se esplicitamente richiesto
-        if reset:
-            # Pulisci entrambi i database
-            db_path = f"memory/{thread_id}.db"
-            if os.path.exists(db_path):
-                os.remove(db_path)
-                
-            mem_db = f"memory/{thread_id}.sqlite"
-            if os.path.exists(mem_db):
-                os.remove(mem_db)
-                logger.info("🧹 Database reset per stream: %s", mem_db)
-                
-            _graph_cache.pop(thread_id, None)
-            _pipeline_states.pop(thread_id, None)
+                return Response(
+                    stream_with_context(edit_resume_stream()), 
+                    mimetype="text/event-stream",
+                    headers={'Cache-Control': 'no-cache', 'Connection': 'keep-alive'}
+                )
 
         # Carica lore per nuove pipeline
         lore_dict = load_lore(lore_param, custom_story)
-        
-        # Usa gestione unificata dello stato
-        pipeline_state_data = get_or_create_pipeline_state(thread_id, lore_dict, reset)
         
         # Ottieni grafo
         graph = get_pipeline_with_memory(thread_id, reset=reset)
         
         def unified_event_stream() -> Generator[str, None, None]:
-            """Generator unificato per Server-Sent Events"""
+            """Generator unificato per Server-Sent Events con stato preservato"""
             try:
-                initial_state: PipelineState = cast(PipelineState, pipeline_state_data)
+                # OTTIENI STATO CORRENTE DA LANGGRAPH PRIMA DI CREARE initial_state
+                current_state = get_pipeline_state_from_langgraph(thread_id)
                 
-                logger.info("🚀 Avvio stream con stato: %s", 
-                           "nuovo" if pipeline_state_data.get("is_new") else "esistente")
+                # Crea initial_state base
+                initial_state: PipelineState = cast(PipelineState, {
+                    "thread_id": thread_id,
+                    "lore": lore_dict,
+                    "messages": [],
+                    "config": lore_dict,
+                    "_explicit_reset": reset
+                })
                 
+                # CRITICAL FIX: Preserva stato critico se esiste
+                if current_state:
+                    logger.info("🔄 Stato LangGraph esistente trovato, preservando dati critici")
+                    
+                    # Preserva flag di ripresa
+                    if current_state.get("_resume_after_feedback"):
+                        initial_state["_resume_after_feedback"] = True
+                        logger.info("✅ Flag _resume_after_feedback preservato")
+                    
+                    if current_state.get("_waiting_for_edit"):
+                        initial_state["_waiting_for_edit"] = True
+                        logger.info("✅ Flag _waiting_for_edit preservato")
+                    
+                    # Preserva tmp_dir esistente
+                    if current_state.get("tmp_dir"):
+                        initial_state["tmp_dir"] = current_state["tmp_dir"]
+                        logger.info("✅ tmp_dir preservata: %s", current_state["tmp_dir"])
+                    
+                    # CRITICAL: Preserva PDDL editati se esistono file edited/
+                    tmp_dir = current_state.get("tmp_dir")
+                    if tmp_dir:
+                        edited_dir = os.path.join(tmp_dir, "edited")
+                        if os.path.isdir(edited_dir):
+                            dom_edited = os.path.join(edited_dir, "domain.pddl")
+                            prob_edited = os.path.join(edited_dir, "problem.pddl")
+                            
+                            if os.path.exists(dom_edited) and os.path.exists(prob_edited):
+                                try:
+                                    with open(dom_edited, "r", encoding="utf-8") as f:
+                                        edited_domain = f.read().strip()
+                                    with open(prob_edited, "r", encoding="utf-8") as f:
+                                        edited_problem = f.read().strip()
+                                    
+                                    if edited_domain and edited_problem:
+                                        initial_state["domain"] = edited_domain
+                                        initial_state["problem"] = edited_problem
+                                        logger.info("✅ PDDL editati caricati da %s", edited_dir)
+                                except Exception as e:
+                                    logger.warning("⚠ Errore caricamento PDDL editati: %s", e)
+                    
+                    # Preserva altri dati importanti
+                    for key in ["status", "attempt", "validation", "refined_domain", "refined_problem"]:
+                        if current_state.get(key) is not None:
+                            initial_state[key] = current_state[key]
+                
+                logger.info("🚀 Avvio stream per thread: %s", thread_id)
+                
+                pipeline_paused = False
+        
                 for chunk in graph.stream(initial_state, config=config):
-                    yield from process_stream_chunk(chunk, thread_id)
+                    chunk_events = list(process_stream_chunk(chunk, thread_id))
+                    
+                    # Controlla se la pipeline è stata messa in pausa
+                    for event_line in chunk_events:
+                        if "event: pause_for_editing" in event_line:
+                            pipeline_paused = True
+                            
+                    # Emetti tutti gli eventi del chunk
+                    for event_line in chunk_events:
+                        yield event_line
+                    
+                    # Se la pipeline è in pausa, non continuare l'iterazione
+                    # La connessione rimane aperta per future continuazioni
+                    if pipeline_paused:
+                        logger.info("🛑 Pipeline in pausa, connessione mantenuta aperta")
+                        return
                 
-                yield "event: done\ndata: {{}}\n\n"
+                yield "event: done\ndata: {}\n\n"
                 
             except StopIteration:
-                yield "event: done\ndata: {{}}\n\n"
+                yield "event: done\ndata: {}\n\n"
             except Exception as e:
                 logger.exception("Errore in unified_event_stream")
                 yield f"event: error\ndata: {json.dumps({'message': str(e)}, ensure_ascii=False)}\n\n"
-                yield "event: done\ndata: {{}}\n\n"
+                yield "event: done\ndata: {}\n\n"
 
         return Response(
             stream_with_context(unified_event_stream()), 
             mimetype="text/event-stream",
-            headers={
-                'Cache-Control': 'no-cache',
-                'Connection': 'keep-alive',
-            }
+            headers={'Cache-Control': 'no-cache', 'Connection': 'keep-alive'}
         )
 
     except (ValueError, FileNotFoundError) as e:
         logger.error("❌ Errore validazione stream: %s", str(e))
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.exception("❌ Errore critico nello stream")
+        logger.exception("❌ Errore generale stream")
         return jsonify({"error": str(e)}), 500
 
 def process_stream_chunk(chunk: Dict[str, Any], thread_id: str) -> Generator[str, None, None]:
-    """Processa un singolo chunk dello stream in modo unificato"""
+    """Processa un singolo chunk dello stream"""
     try:
-        # Salva gli stati importanti nel database
+        # Aggiorna GenerationSession per tracking (opzionale)
         chunk_data = {}
-        
         for key in ["domain", "problem", "validation", "refined_domain", "refined_problem"]:
             if key in chunk:
                 chunk_data[key] = chunk[key]
         
+        state = get_pipeline_state_from_langgraph(thread_id)
+        if state and "lore" in state:
+            chunk_data["lore"] = state["lore"]
+
         if chunk_data:
-            # Aggiorna lo stato della pipeline
-            save_pipeline_checkpoint(thread_id, chunk_data)
-            
-            # Aggiorna la sessione di generazione
             update_generation_session(thread_id, **chunk_data)
+
+        # IMPORTANTE: Gestisci il prompt PRIMA delle interruzioni
+        if "prompt" in chunk:
+            logger.info("📝 [SSE] Emettendo evento prompt")
+            prompt_payload = {
+                "prompt": chunk["prompt"],
+                "status": "prompt_generated"
+            }
+            yield f"event: prompt\ndata: {json.dumps(prompt_payload, ensure_ascii=False)}\n\n"
         
-        # Gestisci interruzioni in modo selettivo
+        # GESTISCI PIANO CON PIÙ ATTENZIONE
+        if "plan" in chunk:
+            logger.info("🎯 [SSE] chunk contiene piano! Emissione GeneratePlan...")
+            payload = {
+                "plan": chunk["plan"],
+                "plan_log": chunk.get("plan_log"),
+                "plan_url": chunk.get("plan_url"),
+                "status": chunk.get("status", "success"),
+                "found_plan": True,
+                "pipeline_completing": True
+            }
+            yield f"event: GeneratePlan\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+            logger.info("✅ [SSE] GeneratePlan emesso")
+
+        # Gestisci interruzioni per feedback
         if "__interrupt__" in chunk:
             interrupt_item = chunk["__interrupt__"]
             interrupt_obj: Optional[Interrupt] = None
@@ -639,73 +685,48 @@ def process_stream_chunk(chunk: Dict[str, Any], thread_id: str) -> Generator[str
                 
                 # Solo interruzioni con domain/problem vanno in editing
                 if isinstance(payload, dict) and "domain" in payload and "problem" in payload:
-                    logger.info("🛑 Interruzione stream per editing: %s", payload)
-                    
-                    # Salva lo stato dell'interruzione
-                    interrupt_state = {
-                        "domain": payload.get("domain", ""),
-                        "problem": payload.get("problem", ""),
-                        "_waiting_for_edit": True,
-                        "__interrupt__": payload
-                    }
-                    
-                    save_pipeline_checkpoint(thread_id, interrupt_state, user_feedback_provided=False)
+                    logger.info("🛑 Interruzione stream per editing")
                     
                     yield f"event: ChatFeedback\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
-                    yield "event: PauseForFeedback\ndata: {{}}\n\n"
-                    yield "event: stream_paused\ndata: {{}}\n\n"
+                    yield "event: PauseForFeedback\ndata: {}\n\n"
+                    yield "event: stream_paused\ndata: {}\n\n"
                     return
                 else:
                     # Altre interruzioni sono normali eventi di stato
-                    logger.info("📊 Interruzione di stato normale: %s", payload)
+                    logger.info("📊 Interruzione di stato normale")
                     yield f"event: status_interrupt\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
-            else:
-                logger.error("Impossibile estrarre oggetto Interrupt da: %s", interrupt_item)
-        
-        # Emetti altri eventi normalmente
+
+        # Emetti TUTTI gli altri eventi normalmente (incluso prompt se non gestito sopra)
         for key, val in chunk.items():
-            if key != "__interrupt__":
+            if key not in ["__interrupt__", "plan"]:  # Escludi quelli già gestiti
+                logger.info(f"📤 [SSE] Emettendo evento: {key}")
                 yield f"event: {key}\ndata: {json.dumps(serialize_value(val), ensure_ascii=False)}\n\n"
                 
     except Exception as e:
-        logger.exception("Errore processamento chunk: %s", chunk)
+        logger.exception("❌ Errore processamento chunk")
         yield f"event: error\ndata: {json.dumps({'message': str(e)}, ensure_ascii=False)}\n\n"
 
 @pipeline_chat_bp.route("/resume", methods=["POST"])
 def resume_pipeline() -> ResponseReturnValue:
-    """Endpoint per il resume della pipeline dopo editing"""
+    """Endpoint legacy per compatibilità - redirige a /feedback"""
     try:
         data: Dict[str, Any] = request.get_json(force=True) or {}
-        thread_id = data.get("thread_id", "session-1")
-        domain = data.get("domain", "")
-        problem = data.get("problem", "")
-
-        if not domain or not problem:
-            return jsonify({"error": "Domain e Problem sono richiesti per il resume"}), 400
-
-        logger.info("🔄 Resume request - thread_id: %s", thread_id)
-
-        # CHIAVE: Aggiorna il checkpoint con il feedback
-        update_pipeline_with_feedback(thread_id, domain, problem)
-
-        # Restituisci solo conferma - il resume avverrà tramite stream
-        return jsonify({
-            "response": "✅ Feedback ricevuto, pipeline riprenderà dal checkpoint.",
-            "status": "feedback_received"
-        })
+        
+        # Delega al nuovo endpoint /feedback
+        return handle_feedback()
 
     except Exception as e:
-        logger.exception("❌ Errore nel resume")
+        logger.exception("❌ Errore nel resume legacy")
         return jsonify({"error": str(e)}), 500
 
 @pipeline_chat_bp.route("/status/<thread_id>", methods=["GET"])
 def get_pipeline_status(thread_id: str) -> ResponseReturnValue:
-    """Endpoint per controllare lo stato della pipeline"""
+    """Endpoint per controllare lo stato della pipeline - SOLO tramite LangGraph"""
     try:
-        state = get_pipeline_state(thread_id)
-        waiting_for_edit = is_pipeline_waiting_for_edit(thread_id)
+        # Ottieni stato SOLO da LangGraph
+        state = get_pipeline_state_from_langgraph(thread_id)
         
-        # Ottieni anche informazioni dalla GenerationSession
+        # Ottieni anche informazioni dalla GenerationSession per tracking
         session_info = {}
         try:
             db_session = get_db_session(thread_id)
@@ -720,8 +741,7 @@ def get_pipeline_status(thread_id: str) -> ResponseReturnValue:
                         "has_problem": bool(session.problem),
                         "has_validation": bool(session.validation),
                         "has_refinements": bool(session.refined_domain and session.refined_problem),
-                        "created_at": session.created_at.isoformat() if session.created_at else None,
-                        "updated_at": session.updated_at.isoformat() if session.updated_at else None
+                        "created_at": session.created_at.isoformat() if session.created_at else None
                     }
             finally:
                 db_session.close()
@@ -729,23 +749,39 @@ def get_pipeline_status(thread_id: str) -> ResponseReturnValue:
             logger.error("Errore lettura GenerationSession: %s", e)
             session_info = {"error": str(e)}
         
-        # Costruisci risposta completa
+        # Costruisci risposta basata SOLO su stato LangGraph
         status_response = {
             "thread_id": thread_id,
             "has_state": bool(state),
-            "waiting_for_edit": waiting_for_edit,
             "session_info": session_info
         }
         
         # Aggiungi dettagli dello stato se disponibile
         if state:
             status_response.update({
+                "status": state.get("status", "unknown"),
+                "waiting_for_edit": state.get("_waiting_for_edit", False),
+                "resume_after_feedback": state.get("_resume_after_feedback", False),
                 "has_domain": bool(state.get("domain")),
                 "has_problem": bool(state.get("problem")),
+                "has_refined_domain": bool(state.get("refined_domain")),
+                "has_refined_problem": bool(state.get("refined_problem")),
                 "has_messages": bool(state.get("messages")),
-                "has_interrupt": bool(state.get("__interrupt__")),
-                "user_feedback_provided": state.get("_user_feedback_provided", False),
-                "last_user_feedback": state.get("_last_user_feedback")
+                "has_validation": bool(state.get("validation")),
+                "lore_id": state.get("lore", {}).get("id") if state.get("lore") else None
+            })
+        else:
+            status_response.update({
+                "status": "no_state",
+                "waiting_for_edit": False,
+                "resume_after_feedback": False,
+                "has_domain": False,
+                "has_problem": False,
+                "has_refined_domain": False,
+                "has_refined_problem": False,
+                "has_messages": False,
+                "has_validation": False,
+                "lore_id": None
             })
         
         return jsonify(status_response)
@@ -756,5 +792,6 @@ def get_pipeline_status(thread_id: str) -> ResponseReturnValue:
             "error": str(e),
             "thread_id": thread_id,
             "has_state": False,
+            "status": "error",
             "waiting_for_edit": False
         }), 500

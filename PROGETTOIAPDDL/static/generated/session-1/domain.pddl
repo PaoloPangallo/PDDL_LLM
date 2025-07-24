@@ -1,1 +1,37 @@
-(define (domain example-domain) (:requirements :strips :typing) (:types t1 t2 t3) (:predicates (p1 ?x - t1) (p2 ?x - t1 ?y - t2) (p3 ?z - t3)) (:action act1 :parameters (?x - t1 ?y - t2) :precondition (and (p2 ?x ?y)) :effect (and (p1 ?x) (not (p2 ?x ?y)))) (:action act2 :parameters (?z - t3) :precondition (and (p3 ?z)) :effect (and (not (p3 ?z)))))
+(define (domain ElvenRealm)
+  (:requirements :strips :typing)
+  (:types agent location item monster)
+  (:predicates
+    (at        ?a  - agent    ?l - location)
+    (item_at   ?i  - item     ?l - location)
+    (has       ?a  - agent    ?i - item)
+    (can_move  ?from - location  ?to - location)
+    (is_dangerous ?l - location)
+    (defeated  ?m  - monster)
+  )
+  (:action TravelTo
+    :parameters (?a    - agent ?from - location ?to - location)
+    :precondition (and (at ?a ?from)
+                       (can_move ?from ?to))
+    :effect      (and (at ?a ?to)
+                       (not (at ?a ?from)))
+  )
+  (:action CollectItem
+    :parameters (?a    - agent ?i    - item     ?l - location)
+    :precondition (and (at ?a ?l)
+                       (item_at ?i ?l))
+    :effect      (and (has ?a ?i)
+                       (not (item_at ?i ?l)))
+  )
+  (:action DefeatMonster
+    :parameters (?a    - agent
+                 ?m    - monster
+                 ?l    - location
+                 ?i    - item)
+    :precondition (and (at ?a ?l)
+                       (is_dangerous ?l)
+                       (has ?a ?i))
+    :effect      (and (defeated ?m)
+                       (not (is_dangerous ?l)))
+  )
+)

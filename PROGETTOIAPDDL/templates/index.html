@@ -3,171 +3,178 @@
 
 {% block content %}
 <main class="container my-5">
-  <h1 class="mb-4">⚙ Pipeline Automatica PDDL (Streaming)</h1>
+    <h1 class="mb-4">⚙ Pipeline Automatica PDDL (Streaming)</h1>
 
-  <!-- ───────────────────────────────────────────── toolbar ───── -->
-  <div class="row mb-3 align-items-end">
-    <div class="col-md-6">
-      <label for="lore-select" class="form-label">📘 Seleziona Lore</label>
-      <select id="lore-select" class="form-select" aria-label="Seleziona il file di lore">
-        <option disabled selected>— Scegli una lore —</option>
-        {% for file in lore_files %}
-          <option value="{{ file }}">{{ file }}</option>
-        {% endfor %}
-        <option value="_free_">— Testo libero —</option>
-      </select>
-    </div>
-
-    <div class="col-md-6 text-md-end">
-      <div class="form-check mb-2 text-start text-md-end">
-        <input class="form-check-input" type="checkbox" id="reset-checkbox">
-        <label class="form-check-label" for="reset-checkbox">
-          🧹 Reset memoria (nuova run)
-        </label>
-      </div>
-      <button id="run-from-scratch"
-              class="btn btn-primary w-100 w-md-auto"
-              aria-label="Avvia la pipeline">
-        ⚡ Avvia Pipeline
-      </button>
-    </div>
-  </div>
-  <div id="custom-story-wrap" class="row mt-3 d-none">
-    <div class="col-12">
-      <label for="custom-story" class="form-label">Scrivi la tua storia</label>
-      <textarea id="custom-story" class="form-control" rows="5"
-                placeholder="Inserisci qui il testo…"></textarea>
-    </div>
-  </div>
-
-  <!-- ───────────────────────────── chat / log area ───── -->
-  <div id="chat-log"
-       class="border rounded p-3 mb-4 bg-white"
-       style="height:300px;overflow-y:auto"
-       aria-label="Log della conversazione">
-    <div class="text-muted">💬 Pronto per eseguire la pipeline…</div>
-  </div>
-
-  <!-- eventuali link download -->
-  <div id="download-links" class="mb-4"></div>
-
-  <!-- ───────────────────────────── accordion dettaglio ───── -->
-  <div class="accordion" id="pipeline-details">
-    <!-- Prompt -->
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="headingPrompt">
-        <button class="accordion-button" type="button"
-                data-bs-toggle="collapse" data-bs-target="#collapsePrompt"
-                aria-expanded="true" aria-controls="collapsePrompt">
-          📝 Prompt generato
-        </button>
-      </h2>
-      <div id="collapsePrompt" class="accordion-collapse collapse show"
-           aria-labelledby="headingPrompt" data-bs-parent="#pipeline-details">
-        <div class="accordion-body p-0">
-          <pre id="prompt-content" class="m-3"></pre>
+    <div class="row mb-3 align-items-end">
+        <div class="col-md-6">
+            <label for="lore-select" class="form-label">📘 Seleziona Lore</label>
+            <select id="lore-select" class="form-select" aria-label="Seleziona il file di lore">
+                <option disabled selected>— Scegli una lore —</option>
+                {% for file in lore_files %}
+                <option value="{{ file }}">{{ file }}</option>
+                {% endfor %}
+                <option value="_free_">— Testo libero —</option>
+            </select>
         </div>
-      </div>
-    </div>
 
-    <!-- Raw -->
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="headingRaw">
-        <button class="accordion-button collapsed" type="button"
-                data-bs-toggle="collapse" data-bs-target="#collapseRaw"
-                aria-expanded="false" aria-controls="collapseRaw">
-          📥 Raw response
-        </button>
-      </h2>
-      <div id="collapseRaw" class="accordion-collapse collapse"
-           aria-labelledby="headingRaw" data-bs-parent="#pipeline-details">
-        <div class="accordion-body p-0">
-          <pre id="raw-content" class="m-3"></pre>
+        <div class="col-md-6 text-md-end">
+            <div class="form-check mb-2 text-start text-md-end">
+                <input class="form-check-input" type="checkbox" id="reset-checkbox" checked>
+                <label class="form-check-label" for="reset-checkbox">
+                    🧹 Reset memoria (nuova run)
+                </label>
+            </div>
+            <button id="run-from-scratch"
+                    class="btn btn-primary w-100 w-md-auto"
+                    aria-label="Avvia la pipeline">
+                ⚡ Avvia Pipeline
+            </button>
         </div>
-      </div>
     </div>
-
-    <!-- Validation (timeline interna) -->
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="headingValidation">
-        <button class="accordion-button collapsed" type="button"
-                data-bs-toggle="collapse" data-bs-target="#collapseValidation"
-                aria-expanded="false" aria-controls="collapseValidation">
-          📋 Validation
-        </button>
-      </h2>
-      <div id="collapseValidation" class="accordion-collapse collapse"
-           aria-labelledby="headingValidation" data-bs-parent="#pipeline-details">
-        <div class="accordion-body p-0">
-          <!-- elenco dinamico Validation #n -->
-          <div id="validation-list" class="accordion"></div>
+    <div id="custom-story-wrap" class="row mt-3 d-none">
+        <div class="col-12">
+            <label for="custom-story" class="form-label">Scrivi la tua storia</label>
+            <textarea id="custom-story" class="form-control" rows="5"
+                      placeholder="Inserisci qui il testo…"></textarea>
         </div>
-      </div>
     </div>
 
-    <!-- Refine (timeline interna) -->
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="headingRefine">
-        <button class="accordion-button collapsed" type="button"
-                data-bs-toggle="collapse" data-bs-target="#collapseRefine"
-                aria-expanded="false" aria-controls="collapseRefine">
-          🔧 Refine feedback
-        </button>
-      </h2>
-      <div id="collapseRefine" class="accordion-collapse collapse"
-           aria-labelledby="headingRefine" data-bs-parent="#pipeline-details">
-        <div class="accordion-body p-0">
-          <!-- elenco dinamico Refine #n -->
-          <div id="refine-list" class="row row-cols-1 row-cols-md-2 g-3"></div>
+    <div id="chat-log"
+         class="border rounded p-3 mb-4 bg-white"
+         style="height:300px;overflow-y:auto"
+         aria-label="Log della conversazione">
+        <div class="text-muted">💬 Pronto per eseguire la pipeline…</div>
+    </div>
+
+    <div id="file-links" class="mt-3 p-3 border rounded bg-light d-none">
+        <h6 class="mb-2">📁 File Generati</h6>
+        <div id="file-links-content"></div>
+    </div>
+
+    <div class="accordion" id="pipeline-details">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingPrompt">
+                <button class="accordion-button" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapsePrompt"
+                        aria-expanded="false" aria-controls="collapsePrompt">
+                    📝 Prompt generato
+                </button>
+            </h2>
+            <div id="collapsePrompt" class="accordion-collapse collapse show"
+                 aria-labelledby="headingPrompt" data-bs-parent="#pipeline-details">
+                <div class="accordion-body p-0">
+                    <pre id="prompt-content" class="m-3"></pre>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingRaw">
+                <button class="accordion-button collapsed" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapseRaw"
+                        aria-expanded="false" aria-controls="collapseRaw">
+                    📥 Raw response
+                </button>
+            </h2>
+            <div id="collapseRaw" class="accordion-collapse collapse"
+                 aria-labelledby="headingRaw" data-bs-parent="#pipeline-details">
+                <div class="accordion-body p-0">
+                    <pre id="raw-content" class="m-3"></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingValidation">
+                <button class="accordion-button collapsed" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapseValidation"
+                        aria-expanded="false" aria-controls="collapseValidation">
+                    📋 Validation
+                </button>
+            </h2>
+            <div id="collapseValidation" class="accordion-collapse collapse"
+                 aria-labelledby="headingValidation" data-bs-parent="#pipeline-details">
+                <div class="accordion-body p-0">
+                    <div id="validation-list" class="accordion"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingRefine">
+                <button class="accordion-button collapsed" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapseRefine"
+                        aria-expanded="false" aria-controls="collapseRefine">
+                    🔧 Refine feedback
+                </button>
+            </h2>
+            <div id="collapseRefine" class="accordion-collapse collapse"
+                 aria-labelledby="headingRefine" data-bs-parent="#pipeline-details">
+                <div class="accordion-body p-0">
+                    <div id="refine-list" class="row row-cols-1 row-cols-md-2 g-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingPlan">
+                <button class="accordion-button collapsed" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapsePlan"
+                        aria-expanded="false" aria-controls="collapsePlan">
+                    🎯 Piano Generato
+                </button>
+            </h2>
+            <div id="collapsePlan" class="accordion-collapse collapse"
+                 aria-labelledby="headingPlan" data-bs-parent="#pipeline-details">
+                <div class="accordion-body p-0">
+                    <div id="plan-content" class="m-3">
+                        <div class="text-muted">Il piano apparirà qui una volta generato...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  
-  <!-- ───────────────────────────── form feedback testuale ───── -->
-  <form id="chatbot-form" class="mt-4 d-none" autocomplete="off"
-        aria-label="Invia un feedback umano">
-    <div class="input-group">
-      <input type="text"
-             id="user-input"
-             class="form-control"
-             placeholder="Scrivi un feedback per raffinare..."
-             autocomplete="off"
-             aria-label="Campo di input feedback" />
-      <button type="submit"
-              class="btn btn-secondary"
-              id="feedback-submit"
-              aria-label="Invia feedback">
-        <span class="spinner-border spinner-border-sm d-none"
-              role="status"
-              aria-hidden="true"
-              id="feedback-spinner"></span>
-        <span id="feedback-text">Invia feedback</span>
-      </button>
+    <form id="chatbot-form" class="mt-4 d-none" autocomplete="off" aria-label="Invia un feedback umano">
+        <div class="input-group">
+            <input type="text"
+                   id="user-input"
+                   class="form-control"
+                   placeholder="Scrivi un feedback per raffinare..."
+                   autocomplete="off"
+                   aria-label="Campo di input feedback" />
+            <button type="submit"
+                    class="btn btn-secondary"
+                    id="feedback-submit"
+                    aria-label="Invia feedback">
+                <span class="spinner-border spinner-border-sm d-none"
+                      role="status"
+                      aria-hidden="true"
+                      id="feedback-spinner"></span>
+                <span id="feedback-text">Invia feedback</span>
+            </button>
+        </div>
+    </form>
+
+    <div id="live-edit-panel" class="card mt-4 d-none" aria-label="Modifica live PDDL">
+        <div class="card-body">
+            <h5 class="card-title mb-3">✏️ Modifica PDDL</h5>
+
+            <label for="domain-edit" class="form-label">domain.pddl</label>
+            <textarea id="domain-edit"
+                      class="form-control"
+                      rows="8"></textarea>
+
+            <label for="problem-edit" class="form-label mt-3">problem.pddl</label>
+            <textarea id="problem-edit"
+                      class="form-control"
+                      rows="8"></textarea>
+
+            <button id="send-edit-btn" class="btn btn-success mt-3">
+                🚀 Invia modifiche
+            </button>
+        </div>
     </div>
-  </form>
-
-  <!-- ───────────────────────────── pannello live-edit PDDL ───── -->
-  <div id="live-edit-panel" class="card mt-4 d-none" aria-label="Modifica live PDDL">
-    <div class="card-body">
-      <h5 class="card-title mb-3">✏️  Modifica PDDL</h5>
-
-      <label for="domain-edit" class="form-label">domain.pddl</label>
-      <textarea id="domain-edit"
-                class="form-control"
-                rows="8"></textarea>
-
-      <label for="problem-edit" class="form-label mt-3">problem.pddl</label>
-      <textarea id="problem-edit"
-                class="form-control"
-                rows="8"></textarea>
-
-      <button id="send-edit-btn" class="btn btn-success mt-3">
-        🚀 Invia modifiche
-      </button>
-    </div>
-  </div>
 
 </main>
 {% endblock %}

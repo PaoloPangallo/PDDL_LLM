@@ -1,7 +1,3 @@
-/* static/js/pipeline.js - FIXED ──────────────────────────────────────
-   Fix per evitare reset indesiderati della pipeline
-   ----------------------------------------------------------------*/
-
 document.addEventListener("DOMContentLoaded", () => {
   /* elementi di configurazione / controllo ------------------------------ */
   const threadId      = "session-1";
@@ -30,16 +26,60 @@ document.addEventListener("DOMContentLoaded", () => {
   const validationWrap = document.getElementById("validation-list");
   const refineWrap     = document.getElementById("refine-list");
 
+  /* contenitori per link file generati ---------------------------------- */
+  const fileLinksWrap = document.getElementById("file-links") || createFileLinksContainer();
+
   /* stato locale --------------------------------------------------------- */
   let source = null;
   let isPaused = false;
-  let isWaitingForEdit = false; // NEW: Flag specifico per editing
+  let isWaitingForEdit = false;
+  let currentState = null; // Nuovo: traccia stato corrente del backend
   const allValidations = [];
   const allRefines     = [];
+  const generatedFiles = {}; // Nuovo: traccia URL file generati
+  let reconnectAttempts = 0;
+  let maxReconnectAttempts = 3;
+  let reconnectDelay = 2000;
+  let pipelineActive = false;
+  let expectingEvents = false;
 
   console.log("✅ DOMContentLoaded fired, elementi caricati");
 
   /* ───────────── helper UI ────────────────────────────────────────────── */
+  function createFileLinksContainer() {
+    const container = document.createElement("div");
+    container.id = "file-links";
+    container.className = "mt-3 p-3 border rounded bg-light";
+    container.innerHTML = `
+      <h6 class="mb-2">📁 File Generati</h6>
+      <div id="file-links-content"></div>
+    `;
+    
+    // Inserisci dopo il raw content
+    const rawContainer = rawEl.closest('.card-body') || document.body;
+    rawContainer.appendChild(container);
+    return container;
+  }
+
+  function updateFileLinks(urls = {}) {
+    const content = document.getElementById("file-links-content");
+    if (!content) return;
+
+    Object.assign(generatedFiles, urls);
+    
+    let html = "";
+    for (const [key, url] of Object.entries(generatedFiles)) {
+      if (url) {
+        const label = key.replace(/_url$/, '').replace(/_/g, ' ').toUpperCase();
+        html += `<a href="${url}" class="btn btn-sm btn-outline-primary me-2 mb-1" target="_blank">
+          📄 ${label}
+        </a>`;
+      }
+    }
+    
+    content.innerHTML = html || "<small class='text-muted'>Nessun file disponibile</small>";
+  }
+
   function append(text, cls = "system") {
     const div = document.createElement("div");
     div.className = `chat-message ${cls}`;
@@ -55,15 +95,18 @@ document.addEventListener("DOMContentLoaded", () => {
     
     allValidations.length = 0;
     allRefines.length = 0;
+    Object.keys(generatedFiles).forEach(key => delete generatedFiles[key]);
 
     if (validationWrap) validationWrap.innerHTML = "";
     if (refineWrap)     refineWrap.innerHTML     = "";
 
+    updateFileLinks();
     hideEditPanel(); 
     storyWrap.classList.add("d-none");
-    feedbackForm.classList.add("d-none");
+    feedbackForm.classList.add("d-none"); //AGGIUNTA
     isPaused = false;
-    isWaitingForEdit = false; // Reset anche questo flag
+    isWaitingForEdit = false;
+    currentState = null;
     
     closeEventSource();
     append("💬 Pronto per eseguire la pipeline…", "system");
@@ -73,21 +116,107 @@ document.addEventListener("DOMContentLoaded", () => {
     domainTA.value  = domain;
     problemTA.value = problem;
     editPanel.classList.remove("d-none");
-    isWaitingForEdit = true; // Imposta flag editing
+    feedbackForm.classList.add("d-none"); // Nascondi chat durante editing
+    isWaitingForEdit = true;
+    
+    // Scroll verso il pannello
+    setTimeout(() => {
+      editPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   }
   
   function hideEditPanel() {
     editPanel.classList.add("d-none");
     domainTA.value = problemTA.value = "";
-    isWaitingForEdit = false; // Reset flag editing
+    isWaitingForEdit = false;
+    feedbackForm.classList.add("d-none");
   }
 
   function closeEventSource() {
     if (source) {
-      console.log("🔌 Chiudo EventSource");
+      console.log("🔌 Chiudo EventSource - ReadyState:", source.readyState);
       source.close();
       source = null;
+      reconnectAttempts = 0;
     }
+  }
+
+  function createEventSource(url) {
+    console.log(`🔗 Creando EventSource: ${url}`);
+    
+    if (source) {
+      closeEventSource();
+    }
+    
+    source = new EventSource(url);
+    
+    source.onopen = () => {
+      console.log("✅ EventSource connesso");
+      reconnectAttempts = 0;
+      pipelineActive = true;
+    };
+    
+    source.onerror = (error) => {
+      console.error("❌ EventSource error - ReadyState:", source.readyState, error);
+      
+      if (source.readyState === EventSource.CLOSED) {
+        console.log("🔌 EventSource chiuso dal server");
+        
+        // Se stavamo aspettando eventi (dopo feedback), prova a riconnettersi
+        if (expectingEvents && reconnectAttempts < maxReconnectAttempts) {
+          console.log(`🔄 Tentativo riconnessione ${reconnectAttempts + 1}/${maxReconnectAttempts}`);
+          setTimeout(() => {
+            attemptReconnection(url);
+          }, reconnectDelay);
+        } else if (!expectingEvents) {
+          console.log("✅ Chiusura normale - pipeline completata");
+          pipelineActive = false;
+        } else {
+          console.log("❌ Max tentativi riconnessione raggiunti");
+          append("❌ Impossibile riconnettersi al server", "system");
+          pipelineActive = false;
+          expectingEvents = false;
+        }
+      }
+    };
+    
+    attachPipelineListeners(source);
+    return source;
+  }
+  
+  function attemptReconnection(baseUrl) {
+    reconnectAttempts++;
+    
+    // Usa URL con parametro di riconnessione
+    const reconnectUrl = baseUrl.includes('resume_after_feedback') 
+      ? baseUrl 
+      : `${baseUrl}&reconnect=true&attempt=${reconnectAttempts}`;
+      
+    append(`🔄 Tentativo riconnessione ${reconnectAttempts}...`, "system");
+    createEventSource(reconnectUrl);
+  }
+
+  /* ───────────── gestione stato pipeline ──────────────────────────────── */
+  async function checkPipelineStatus() {
+    try {
+      const response = await fetch(`/status/${threadId}`);
+      if (response.ok) {
+        const status = await response.json();
+        currentState = status;
+        
+        // Aggiorna UI basandosi sullo stato
+        if (status.waiting_for_edit) {
+          isWaitingForEdit = true;
+          isPaused = true;
+        }
+        
+        console.log("📊 Status aggiornato:", status);
+        return status;
+      }
+    } catch (err) {
+      console.warn("⚠️ Impossibile verificare stato pipeline:", err);
+    }
+    return null;
   }
 
   /* ───────────── rendering timeline ───────────────────────────────────── */
@@ -139,16 +268,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ───────────── listeners SSE dinamici ──────────────────────────────── */
+  /* ───────────── listeners SSE dinamici - AGGIORNATI ──────────────────── */
   function attachPipelineListeners(es) {
+    es.addEventListener("PipelineStarted", e => {
+      pipelineActive = true;
+      expectingEvents = true;
+      append("🚀 Pipeline avviata", "system");
+    });
+
     es.addEventListener("Generate", e => {
-      const { domain, problem, prompt } = JSON.parse(e.data);
+      const data = JSON.parse(e.data);
+      const { domain, problem, prompt } = data;
+      
       if (prompt) {
         promptEl.textContent = prompt;
         append("📝 Prompt generato", "bot");
       }
       rawEl.textContent = `=== DOMAIN ===\n${domain}\n\n=== PROBLEM ===\n${problem}`;
       append("🧠 Generazione completata", "bot");
+      
+      // Aggiorna file links se presenti
+      updateFileLinks({
+        domain_url: data.domain_url,
+        problem_url: data.problem_url,
+        raw_response_url: data.raw_response_url
+      });
     });
 
     es.addEventListener("PreparePrompt", e => {
@@ -156,11 +300,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     
     es.addEventListener("GenerateVision", e => {
+      const data = JSON.parse(e.data);
       append("👁️ Vision JSON pronto", "bot");
+      
+      if (data.vision_url) {
+        updateFileLinks({ vision_url: data.vision_url });
+      }
     });
     
     es.addEventListener("GenerateSpec", e => {
+      const data = JSON.parse(e.data);
       append("📐 Spec JSON pronto", "bot");
+      
+      if (data.spec_url) {
+        updateFileLinks({ spec_url: data.spec_url });
+      }
     });
 
     es.addEventListener("TemplateFallback", e => {
@@ -170,93 +324,257 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     es.addEventListener("Validate", e => {
-      const { validation } = JSON.parse(e.data);
+      const data = JSON.parse(e.data);
+      const { validation } = data;
       allValidations.push(validation);
       renderValidationTimeline();
       append(`📋 Validazione #${allValidations.length} completata`, "bot");
+      
+      if (data.validation_url) {
+        updateFileLinks({ validation_url: data.validation_url });
+      }
     });
 
     es.addEventListener("Refine", e => {
-      const { refined_domain, refined_problem } = JSON.parse(e.data);
+      const data = JSON.parse(e.data);
+      const { refined_domain, refined_problem } = data;
       allRefines.push({ domain: refined_domain, problem: refined_problem });
       renderRefineTimeline();
       append(`🔧 Refine #${allRefines.length} completato`, "bot");
+      
+      updateFileLinks({
+        refined_domain_url: data.refined_domain_url,
+        refined_problem_url: data.refined_problem_url
+      });
     });
 
+    // NUOVO: Gestione ChatFeedback - interruzione per editing
     es.addEventListener("ChatFeedback", e => {
       console.log("📨 ChatFeedback ricevuto - pipeline in pausa per editing");
-      const { domain, problem } = JSON.parse(e.data);
+      const data = JSON.parse(e.data);
+      
+      // Prioritizza refined se disponibili, altrimenti usa originali
+      const domain = data.refined_domain || data.domain || "";
+      const problem = data.refined_problem || data.problem || "";
       
       showEditPanel(domain, problem);
       rawEl.textContent = `=== DOMAIN ===\n${domain}\n\n=== PROBLEM ===\n${problem}`;
       
-      // Scroll verso il pannello di editing
-      setTimeout(() => {
-        editPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-      
       append("✏️ Modifica live disponibile - edita e invia.", "system");
-      feedbackForm.classList.add("d-none");
       isPaused = true;
+      expectingEvents = true;
       
-      // IMPORTANTE: NON chiudere EventSource qui, è ancora necessario per il resume
+      // Aggiorna file links se presenti
+      updateFileLinks({
+        domain_url: data.domain_url,
+        problem_url: data.problem_url,
+        refined_domain_url: data.refined_domain_url,
+        refined_problem_url: data.refined_problem_url
+      });
     });
 
-    es.addEventListener("PauseForFeedback", () => {
+    // NUOVO: Gestione PauseForFeedback
+    es.addEventListener("PauseForFeedback", e => {
       console.log("⏸️ PauseForFeedback ricevuto");
+      const data = JSON.parse(e.data || "{}");
+      //feedbackForm.classList.remove("d-none"); //AGGIUNTA
       isPaused = true;
       append("⏳ Pipeline in pausa - attendo modifiche...", "system");
+      
+      // Se abbiamo dati PDDL, mostra pannello editing
+      if (data.domain || data.problem) {
+        const domain = data.refined_domain || data.domain || "";
+        const problem = data.refined_problem || data.problem || "";
+        showEditPanel(domain, problem);
+      }
     });
 
-    es.addEventListener("stream_paused", () => {
+    // AGGIORNATO: stream_paused
+    es.addEventListener("stream_paused", e => {
       console.log("⏸️ Stream in pausa, pannello di editing attivo");
       isPaused = true;
+      
+      const data = JSON.parse(e.data || "{}");
+      if (data.domain || data.problem) {
+        const domain = data.refined_domain || data.domain || "";
+        const problem = data.refined_problem || data.problem || "";
+        showEditPanel(domain, problem);
+      }
     });
 
+    // NUOVO: Gestione eventi di stato
+    es.addEventListener("status_interrupt", e => {
+      const data = JSON.parse(e.data);
+      console.log("🔄 Status interrupt:", data);
+      
+      if (data.waiting_for_edit) {
+        isWaitingForEdit = true;
+        isPaused = true;
+        append("⏳ Attendo modifiche dell'utente...", "system");
+      }
+    });
+
+    // NUOVO: Gestione messaggi
+    es.addEventListener("messages", e => {
+      const data = JSON.parse(e.data);
+      if (data.message) {
+        append(data.message, data.type || "system");
+      }
+    });
+
+    // AGGIORNATO: Gestione status
     es.addEventListener("status", e => {
       const status = e.data;
-      if (status === "awaiting_feedback") {
-        append("⏳ In attesa di modifica/feedback…", "system");
-        if (!isWaitingForEdit) { // Mostra form solo se non stiamo aspettando edit
-          feedbackForm.classList.remove("d-none");
-        }
-      }
       console.log(`📊 Status update: ${status}`);
+      
+      if (status === "awaiting_feedback") {
+        append("⏳ In attesa di feedback…", "system");
+        if (!isWaitingForEdit) {
+          feedbackForm.classList.add("d-none"); //AGGIUNTA
+        }
+      } else if (status === "_waiting_for_edit") {
+        isWaitingForEdit = true;
+        isPaused = true;
+        append("✏️ In attesa di modifiche PDDL...", "system");
+      } else if (status === "_resume_after_feedback") {
+        append("🔄 Ripresa pipeline dopo feedback...", "system");
+        isPaused = false;
+        isWaitingForEdit = false;
+        hideEditPanel();
+      }
+    });
+
+    es.addEventListener("GeneratePlan", e => {
+      const data = JSON.parse(e.data);
+      console.log("🎯 GeneratePlan ricevuto:", data);
+      
+      if (data.status === "success" && data.found_plan) {
+        append(`✅ Piano generato con successo!`, "bot");
+        append(`📊 Fonte: ${data.source || 'unknown'}`, "system");
+        
+        showPlanResult(data.plan, data.plan_log);
+        
+        if (data.plan_url) {
+          updateFileLinks({ plan_url: data.plan_url });
+        }
+        //currentState = { ...(currentState || {}), _plan_generated: true };
+      } else if (data.status === "failed") {
+        append(`❌ Planning fallito: ${data.error || 'Nessun piano trovato'}`, "bot");
+        
+        if (data.plan_log) {
+          showPlanResult(null, data.plan_log, true);
+        }
+      }// } else if (data.status === "error") {
+      //   append(`❌ Errore durante planning: ${data.error}`, "bot");
+      //   console.error("Planning error:", data.exception);
+      // }
+      expectingEvents = true;
+    });
+
+    es.addEventListener("PipelineCompleted", e => {
+      const data = JSON.parse(e.data);
+      console.log("🏁 PipelineCompleted ricevuto:", data);
+      append("🏁 Pipeline completata con successo.", "success");
+      
+      if (data.plan) {
+        showPlanResult(data.plan, null);
+        append(`📊 Piano con ${data.plan.split('\n').filter(l => l.trim()).length} azioni`, "system");
+      }
+      if (data.plan_url) {
+        updateFileLinks({ plan_url: data.plan_url });
+      }
+      
+      pipelineActive = false;
+      expectingEvents = false;
+      isPaused = false;
+      isWaitingForEdit = false;
+      
+      // ⭐ CHIUDI SOLO DOPO PIPELINE COMPLETATA
+       setTimeout(() => {
+        if (source && source.readyState === EventSource.OPEN) {
+          console.log("⏰ Timeout post-completamento, chiusura stream");
+          closeEventSource();
+        }
+      }, 3000);
     });
 
     es.addEventListener("done", () => {
-      console.log("🏁 Pipeline completata");
+      console.log("🏁 Evento 'done' ricevuto");
       append("🏁 Pipeline terminata.", "system");
+
+      pipelineActive = false;
+      expectingEvents = false;
       
       if (!isPaused && !isWaitingForEdit) {
-        feedbackForm.classList.remove("d-none");
+        feedbackForm.classList.add("d-none");
       }
       
-      closeEventSource();
+      // ⭐ CHIUDI SOLO SE NON STIAMO ASPETTANDO ALTRI EVENTI
+      setTimeout(() => closeEventSource(), 1000);
+      
       isPaused = false;
       isWaitingForEdit = false;
+      currentState = { ...(currentState || {}), _done_received: true };
     });
 
-    es.addEventListener("error", e => {
-      console.error("❌ Errore EventSource:", e);
-      append("❌ Errore nella comunicazione", "bot");
+    // ⭐ AGGIUNTA: Gestione esplicita di fine stream
+    es.addEventListener("stream_complete", e => {
+      console.log("🎌 Stream completato definitivamente");
+      append("🎌 Streaming completato.", "system");
+      closeEventSource();
     });
 
-    es.onerror = (err) => {
-      console.log(`🔌 EventSource error - ReadyState: ${es.readyState}`);
+    // es.addEventListener("error", e => {
+    //   const data = JSON.parse(e.data || "{}");
+    //   console.error("❌ Errore pipeline:", data);
+    //   append(`❌ Errore: ${data.error || 'Errore sconosciuto'}`, "bot");
       
-      if (es.readyState === EventSource.CLOSED) {
-        console.log("EventSource chiuso normalmente");
-        return;
+    //   if (data.critical) {
+    //     pipelineActive = false;
+    //     expectingEvents = false;
+    //     closeEventSource();
+    //   }
+    // });
+
+    // es.onerror = (err) => {
+    //   console.log(`🔌 EventSource error - ReadyState: ${es.readyState}`);
+      
+    //   if (es.readyState === EventSource.CLOSED) {
+    //     console.log("EventSource chiuso normalmente");
+    //     return;
+    //   }
+      
+    //   console.error("❌ SSE ERROR:", err);
+    //   append("❌ Errore nello streaming", "bot");
+    // };
+
+    es.onerror = (error) => {
+      console.error("❌ EventSource error - ReadyState:", source.readyState, error);
+      
+      if (source.readyState === EventSource.CLOSED) {
+        console.log("🔌 EventSource chiuso dal server");
+        
+        // Se stavamo aspettando eventi (dopo feedback), prova a riconnettersi
+        if (expectingEvents && reconnectAttempts < maxReconnectAttempts) {
+          console.log(`🔄 Tentativo riconnessione ${reconnectAttempts + 1}/${maxReconnectAttempts}`);
+          setTimeout(() => {
+            attemptReconnection(url);
+          }, reconnectDelay);
+        } else if (!expectingEvents) {
+          console.log("✅ Chiusura normale - pipeline completata");
+          pipelineActive = false;
+        } else {
+          console.log("❌ Max tentativi riconnessione raggiunti");
+          append("❌ Impossibile riconnettersi al server", "system");
+          pipelineActive = false;
+          expectingEvents = false;
+        }
       }
-      
-      console.error("❌ SSE ERROR:", err);
-      append("❌ Errore nello streaming", "bot");
     };
   }
 
   /* ───────────── avvio streaming UNIFICATO ──────────────────────────── */
-  function startStreaming() {
+  async function startStreaming() {
     const lore   = loreSelect.value;
     const reset  = resetCheckbox.checked;
     const story  = (lore === "_free_") ? storyTA.value.trim() : null;
@@ -271,42 +589,58 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Controlla stato corrente se non è un reset
+    // if (!reset) {
+    //   await checkPipelineStatus();
+    // }
+
     // Reset UI e stato solo se necessario
     if (reset) {
       resetAll();
     }
-    
-    //append("💬 Inizio/continua pipeline (streaming)…", "system");
 
-    // Costruzione URL - reset solo se esplicitamente richiesto
+    // Costruzione URL con parametro reset corretto
     const qsStory = story ? `&custom_story=${encodeURIComponent(story)}` : "";
-    const url = `/stream?lore=${encodeURIComponent(lore)}&thread_id=${threadId}` +
-                (reset ? "&reset=true" : "") + qsStory;
+    const resetParam = reset ? "&reset=true" : "";
+    const url = `/stream?lore=${encodeURIComponent(lore)}&thread_id=${threadId}${resetParam}${qsStory}`;
 
     console.log(`🚀 Apertura stream: ${url}`);
-    //closeEventSource(); // Assicura pulizia precedente
     
-    source = new EventSource(url);
-    attachPipelineListeners(source);
+    // Chiudi stream precedente se esiste
+    if (source) {
+      closeEventSource();
+    }
+    
+    //source = new EventSource(url);
+    //attachPipelineListeners(source);
+    expectingEvents = true;
+    pipelineActive = true;
+    createEventSource(url);
     
     append("🔗 Connessione streaming attiva", "system");
-    resetCheckbox.checked = false; // Reset checkbox
+    resetCheckbox.checked = false;
   }
 
-  /* ───────────── resume dopo editing - FIXED ────────────────────────── */
-  async function resumeAfterEdit(domain, problem) {
+  /* ───────────── feedback PDDL - AGGIORNATO ──────────────────────────── */
+  async function sendFeedback(domain, problem, message = "") {
     try {
-      console.log("🔄 Invio modifiche e resume...");
+      console.log("🔄 Invio feedback PDDL...");
       
-      const response = await fetch("/resume", { //l'endpoint era message
+      const payload = {
+        lore: loreSelect.value,
+        thread_id: threadId,
+        domain,
+        problem
+      };
+      
+      if (message.trim()) {
+        payload.message = message.trim();
+      }
+      
+      const response = await fetch("/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          lore: loreSelect.value,
-          thread_id: threadId,
-          domain,
-          problem
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
@@ -320,26 +654,98 @@ document.addEventListener("DOMContentLoaded", () => {
         return false;
       }
 
-      // CHIAVE: Riapri stream SENZA reset per continuare la pipeline
-      const url = `/stream?lore=${encodeURIComponent(loreSelect.value)}&thread_id=${encodeURIComponent(threadId)}`;
-      // NON aggiungere &reset=true qui!
+      if (data.response) {
+        append(`🤖 ${data.response}`, "bot");
+      }
+
+      if (data.refined_domain && data.refined_problem) {
+        rawEl.textContent = `=== DOMAIN ===\n${data.refined_domain}\n\n=== PROBLEM ===\n${data.refined_problem}`;
+        append("🔧 PDDL raffinati ricevuti", "system");
+      }
+
+      if (data.validation) {
+        allValidations.push(data.validation);
+        renderValidationTimeline();
+        append("📋 Validazione aggiornata", "system");
+      }
+
+      updateFileLinks({
+        domain_url: data.domain_url,
+        problem_url: data.problem_url,
+        refined_domain_url: data.refined_domain_url,
+        refined_problem_url: data.refined_problem_url,
+        validation_url: data.validation_url
+      });
+
+      append("✅ Feedback inviato con successo", "system");
       
-      //closeEventSource();
-      
-      source = new EventSource(url);
-      attachPipelineListeners(source);
-      
-      append("💬 Pipeline ripresa dopo modifiche...", "system");
+      // Nascondi pannello di editing
+      hideEditPanel();
       isPaused = false;
+      isWaitingForEdit = false;
+
+      expectingEvents = true;
+
+      // Riavvia stream per continuare la pipeline
+      //await resumeStream(); DA RIVEDERE
+      // if (source) source.close();
+      // source = new EventSource(
+      //   `/stream?lore=${encodeURIComponent(loreSelect.value)}&thread_id=${threadId}&resume=true`
+      // );
+      // attachPipelineListeners(source);
+      if (!source || source.readyState === EventSource.CLOSED) {
+        console.log("🔄 EventSource non attivo dopo feedback, riconnessione...");
+        append("🔌 Riconnessione stream per eventi finali...", "system");
+        
+        const resumeUrl = `/stream?lore=${encodeURIComponent(loreSelect.value)}&thread_id=${threadId}&resume_after_feedback=true`;
+        createEventSource(resumeUrl);
+      } else {
+        console.log("📡 EventSource attivo, attesa eventi finali...");
+        append("⏳ Attesa completamento pipeline...", "system");
+      }
       
       return true;
 
     } catch (err) {
-      console.error("Errore durante resume:", err);
-      append("❌ Impossibile riprendere la pipeline", "bot");
+      console.error("Errore durante invio feedback:", err);
+      append("❌ Impossibile inviare il feedback", "bot");
       return false;
     }
   }
+
+  /* ───────────── resume stream dopo feedback ─────────────────────────── */
+  async function resumeStream() {
+  try {
+    console.log("🔄 Ripresa stream dopo feedback...");
+    
+    // Chiudi stream corrente solo se necessario
+    if (source && source.readyState !== EventSource.CONNECTING) {
+      console.log("🔌 Chiusura stream precedente...");
+      closeEventSource();
+    }
+    
+    // Riapri stream con parametro specifico per ripresa
+    const url = `/stream?lore=${encodeURIComponent(loreSelect.value)}&thread_id=${encodeURIComponent(threadId)}&resume_after_feedback=true`;
+    
+    console.log(`🚀 Riapertura stream: ${url}`);
+    source = new EventSource(url);
+    attachPipelineListeners(source);
+    
+    append("💫 Stream ripreso, continuando pipeline...", "system");
+    
+    // ⭐ TIMEOUT di sicurezza per eventi finali
+    setTimeout(() => {
+      if (source && source.readyState === EventSource.OPEN && !isPaused) {
+        console.log("⏰ Timeout sicurezza - controllo stato pipeline...");
+        checkFinalPipelineStatus();
+      }
+    }, 30000); // 30 secondi
+    
+  } catch (err) {
+    console.error("Errore durante resume stream:", err);
+    append("❌ Impossibile riprendere lo stream", "bot");
+  }
+}
 
   /* ───────────── event listeners ──────────────────────────────────────── */
   
@@ -384,8 +790,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.error) {
         append(`❌ Errore: ${data.error}`, "bot");
       } else {
+        if (data.response) {
+          append(`🤖 ${data.response}`, "bot");
+        }
         append("✅ Feedback ricevuto.", "system");
-        feedbackForm.classList.add("d-none");
+        
+        // Se il backend ha messo in pausa per editing, gestisci
+        if (data.waiting_for_edit && (data.domain || data.problem)) {
+          showEditPanel(data.domain || "", data.problem || "");
+        } else {
+          feedbackForm.classList.add("d-none");
+        }
       }
     } catch (err) {
       console.error("Errore invio feedback:", err);
@@ -395,13 +810,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Invio PDDL modificati - FIXED
+  // AGGIORNATO: Invio PDDL modificati
   sendEditBtn.addEventListener("click", async () => {
     const domain  = domainTA.value.trim();
     const problem = problemTA.value.trim();
+    const message = feedbackInput.value.trim(); // Prendi messaggio se presente
     
     if (!domain || !problem) {
-      append("❗ domain/problem non possono essere vuoti", "bot");
+      append("❗ Domain e problem non possono essere vuoti", "bot");
       return;
     }
 
@@ -409,11 +825,11 @@ document.addEventListener("DOMContentLoaded", () => {
     append("🚀 Invio PDDL modificati…", "user");
 
     try {
-      const success = await resumeAfterEdit(domain, problem);
+      const success = await sendFeedback(domain, problem, message);
       
       if (success) {
         append("✅ PDDL inviati. Pipeline ripresa...", "system");
-        hideEditPanel(); // Nasconde pannello dopo successo
+        feedbackInput.value = ""; // Pulisci input messaggio
       }
     } catch (err) {
       console.error("Errore durante invio edit:", err);
@@ -423,16 +839,120 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  /* ───────────── gestione piano generato ────────────────────────────── */
+  function showPlanResult(plan, log, isError = false) {
+    let planAccordion = document.getElementById("collapsePlan");
+    
+    if (!planAccordion) {
+      const pipelineDetails = document.getElementById("pipeline-details");
+      if (pipelineDetails) {
+        const planItem = document.createElement("div");
+        planItem.className = "accordion-item";
+        planItem.innerHTML = `
+          <h2 class="accordion-header" id="headingPlan">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#collapsePlan"
+                    aria-expanded="false" aria-controls="collapsePlan">
+              🎯 Piano Generato
+            </button>
+          </h2>
+          <div id="collapsePlan" class="accordion-collapse collapse"
+              aria-labelledby="headingPlan" data-bs-parent="#pipeline-details">
+            <div class="accordion-body p-0">
+              <div id="plan-content" class="m-3"></div>
+            </div>
+          </div>`;
+        
+        pipelineDetails.appendChild(planItem);
+        planAccordion = document.getElementById("collapsePlan");
+      }
+    }
+    
+    const planContent = document.getElementById("plan-content");
+    if (planContent) {
+      let html = "";
+      
+      if (plan && !isError) {
+        // Piano trovato
+        html += `
+          <div class="alert alert-success">
+            <h6 class="alert-heading">✅ Piano trovato!</h6>
+          </div>
+          <h6 class="text-success mb-2">📋 Actions:</h6>
+          <pre class="bg-light p-3 border rounded">${escapeHtml(plan)}</pre>
+        `;
+      } else if (isError) {
+        // Errore
+        html += `
+          <div class="alert alert-danger">
+            <h6 class="alert-heading">❌ Planning fallito</h6>
+          </div>
+        `;
+      }
+      
+      if (log) {
+        html += `
+          <h6 class="text-muted mt-3 mb-2">📄 Log Fast-Downward:</h6>
+          <pre class="small bg-light p-2 border rounded" style="max-height: 300px; overflow-y: auto;">${escapeHtml(log)}</pre>
+        `;
+      }
+      
+      planContent.innerHTML = html;
+      
+      // Espandi automaticamente l'accordion del piano
+      if (planAccordion && planAccordion.classList.contains("collapse")) {
+        const bsCollapse = new bootstrap.Collapse(planAccordion, { show: true });
+      }
+    }
+  }
+
+// Helper per escape HTML
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+async function checkFinalPipelineStatus() {
+  try {
+    const response = await fetch(`/status/${threadId}`);
+    if (response.ok) {
+      const status = await response.json();
+      console.log("📊 Status finale controllo:", status);
+      
+      if (status.completed && !currentState?._pipeline_completed) {
+        append("🏁 Pipeline completata (da controllo status).", "system");
+        
+        if (status.plan) {
+          showPlanResult(status.plan, status.plan_log);
+        }
+        
+        // Aggiorna file links finali
+        if (status.plan_url) {
+          updateFileLinks({ plan_url: status.plan_url });
+        }
+        
+        closeEventSource();
+      }
+    }
+  } catch (err) {
+    console.warn("⚠️ Errore controllo status finale:", err);
+  }
+}
+
   /* ───────────── cleanup e inizializzazione ─────────────────────────── */
   
   // Cleanup alla chiusura della pagina
   window.addEventListener("beforeunload", () => {
+    expectingEvents = false;
+    pipelineActive = false;
     closeEventSource();
   });
 
-  // Inizializzazione UI
+  // Inizializzazione
   feedbackForm.classList.add("d-none");
   hideEditPanel();
+  updateFileLinks();
   
-  console.log("✅ Pipeline.js inizializzato correttamente - VERSION FIXED");
+  console.log("✅ Pipeline.js inizializzato - VERSIONE EVENTSOURCE ROBUSTA");
 });
