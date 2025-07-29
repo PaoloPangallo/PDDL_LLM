@@ -3,28 +3,28 @@ Your task is to produce two complete, syntactically valid and logically consiste
 - domain.pddl
 - problem.pddl
 
-📝 Domain description:
+Domain description:
 {DESCRIPTION}
 
-📦 Objects:
+Objects:
 {OBJECTS}
 
-🚀 Initial state:
+Initial state:
 {INIT}
 
-🎯 Goal conditions:
+Goal conditions:
 {GOAL}
 
 {BRANCHING}{DEPTH}{ACTIONS}{FEW_SHOT}
 
-🔒 STRICT CONSTRAINTS — DO NOT violate these:
+STRICT CONSTRAINTS — DO NOT violate these:
 1. NEVER hardcode specific objects like 'sword_of_fire' or 'ice_dragon' in the domain file.
    → Use generic parameters like ?o - object, ?m - monster, etc.
 2. Each :action must define all required parameters explicitly and assign types correctly.
    → Example: (:parameters (?a - agent ?o - object ?l - location))
 3. Each predicate must follow the format: (predicate ?x - type ?y - type)
-   → ❌ Wrong: (at ?a ?l) — (agent location)
-   → ✅ Correct: (at ?a - agent ?l - location)
+   → Wrong: (at ?a ?l) — (agent location)
+   → Correct: (at ?a - agent ?l - location)
 4. Use ONLY objects, predicates and goals listed in the lore.
 5. Use :precondition and :effect sections correctly (no plural).
 6. Use valid STRIPS-compatible syntax: :types, :predicates, :action.

@@ -29,5 +29,5 @@ OUTPUT
 Return **exactly** the corrected JSON object or the single-line error object. **No** extra text.  
 Do **not** remove or shorten any array: `types`, `predicates`, `objects`, `actions` must remain with all original elements. Just add every missing component and use every specific subtype you have in input.
 
-You can use these examples (only for reference). 
+You can use these examples (only for reference: do not copy them). 
 {{EXAMPLES}}

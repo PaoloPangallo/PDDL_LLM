@@ -80,7 +80,6 @@ def retrieve_best_example(lore_text: str, k: int = 1) -> List[Tuple[str, str]]:
 
     try:
         vec = TfidfVectorizer().fit_transform(texts + [lore_text])
-        #vec_dense = vec.tocsr().toarray()
         vec_dense = csr_matrix(vec).toarray()
         sims = cosine_similarity(vec_dense[-1].reshape(1, -1), vec_dense[:-1]).flatten()
         top_indices = sims.argsort()[::-1][:k]
@@ -93,29 +92,23 @@ def generate_pddl_from_dict(
     lore: dict,
     lore_path: Optional[str] = None
 ) -> Tuple[Optional[str], Optional[str], List[str]]:
-    # Step 1: Recupera esempi più simili
     description_text = lore.get("description", "")
-    example_pairs = retrieve_best_example(description_text, k=1)  # usa anche k=2 se vuoi più esempi
+    example_pairs = retrieve_best_example(description_text, k=1)
     example_texts = [content for _, content in example_pairs]
 
-    # Step 2: Costruisci il prompt con gli esempi
     prompt, used_example_names = build_prompt_from_lore(lore, example_texts)
 
-    # Step 3: Chiedi al LLM
-    raw = ask_ollama(prompt)
+    raw = ask_ollama(prompt, "devstral:24b")
 
-    # Step 4: Salva risposta raw per debug
     session_dir = os.path.join(
         "uploads", "tmp" if not lore_path else os.path.basename(lore_path).split(".")[0]
     )
     os.makedirs(session_dir, exist_ok=True)
     save_text_file(os.path.join(session_dir, "raw_llm_response.txt"), raw)
 
-    # Step 5: Estrai i blocchi
     domain = extract_between(raw, "=== DOMAIN START ===", "=== DOMAIN END ===")
     problem = extract_between(raw, "=== PROBLEM START ===", "=== PROBLEM END ===")
 
-    # Step 6: Validazione
     if not domain or not problem or not domain.strip().lower().startswith("(define"):
         logger.warning("Generazione fallita: PDDL non valido.")
         return None, None, used_example_names
@@ -156,19 +149,19 @@ def build_prompt_from_lore1(lore: dict, examples: Optional[List[str]] = None) ->
             - domain.pddl
             - problem.pddl
 
-            🧠 These files will be validated automatically for:
+            These files will be validated automatically for:
             • Syntactic correctness (valid parentheses, required sections, correct parameter types)
             • Semantic coherence between domain/problem/init/goal
             • Consistency with the provided lore: description, objects, initial state, and goal
 
-            🔒 STRICT CONSTRAINTS — DO NOT violate these:
+            STRICT CONSTRAINTS — DO NOT violate these:
             1. NEVER hardcode specific objects like 'sword_of_fire' or 'ice_dragon' in the domain file.
             → Use generic parameters like ?o - object, ?m - monster, etc.
             2. Each :action must define all required parameters explicitly and assign types correctly.
             → Example: (:parameters (?a - agent ?o - object ?l - location))
             3. Each predicate must follow the format: (predicate ?x - type ?y - type)
-            → ❌ Wrong: (at ?a ?l) - (agent location)
-            → ✅ Correct: (at ?a - agent ?l - location)
+            → Wrong: (at ?a ?l) - (agent location)
+            → Correct: (at ?a - agent ?l - location)
             4. Use ONLY objects, predicates and goals listed in the lore.
             5. Use :precondition and :effect sections correctly (no plural).
             6. Use valid STRIPS-compatible syntax: :types, :predicates, :action.
@@ -216,7 +209,6 @@ def build_prompt_from_lore1(lore: dict, examples: Optional[List[str]] = None) ->
     if examples_text:
         prompt += "\n📚 REFERENCE EXAMPLES:\n" + examples_text
 
-    # Output format obbligatorio
     prompt += (
         "\n\nYour output MUST follow this format:\n"
         "=== DOMAIN START ===\n<insert domain.pddl here>\n=== DOMAIN END ===\n"
@@ -233,14 +225,12 @@ def build_prompt_from_lore(lore: Dict[str, Any], examples: Optional[List[str]] =
       - esempi few-shot (se presenti)
     Se qualche campo manca, viene sostituito con stringa vuota o lista vuota.
     """
-    # 1) Carica template
     prompt_path = "prompts/generator/generator_prompt2.txt"
     tpl = Path(prompt_path)
     if not tpl.exists():
         raise FileNotFoundError(f"Prompt template not found at: {prompt_path}")
     template = tpl.read_text(encoding="utf-8")
 
-    # 2) Estrai e normalizza i campi da lore
     description     = lore.get("description") or ""
     if not isinstance(description, str):
         description = str(description)
@@ -274,7 +264,6 @@ def build_prompt_from_lore(lore: Dict[str, Any], examples: Optional[List[str]] =
     if not isinstance(actions, list):
         actions = []
 
-    # 3) Costruisci sezioni opzionali
     branching_section = ""
     if branching:
         branching_section = (
@@ -317,7 +306,6 @@ def build_prompt_from_lore(lore: Dict[str, Any], examples: Optional[List[str]] =
                 f"  :effect (and {effs_str}))\n\n"
             )
 
-    # 4) Few-shot
     few_shot_block = ""
     if examples:
         few_shot_block = (
@@ -326,7 +314,6 @@ def build_prompt_from_lore(lore: Dict[str, Any], examples: Optional[List[str]] =
             + "\n"
         )
 
-    # 5) Popola il template
     try:
         prompt = template.format(
             DESCRIPTION=description.strip(),

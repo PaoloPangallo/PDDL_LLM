@@ -16,7 +16,7 @@ STORY:
 3. "domain" {…} and "problem" {…}   <- STEP 3–6: INIT_GOAL, PREDICATES, OBJECTS_AND_TYPES, ACTIONS_PDDL + STEP 7: VISION_JSON 
 4. "self_check" {…}  ← appended immediately after "problem"
 
-⚠️ **CONSTRAINTS**
+**CONSTRAINTS**
 1. *No generic types* — every type must be a concrete subtype (e.g., `tower_location`, `dragon_monster`, `sword_weapon`).
 2. *Types usage* — include only types actually used by objects and actions; do not declare unused types.
 3. *Predicate consistency* — every predicate in INIT or GOAL must appear in at least one action precondition and one action effect.

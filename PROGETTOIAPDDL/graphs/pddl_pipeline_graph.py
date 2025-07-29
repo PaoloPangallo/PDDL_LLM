@@ -16,7 +16,7 @@ from datetime import datetime
 
 
 # ────────────────────────────────────────────────────────────────────────────────
-#  Configurazione logging (DEBUG di default)  ───────────────────────────────────
+#  Configurazione logging (DEBUG di default)
 # ────────────────────────────────────────────────────────────────────────────────
 logger = logging.getLogger("pddl_pipeline_graph")
 
@@ -40,7 +40,7 @@ def _log_node_end(name: str, extra: str = ""):
     logger.info("")
 
 # ────────────────────────────────────────────────────────────────────────────────
-#  Costanti (modelli e percorsi)  ───────────────────────────────────────────────
+#  Costanti (modelli e percorsi) 
 # ────────────────────────────────────────────────────────────────────────────────
 VISION_PROMPT_PATH = Path("prompts/JsonGenerator/JsonGenerator3.txt")
 SPEC_PROMPT_PATH   = Path("prompts/JsonIntermediator/Prompt3.txt")
@@ -127,7 +127,7 @@ def is_positive_feedback(msg: str) -> bool:
     }
 
 # ════════════════════════════════════════════════════════════════════════════════
-#  NODI — Build‑Prompt (3 passaggi) con logging dettagliato
+#  NODI pipeline (Router, PreparePrompt, GenerateVision, GenerateSpec)
 # ════════════════════════════════════════════════════════════════════════════════
 
 
@@ -438,6 +438,7 @@ def node_generate_pddl(state: PipelineState) -> PipelineState:
 
         save_text_file(os.path.join(tmp, "domain.pddl"), domain)
         save_text_file(os.path.join(tmp, "problem.pddl"), problem)
+        
         logger.info("%s | PDDL files saved", name)
         logger.info("")
 
@@ -652,7 +653,8 @@ def validate_decision(state: PipelineState) -> str:
     predefined_lore_files = [
         "lore/hero_lore.json",
         "lore/hacker_lore.json", 
-        "lore/robot_lore.json"
+        "lore/robot_lore.json",
+        "lore/scarc_lore.json"
     ]
     
     # Controlla se la lore corrente corrisponde a una di quelle predefinite
@@ -704,7 +706,8 @@ def plan_branch(state: PipelineState) -> str:
     predefined_lore_files = [
         "lore/hero_lore.json",
         "lore/hacker_lore.json", 
-        "lore/robot_lore.json"
+        "lore/robot_lore.json",
+        "lore/scarc_lore.json"
     ]
     
     for lore_file in predefined_lore_files:
@@ -873,10 +876,10 @@ def node_template_fallback(state: PipelineState) -> PipelineState:
     LORE_TO_SPEC = {
         "lore/hero_lore.json": "examples/hero_lore.json",
         "lore/hacker_lore.json": "examples/hacker_lore.json",
-        "lore/robot_lore.json": "examples/robot_lore.json"
+        "lore/robot_lore.json": "examples/robot_lore.json",
+        "lore/scarc_lore.json": "examples/scarc_lore.json"
     }
 
-    # Estrai il JSON dalla lore corrente
     current_lore_wrapper = state["lore"]
     try:
         current_lore_json = json.loads(current_lore_wrapper["text"])
@@ -884,7 +887,6 @@ def node_template_fallback(state: PipelineState) -> PipelineState:
         json_path = Path("json_specs/generic.json")
         spec = json.loads(json_path.read_text(encoding="utf-8"))
     else:
-        # Trova quale lore corrisponde a quella corrente
         spec_path = None
         for lore_file, spec_file in LORE_TO_SPEC.items():
             try:
@@ -896,7 +898,6 @@ def node_template_fallback(state: PipelineState) -> PipelineState:
             except (FileNotFoundError, json.JSONDecodeError):
                 continue
         
-        # Carica la spec corrispondente o fallback di default
         if spec_path:
             json_path = Path(spec_path)
         else:
@@ -933,20 +934,16 @@ def node_generate_plan(state: PipelineState) -> PipelineState:
     name = "GeneratePlan"
     print(f"\n=== Enter {name}_node ===")
     
-    # Directory base dei file temporanei
     tmp_dir = state.get("tmp_dir") or ""
     edited_dir = os.path.join(tmp_dir, "edited")
     
-    # Stato interno e tentativi
     resume_feedback = state.get("_resume_after_feedback", False)
     attempt = state.get("attempt", -1)
     
-    # Variabili per PDDL da usare per planning
     domain_for_planning = None
     problem_for_planning = None
     source_description = ""
 
-    # 1) PRIORITÀ 1: PDDL editati dall'utente (sempre prioritari se presenti)
     if edited_dir and os.path.isdir(edited_dir):
         dom_path = os.path.join(edited_dir, "domain.pddl")
         prob_path = os.path.join(edited_dir, "problem.pddl")
@@ -958,35 +955,29 @@ def node_generate_plan(state: PipelineState) -> PipelineState:
             source_description = "edited files from disk"
             logger.info("%s | Using edited PDDL from %s", name, edited_dir)
     
-    # 2) PRIORITÀ 2: PDDL dallo stato LangGraph (aggiornati da feedback)
     if not domain_for_planning or not problem_for_planning:
         if resume_feedback or state.get("_waiting_for_edit") == False:
-            # Dopo feedback, usa domain/problem aggiornati nello stato
             domain_for_planning = state.get("domain", "")
             problem_for_planning = state.get("problem", "")
             source_description = "state after feedback"
             logger.info("%s | Using domain/problem from state after feedback", name)
         else:
-            # Usa refined se disponibili, altrimenti originali
             domain_for_planning = state.get("refined_domain") or state.get("domain", "")
             problem_for_planning = state.get("refined_problem") or state.get("problem", "")
             source_description = "refined or original"
     
-    # 3) Fallback per gestire casi edge
     if not domain_for_planning or domain_for_planning in [None, "(define (domain ...)))"]:
         domain_for_planning = state.get("domain", "")
     
     if not problem_for_planning or problem_for_planning in [None, "(define (problem ...)))"]:
         problem_for_planning = state.get("problem", "")
     
-    # 4) Validazione finale
     if not domain_for_planning or not problem_for_planning:
         error_msg = f"Missing domain or problem for planning (source: {source_description})"
         logger.error("%s | %s", name, error_msg)
         print(f"❌ {error_msg}")
         print(f"=== Exit {name}_node ===\n")
         
-        # Emetti errore al frontend
         emit_sse_event("GeneratePlan", {
             "status": "failed",
             "error": error_msg,
@@ -1003,7 +994,6 @@ def node_generate_plan(state: PipelineState) -> PipelineState:
     print(f"   Domain: {len(domain_for_planning)} chars")
     print(f"   Problem: {len(problem_for_planning)} chars")
     
-    # 5) Genera il piano
     try:
         result = generate_plan_with_fd(domain_for_planning, problem_for_planning)
         
@@ -1014,7 +1004,6 @@ def node_generate_plan(state: PipelineState) -> PipelineState:
             print(f"✅ Piano trovato!")
             print(f"\n{plan_text}\n")
             
-            # 6) Salva il piano su file (opzionale)
             plan_url = None
             if tmp_dir:
                 try:
@@ -1026,25 +1015,11 @@ def node_generate_plan(state: PipelineState) -> PipelineState:
                         f.write(f"=== PLAN ===\n{plan_text}\n\n")
                         f.write(f"=== LOG ===\n{plan_log}")
                     
-                    # Genera URL per download se hai una funzione disponibile
-                    # plan_url = generate_file_url(plan_file, "plan.txt")  # Sostituisci con la tua funzione
-                    plan_url = f"/tmp/files/{os.path.basename(plan_file)}"  # URL semplificato
+                    plan_url = f"/tmp/files/{os.path.basename(plan_file)}"
                     logger.info("%s | Piano salvato in %s", name, plan_file)
                 except Exception as e:
                     logger.warning("%s | Impossibile salvare piano su file: %s", name, e)
             
-            # 7) Emetti evento SSE al frontend
-            # emit_sse_event("GeneratePlan", {
-            #     "status": "success",
-            #     "plan": plan_text,
-            #     "plan_log": plan_log,
-            #     "source": source_description,
-            #     "plan_url": plan_url,
-            #     "found_plan": True,
-            #     "domain_chars": len(domain_for_planning),
-            #     "problem_chars": len(problem_for_planning),
-            #     #"_pipeline_completed": True
-            # }, state)
             logger.info(f"✅ [GeneratePlan_node] Evento GeneratePlan emesso e pipeline continua.")
             
             print(f"=== Exit {name}_node ===\n")
@@ -1061,7 +1036,6 @@ def node_generate_plan(state: PipelineState) -> PipelineState:
         else:
             print("❌ Nessun piano trovato...")
             
-            # Emetti fallimento al frontend
             emit_sse_event("GeneratePlan", {
                 "status": "failed", 
                 "found_plan": False,
@@ -1083,14 +1057,6 @@ def node_generate_plan(state: PipelineState) -> PipelineState:
         logger.exception("%s | Errore durante planning", name)
         error_msg = f"Planning exception: {e}"
         print(f"❌ {error_msg}")
-        
-        # # Emetti eccezione al frontend
-        # emit_sse_event("GeneratePlan", {
-        #     "status": "error",
-        #     "error": error_msg,
-        #     "source": source_description,
-        #     "exception": str(e)
-        # }, state)
         
         print(f"=== Exit {name}_node ===\n")
         return {
@@ -1127,25 +1093,14 @@ def end_node(state: PipelineState) -> PipelineState:
         "status": state.get("status", "ok")
     }
 
-    # emit_sse_event("PipelineCompleted", {
-    #     "status": "completed",
-    #     "_pipeline_completed": True,
-    #     "thread_id": thread_id,
-    #     "plan": plan,
-    #     "plan_url": plan_url,
-    # }, new_state)
-
-    # 1) Pulisci il database LangGraph per questo thread
     try:
         saver = cast(Any, state.get("__saver__"))
         
         if saver:
-            # Prova prima il metodo preferito
             if hasattr(saver, "delete_all"):
                 saver.delete_all()
                 logger.info("%s | ✅ Database LangGraph pulito via delete_all() per thread: %s", name, thread_id)
             else:
-                # Fallback al metodo diretto
                 conn = cast(Any, saver)._conn
                 if conn:
                     conn.execute("DELETE FROM checkpoints")
@@ -1158,19 +1113,7 @@ def end_node(state: PipelineState) -> PipelineState:
             
     except Exception as e:
         logger.error("%s | ❌ Errore pulizia database LangGraph per thread %s: %s", name, thread_id, e)
-        # Non fermare l'esecuzione per errori di pulizia
-    
-    # 2) Pulisci anche i file temporanei se presenti
-    # try:
-    #     tmp_dir = state.get("tmp_dir")
-    #     if tmp_dir and os.path.exists(tmp_dir):
-    #         import shutil
-    #         shutil.rmtree(tmp_dir)
-    #         logger.info("%s | ✅ Directory temporanea rimossa: %s", name, tmp_dir)
-    # except Exception as e:
-    #     logger.warning("%s | ⚠️ Errore rimozione directory temporanea: %s", name, e)
-    
-    # 3) Stato finale minimale - conserva solo le informazioni essenziali
+
     final_status = state.get("status", "completed")
     if final_status not in ["ok", "failed", "done"]:
         final_status = "completed"
@@ -1200,15 +1143,12 @@ def end_node(state: PipelineState) -> PipelineState:
 def build_pipeline(checkpointer=None):
     builder = StateGraph(PipelineState)
 
-    # Starting point
     builder.add_node("Router", node_router)
 
-    # Build‑Prompt chain
     builder.add_node("PreparePrompt", node_prepare_prompt)
     builder.add_node("GenerateVision", node_generate_vision)
     builder.add_node("GenerateSpec", node_generate_spec)
 
-    # Core nodes
     builder.add_node("Generate", node_generate_pddl)
     builder.add_node("Validate", node_validate)
     builder.add_node("Refine", node_refine)
@@ -1217,7 +1157,6 @@ def build_pipeline(checkpointer=None):
     builder.add_node("GeneratePlan", node_generate_plan)
     builder.add_node("End", end_node)
 
-    # Edges
     builder.set_entry_point("Router")
     builder.add_edge("PreparePrompt", "GenerateVision")
     builder.add_edge("GenerateVision", "GenerateSpec")
@@ -1269,19 +1208,15 @@ def has_valid_pddl_state(state: PipelineState) -> bool:
     domain = state.get("domain")
     problem = state.get("problem")
     
-    # Controlli base di validità
     if not domain or not problem:
         return False
     
-    # Verifica che non siano stringhe vuote
     if not str(domain).strip() or not str(problem).strip():
         return False
     
-    # Verifica minima che sembrino PDDL validi
     domain_str = str(domain).strip()
     problem_str = str(problem).strip()
     
-    # Controlli minimi di struttura PDDL
     if not (domain_str.startswith("(define") and domain_str.endswith(")")):
         logger.warning("⚠️ [has_valid_pddl_state] Domain non sembra PDDL valido")
         return False
@@ -1309,7 +1244,6 @@ def is_valid_resume_context(state: PipelineState) -> bool:
         True se è un contesto di ripresa valido, False altrimenti
     """
     
-    # Caso 1: Flags espliciti di ripresa
     if state.get("_resume_after_feedback"):
         logger.info("✅ [is_valid_resume_context] Resume dopo feedback")
         return True
@@ -1318,7 +1252,6 @@ def is_valid_resume_context(state: PipelineState) -> bool:
         logger.info("✅ [is_valid_resume_context] In attesa di edit")
         return True
     
-    # Caso 2: Status che indicano ripresa
     status = state.get("status", "")
     valid_resume_statuses = {
         "awaiting_feedback", 
@@ -1331,20 +1264,16 @@ def is_valid_resume_context(state: PipelineState) -> bool:
         logger.info("✅ [is_valid_resume_context] Status valido per ripresa: %s", status)
         return True
     
-    # Caso 3: Presenza di validazione in corso (indica processo avanzato)
     if state.get("validation") is not None:
         logger.info("✅ [is_valid_resume_context] Validazione presente, probabile ripresa")
         return True
     
-    # Caso 4: Presenza di PDDL refinati (indica processo molto avanzato)
     if state.get("refined_domain") or state.get("refined_problem"):
         logger.info("✅ [is_valid_resume_context] PDDL refinati presenti, ripresa valida")
         return True
     
-    # Caso 5: Messaggi recenti che indicano interazione utente
     messages = state.get("messages", [])
     if messages:
-        # Controlla se ci sono messaggi recenti (ultimi 2)
         recent_messages = messages[-2:] if len(messages) >= 2 else messages
         
         for msg in recent_messages:
@@ -1352,19 +1281,15 @@ def is_valid_resume_context(state: PipelineState) -> bool:
                 msg_type = msg.get("type", "")
                 content = str(msg.get("content", "")).lower()
                 
-                # Messaggi utente recenti indicano interazione in corso
                 if msg_type == "human":
                     logger.info("✅ [is_valid_resume_context] Messaggio utente recente trovato")
                     return True
                     
-                # Messaggi AI che parlano di feedback/editing
                 if msg_type == "ai" and any(keyword in content for keyword in 
                                          ["edit", "modifica", "feedback", "correggi", "valida"]):
                     logger.info("✅ [is_valid_resume_context] Messaggio AI di feedback recente")
                     return True
-    
-    # Caso 6: Check temporale - se è passato poco tempo dalla creazione
-    # (questo previene riprese spurie dopo molto tempo)
+
     tmp_dir = state.get("tmp_dir")
     if tmp_dir and os.path.exists(tmp_dir):
         try:
@@ -1372,14 +1297,12 @@ def is_valid_resume_context(state: PipelineState) -> bool:
             dir_mtime = os.path.getmtime(tmp_dir)
             current_time = time.time()
             
-            # Se la directory è stata modificata negli ultimi 30 minuti
-            if (current_time - dir_mtime) < 1800:  # 30 minuti
+            if (current_time - dir_mtime) < 1800:
                 logger.info("✅ [is_valid_resume_context] tmp_dir recente, ripresa valida")
                 return True
         except OSError:
             pass
     
-    # Default: NON è una ripresa valida
     logger.info("❌ [is_valid_resume_context] Nessun indicatore di ripresa valido trovato")
     return False
 
@@ -1396,12 +1319,10 @@ def reset_pipeline_state(state: PipelineState) -> dict:
     """
     logger.info("🔄 [reset_pipeline_state] Reset completo dello stato")
     
-    # Mantieni solo i dati essenziali
     thread_id = state.get("thread_id", "default")
     lore = state.get("lore", {})
     messages = state.get("messages", [])
     
-    # Pulisci tmp_dir esistente se presente
     old_tmp_dir = state.get("tmp_dir")
     if old_tmp_dir and os.path.exists(old_tmp_dir):
         try:
@@ -1439,7 +1360,6 @@ def ensure_pddl_files_saved(state: PipelineState) -> None:
     """
     logger.info("💾 [ensure_pddl_files_saved] Inizio salvataggio PDDL")
     
-    # Verifica che i dati PDDL siano disponibili nello stato
     domain = state.get("domain")
     problem = state.get("problem")
     
@@ -1448,18 +1368,14 @@ def ensure_pddl_files_saved(state: PipelineState) -> None:
         logger.error("❌ [ensure_pddl_files_saved] %s", error_msg)
         raise ValueError(error_msg)
     
-    # Ottieni o crea tmp_dir
     tmp_dir = state.get("tmp_dir")
     if not tmp_dir:
-        # Crea una nuova tmp_dir basata su thread_id
         thread_id = state.get("thread_id", "default")
         tmp_dir = os.path.join("static", "uploads", thread_id)
         logger.info("📁 [ensure_pddl_files_saved] Creata nuova tmp_dir: %s", tmp_dir)
         
-        # Aggiorna lo stato con la nuova tmp_dir
         state["tmp_dir"] = tmp_dir
     
-    # Assicura che la directory esista
     try:
         os.makedirs(tmp_dir, exist_ok=True)
         logger.info("✅ [ensure_pddl_files_saved] Directory creata/verificata: %s", tmp_dir)
@@ -1468,26 +1384,21 @@ def ensure_pddl_files_saved(state: PipelineState) -> None:
         logger.error("❌ [ensure_pddl_files_saved] %s", error_msg)
         raise OSError(error_msg) from e
     
-    # Salva i file PDDL
     domain_path = os.path.join(tmp_dir, "domain.pddl")
     problem_path = os.path.join(tmp_dir, "problem.pddl")
     
     try:
-        # Salva domain.pddl
         with open(domain_path, "w", encoding="utf-8") as f:
             f.write(str(domain))
         logger.info("✅ [ensure_pddl_files_saved] Domain salvato: %s", domain_path)
         
-        # Salva problem.pddl
         with open(problem_path, "w", encoding="utf-8") as f:
             f.write(str(problem))
         logger.info("✅ [ensure_pddl_files_saved] Problem salvato: %s", problem_path)
         
-        # Verifica che i file siano stati creati correttamente
         if not os.path.exists(domain_path) or not os.path.exists(problem_path):
             raise OSError("File PDDL non trovati dopo il salvataggio")
         
-        # Verifica che i file non siano vuoti
         if os.path.getsize(domain_path) == 0 or os.path.getsize(problem_path) == 0:
             raise OSError("File PDDL vuoti dopo il salvataggio")
         
@@ -1503,11 +1414,8 @@ def emit_sse_event(event_type: str, data: dict, state: PipelineState):
     """
     Emette un evento SSE. Adatta questa funzione in base al tuo sistema.
     """
-    # Esempio - sostituisci con la tua implementazione
     try:
         event_data = json.dumps(data)
         print(f"SSE_EVENT: {event_type} - {event_data}")
-        # Se hai un sistema di eventi, usalo qui
-        # es: your_sse_emitter.emit(event_type, data)
     except Exception as e:
         print(f"Errore nell'emissione evento SSE: {e}")

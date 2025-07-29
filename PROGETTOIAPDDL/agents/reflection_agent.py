@@ -16,9 +16,6 @@ from core.utils import (
     extract_between,
 )
 
-# ===============================
-# ⚙ Configurazione
-# ===============================
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 #DEFAULT_MODEL = "llama3:8b-instruct-q5_K_M"
 #FALLBACK_MODEL = "mistral"
@@ -27,7 +24,7 @@ OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 DEFAULT_MODEL = "deepseek-coder-v2:16b"
 FALLBACK_MODEL = "deepseek-coder-v2:16b"
 HEADERS = {"Content-Type": "application/json"}
-DEBUG_LLM = True  # Attiva salvataggio completo per debug
+DEBUG_LLM = True 
 
 logger = logging.getLogger(__name__)
 if not logger.hasHandlers():
@@ -38,9 +35,6 @@ if not logger.hasHandlers():
     logger.setLevel(logging.INFO)
 
 
-# ===============================
-# 🔁 Invio prompt al LLM locale
-# ===============================
 def ask_local_llm(prompt: str, model: str) -> Optional[str]:
     logger.info(" Invio richiesta a Ollama (%s)...", model)
     logger.debug(" Prompt inviato (primi 500 char):\n%s", prompt[:500])
@@ -86,10 +80,6 @@ def ask_llm_with_fallback(prompt: str) -> str:
     raise RuntimeError("Errore critico: LLM non ha risposto nemmeno con fallback.")
 
 
-# ===============================
-#  Costruzione del prompt
-# ===============================
-
 logger = logging.getLogger(__name__)
 
 def build_prompt(domain_text: str, problem_text: str, error_message: str, validation: Optional[dict] = None, lore: Optional[dict] = None) -> str:
@@ -108,7 +98,6 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
             "\n=== PROBLEM START ===\n<...>\n=== PROBLEM END ==="
         )
 
-    # Costruzione note aggiuntive per LLM
     notes = "\n\n---\nOBIETTIVO:\n"
     notes += (
         "- Correggere i file PDDL affinché siano validi, completi e semanticamente coerenti con la pianificazione classica.\n"
@@ -122,7 +111,6 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
         "- Rispettare la formattazione canonica del PDDL: indentazione, ordine e struttura.\n"
     )
 
-    # Errori rilevati dal validatore
     if isinstance(validation, dict):
         if validation.get("undefined_objects_in_goal"):
             notes += "\nOggetti mancanti nella sezione :goal:\n- " + "\n- ".join(validation["undefined_objects_in_goal"])
@@ -137,7 +125,6 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
         if validation.get("domain_mismatch"):
             notes += f"\nIncoerenza nei nomi del dominio: {validation['domain_mismatch']}"
 
-    # Lore originale (se fornita)
     if lore:
         try:
             lore_json = json.dumps(lore, indent=2, ensure_ascii=False)
@@ -145,11 +132,9 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
         except Exception as e:
             logger.warning("Impossibile serializzare il lore: %s", e)
 
-    # Errori noti ricorrenti
     if "unhashable type: 'list'" in error_message:
         notes += "\n\nNota tecnica: evitare l'uso di liste annidate nella sezione :init."
 
-    # Componi il prompt finale
     return template.format(
         domain=domain_text.strip(),
         problem=problem_text.strip(),
@@ -158,17 +143,14 @@ def build_prompt(domain_text: str, problem_text: str, error_message: str, valida
     )
 
 def build_prompt2(domain_text: str, problem_text: str, error_message: str, validation: Optional[dict] = None, lore: Optional[dict] = None) -> str:
-    # Carica il template del prompt
     prompt_path = Path("prompts/reflection_agent/reflection_prompt2.txt")
     if prompt_path.exists():
         template = prompt_path.read_text(encoding="utf-8")
     else:
-        # Fallback minimale
         raise FileNotFoundError(
             f"Reflection prompt template not found at {prompt_path}."
         )
 
-    # Contesto: original files, validation report, error message
     filled = {
         'domain': domain_text.strip(),
         'problem': problem_text.strip(),
@@ -176,15 +158,10 @@ def build_prompt2(domain_text: str, problem_text: str, error_message: str, valid
         'validation': json.dumps(validation, indent=2, ensure_ascii=False) if validation else ""
     }
 
-    # Inserisci le sezioni nel template
     final_prompt = template.format(**filled)
     return final_prompt
 
 
-
-# ===============================
-#  Raffinamento dei file
-# ===============================
 def refine_pddl(domain_path: str, problem_path: str, error_message: str, lore: Optional[dict] = None, validation: Optional[dict] = None) -> str:
     domain_raw = read_text_file(domain_path)
     problem_raw = read_text_file(problem_path)
@@ -192,7 +169,6 @@ def refine_pddl(domain_path: str, problem_path: str, error_message: str, lore: O
     if not domain_raw or not problem_raw:
         raise ValueError("❌ File PDDL vuoti o mancanti.")
 
-    # Se non passato esplicitamente, fai la validazione qui
     if validation is None and lore is not None:
         validation = validate_pddl(domain_raw, problem_raw, lore)
 
@@ -206,9 +182,7 @@ def refine_pddl(domain_path: str, problem_path: str, error_message: str, lore: O
     prompt = build_prompt2(domain_raw, problem_raw, error_message, validation, lore)
     return ask_llm_with_fallback(prompt)
 
-# ===============================
-# 💾 Raffina e salva
-# ===============================
+
 def refine_and_save(domain_path: str, problem_path: str, error_message: str, output_dir: str, lore: Optional[dict] = None) -> tuple[Optional[str], Optional[str]]:
     from core.utils import get_unique_filename
 

@@ -1,0 +1,42 @@
+{
+  "description": "Lo studente infiltrato deve introdursi nel Laboratorio SmartLab del DIMES per recuperare la traccia del compito scritto del professore Scarcello, ma solo dopo aver disattivato il sistema di sorveglianza del campus o convinto un assistente del Prof. Scarcello a collaborare. Dopo aver ottenuto il Codice, lo studente deve fuggire attraverso il tetto dell'edificio cubo 41C o i tunnel sotterranei e consegnarlo al laboratorio sicuro del Prof. Longo.",
+  "objects": [
+    "studente          - agent",
+    "assistente        - npc",
+    "sistema_sicurezza - security_system",
+    "codice_accesso    - credential",
+    "mainframe         - device",
+    "ScrittoIA         - artifact",
+    "lab_longo         - house",
+    "aula_reti         - location",
+    "bar_TAU           - location",
+    "smartlab          - location",
+    "tetto_cubo44      - location",
+    "tunnel_dimes      - location"
+  ],
+  "init": [
+    "(at studente lab_longo)",
+    "(at sistema_sicurezza aula_reti)",
+    "(at assistente bar_TAU )",
+    "(at codice_accesso bar_TAU )",
+    "(at mainframe smartlab)",
+    "(at codice_quantum smartlab)",
+    "(connected lab_longo aula_reti)",
+    "(connected lab_longo bar_TAU )",
+    "(connected aula_reti smartlab)",
+    "(connected smartlab aula_reti)",
+    "(connected bar_TAU  smartlab)",
+    "(connected smartlab bar_TAU )",
+    "(connected smartlab tetto_cubo44)",
+    "(connected tetto_cubo44 smartlab)",
+    "(connected smartlab tunnel_dimes)",
+    "(connected tunnel_dimes smartlab)",
+    "(connected tunnel_dimes lab_longo)",
+    "(connected tetto_cubo44 lab_longo)"
+  ],
+
+  "goal": [
+    "(at studente lab_longo)",
+    "(delivered codice_quantum)"
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "description": "Lo studente infiltrato deve introdursi nel laboratorio SmartLab del DIMES per recuperare la traccia del compito scritto del Prof. Scarcello, ma solo dopo aver disattivato il sistema di sorveglianza o convinto un assistente. Dopo aver ottenuto il codice, deve fuggire attraverso il tetto del Cubo 44 o i tunnel sotterranei, e consegnare il codice al laboratorio sicuro del Prof. Longo.",
+  "trama": "Nascosto tra i corridoi del DIMES, lo studente parte dal laboratorio sicuro del Prof. Longo. Prima deve decidere come neutralizzare la sicurezza: raggiungere l’aula reti per disattivare il sistema o andare al bar_TAU per convincere un assistente. Solo una volta bypassata la sorveglianza può penetrare nel SmartLab e prendere il codice segreto contenente la traccia del compito. Con il codice in mano, fugge via tetto o tunnel e lo consegna al Prof. Longo.",
+  "domain": {
+    "name": "scarc_domain",
+    "types": [
+      "location",
+      "object",
+      "agent - object",
+      "npc - object",
+      "security_system - object",
+      "credential - object",
+      "device - object",
+      "artifact - object",
+      "studente_type - agent",
+      "assistente_type - npc",
+      "sistema_sicurezza_type - security_system",
+      "codice_quantum_type - credential"
+    ],
+    "predicates": [
+      "(at ?x - object ?y - location)",
+      "(connected ?x - location ?y - location)",
+      "(has ?x - agent ?o - object)",
+      "(disabled ?x - security_system)",
+      "(convinced ?x - npc)",
+      "(delivered ?x - object)"
+    ],
+    "objects": [
+      "studente - studente_type",
+      "assistente - assistente_type",
+      "sistema_sicurezza - sistema_sicurezza_type",
+      "codice_quantum - codice_quantum_type",
+      "mainframe - device",
+      "ScrittoIA - artifact",
+      "lab_longo - location",
+      "aula_reti - location",
+      "bar_TAU - location",
+      "smartlab - location",
+      "tetto_cubo44 - location",
+      "tunnel_dimes - location"
+    ],
+    "actions": [
+      {
+        "name": "move",
+        "params": ["?a - agent", "?from - location", "?to - location"],
+        "pre": { "and": ["(at ?a ?from)", "(connected ?from ?to)"] },
+        "eff": { "add": ["(at ?a ?to)"], "del": ["(at ?a ?from)"] }
+      },
+      {
+        "name": "disattiva_sistema",
+        "params": ["?a - agent", "?s - security_system", "?l - location"],
+        "pre": { "and": ["(at ?a ?l)", "(at ?s ?l)"] },
+        "eff": { "add": ["(disabled ?s)"] }
+      },
+      {
+        "name": "convinci_assistente",
+        "params": ["?a - agent", "?as - npc", "?l - location"],
+        "pre": { "and": ["(at ?a ?l)", "(at ?as ?l)"] },
+        "eff": { "add": ["(convinced ?as)"] }
+      },
+      {
+        "name": "prendi_codice",
+        "params": ["?a - agent", "?c - credential", "?l - location", "?s - security_system", "?as - npc"],
+        "pre": {
+          "and": [
+            "(at ?a ?l)",
+            "(at ?c ?l)",
+            "(disabled ?s)",
+            "(convinced ?as)"
+          ]
+        },
+        "eff": {
+          "add": ["(has ?a ?c)"],
+          "del": ["(at ?c ?l)"]
+        }
+      },
+      {
+        "name": "fuggi",
+        "params": ["?a - agent", "?from - location", "?to - location"],
+        "pre": { "and": ["(at ?a ?from)", "(connected ?from ?to)"] },
+        "eff": { "add": ["(at ?a ?to)"], "del": ["(at ?a ?from)"] }
+      },
+      {
+        "name": "consegna_codice",
+        "params": ["?a - agent", "?c - credential", "?l - location"],
+        "pre": { "and": ["(at ?a ?l)", "(has ?a ?c)"] },
+        "eff": { "add": ["(delivered ?c)"] }
+      }
+    ]
+  },
+  "problem": {
+    "name": "scarc_problem",
+    "domain": "scarc_domain",
+    "objects": [
+      "studente - studente_type",
+      "assistente - assistente_type",
+      "sistema_sicurezza - sistema_sicurezza_type",
+      "codice_quantum - codice_quantum_type",
+      "mainframe - device",
+      "ScrittoIA - artifact",
+      "lab_longo aula_reti bar_TAU smartlab tetto_cubo44 tunnel_dimes - location"
+    ],
+    "init": [
+      "(at studente lab_longo)",
+      "(at sistema_sicurezza aula_reti)",
+      "(at assistente bar_TAU)",
+      "(at codice_quantum smartlab)",
+      "(connected lab_longo aula_reti)",
+      "(connected lab_longo bar_TAU)",
+      "(connected aula_reti smartlab)",
+      "(connected smartlab aula_reti)",
+      "(connected bar_TAU smartlab)",
+      "(connected smartlab bar_TAU)",
+      "(connected smartlab tetto_cubo44)",
+      "(connected tetto_cubo44 smartlab)",
+      "(connected smartlab tunnel_dimes)",
+      "(connected tunnel_dimes smartlab)",
+      "(connected tunnel_dimes lab_longo)",
+      "(connected tetto_cubo44 lab_longo)"
+    ],
+    "goal": [
+      "(at studente lab_longo)",
+      "(delivered codice_quantum)"
+    ]
+  }
+}

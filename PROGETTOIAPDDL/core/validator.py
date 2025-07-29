@@ -43,18 +43,14 @@ def validate_pddl(domain: str, problem: str, lore: Any) -> Dict:
 
     for line in full_log:
         clean_line = line.strip(" \t\r\n->")
-        # Quando trovi la linea con "translate exit code"
         if "translate exit code" in clean_line.lower():
-            # Estrai il codice numerico
             match = re.search(r"translate exit code[: ]+(\d+)", clean_line, re.IGNORECASE)
             if match:
                 translate_exit_code = int(match.group(1))
             break
-        # Ignora righe info banali, tieni solo righe significative
         if clean_line and not clean_line.lower().startswith("info"):
             validation_summary_lines.append(clean_line)
 
-    # Se non ha trovato "translate exit code" usa il codice di ritorno di processo
     if translate_exit_code is None:
         translate_exit_code = proc.returncode
 

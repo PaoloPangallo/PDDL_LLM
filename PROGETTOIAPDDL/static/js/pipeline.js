@@ -26,17 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const validationWrap = document.getElementById("validation-list");
   const refineWrap     = document.getElementById("refine-list");
 
-  /* contenitori per link file generati ---------------------------------- */
-  const fileLinksWrap = document.getElementById("file-links") || createFileLinksContainer();
-
   /* stato locale --------------------------------------------------------- */
   let source = null;
   let isPaused = false;
   let isWaitingForEdit = false;
-  let currentState = null; // Nuovo: traccia stato corrente del backend
+  let currentState = null;
   const allValidations = [];
   const allRefines     = [];
-  const generatedFiles = {}; // Nuovo: traccia URL file generati
+  const generatedFiles = {};
   let reconnectAttempts = 0;
   let maxReconnectAttempts = 3;
   let reconnectDelay = 2000;
@@ -55,12 +52,11 @@ document.addEventListener("DOMContentLoaded", () => {
       <div id="file-links-content"></div>
     `;
     
-    // Inserisci dopo il raw content
     const rawContainer = rawEl.closest('.card-body') || document.body;
     if (pipelineDetails && pipelineDetails.parentElement) {
-      pipelineDetails.parentElement.appendChild(container); // 👈 lo metti dopo tutto
+      pipelineDetails.parentElement.appendChild(container);
     } else {
-      document.body.appendChild(container); // fallback
+      document.body.appendChild(container);
     }
       return container;
   }
@@ -107,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateFileLinks();
     hideEditPanel(); 
     storyWrap.classList.add("d-none");
-    feedbackForm.classList.add("d-none"); //AGGIUNTA
+    feedbackForm.classList.add("d-none");
     isPaused = false;
     isWaitingForEdit = false;
     currentState = null;
@@ -120,10 +116,9 @@ document.addEventListener("DOMContentLoaded", () => {
     domainTA.value  = domain;
     problemTA.value = problem;
     editPanel.classList.remove("d-none");
-    feedbackForm.classList.add("d-none"); // Nascondi chat durante editing
+    feedbackForm.classList.add("d-none");
     isWaitingForEdit = true;
     
-    // Scroll verso il pannello
     setTimeout(() => {
       editPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
@@ -166,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (source.readyState === EventSource.CLOSED) {
         console.log("🔌 EventSource chiuso dal server");
         
-        // Se stavamo aspettando eventi (dopo feedback), prova a riconnettersi
         if (expectingEvents && reconnectAttempts < maxReconnectAttempts) {
           console.log(`🔄 Tentativo riconnessione ${reconnectAttempts + 1}/${maxReconnectAttempts}`);
           setTimeout(() => {
@@ -191,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function attemptReconnection(baseUrl) {
     reconnectAttempts++;
     
-    // Usa URL con parametro di riconnessione
     const reconnectUrl = baseUrl.includes('resume_after_feedback') 
       ? baseUrl 
       : `${baseUrl}&reconnect=true&attempt=${reconnectAttempts}`;
@@ -208,7 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const status = await response.json();
         currentState = status;
         
-        // Aggiorna UI basandosi sullo stato
         if (status.waiting_for_edit) {
           isWaitingForEdit = true;
           isPaused = true;
@@ -272,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ───────────── listeners SSE dinamici - AGGIORNATI ──────────────────── */
+  /* ───────────── listeners SSE dinamici ──────────────────── */
   function attachPipelineListeners(es) {
     es.addEventListener("PipelineStarted", e => {
       pipelineActive = true;
@@ -291,7 +283,6 @@ document.addEventListener("DOMContentLoaded", () => {
       rawEl.textContent = `=== DOMAIN ===\n${domain}\n\n=== PROBLEM ===\n${problem}`;
       append("🧠 Generazione completata", "bot");
       
-      // Aggiorna file links se presenti
       updateFileLinks({
         domain_url: data.domain_url,
         problem_url: data.problem_url,
@@ -352,12 +343,10 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // NUOVO: Gestione ChatFeedback - interruzione per editing
     es.addEventListener("ChatFeedback", e => {
       console.log("📨 ChatFeedback ricevuto - pipeline in pausa per editing");
       const data = JSON.parse(e.data);
       
-      // Prioritizza refined se disponibili, altrimenti usa originali
       const domain = data.refined_domain || data.domain || "";
       const problem = data.refined_problem || data.problem || "";
       
@@ -368,7 +357,6 @@ document.addEventListener("DOMContentLoaded", () => {
       isPaused = true;
       expectingEvents = true;
       
-      // Aggiorna file links se presenti
       updateFileLinks({
         domain_url: data.domain_url,
         problem_url: data.problem_url,
@@ -377,15 +365,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // NUOVO: Gestione PauseForFeedback
     es.addEventListener("PauseForFeedback", e => {
       console.log("⏸️ PauseForFeedback ricevuto");
       const data = JSON.parse(e.data || "{}");
-      //feedbackForm.classList.remove("d-none"); //AGGIUNTA
       isPaused = true;
       append("⏳ Pipeline in pausa - attendo modifiche...", "system");
       
-      // Se abbiamo dati PDDL, mostra pannello editing
       if (data.domain || data.problem) {
         const domain = data.refined_domain || data.domain || "";
         const problem = data.refined_problem || data.problem || "";
@@ -393,7 +378,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // AGGIORNATO: stream_paused
     es.addEventListener("stream_paused", e => {
       console.log("⏸️ Stream in pausa, pannello di editing attivo");
       isPaused = true;
@@ -406,7 +390,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // NUOVO: Gestione eventi di stato
     es.addEventListener("status_interrupt", e => {
       const data = JSON.parse(e.data);
       console.log("🔄 Status interrupt:", data);
@@ -418,7 +401,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // NUOVO: Gestione messaggi
     es.addEventListener("messages", e => {
       const data = JSON.parse(e.data);
       if (data.message) {
@@ -426,7 +408,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // AGGIORNATO: Gestione status
     es.addEventListener("status", e => {
       const status = e.data;
       console.log(`📊 Status update: ${status}`);
@@ -434,7 +415,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (status === "awaiting_feedback") {
         append("⏳ In attesa di feedback…", "system");
         if (!isWaitingForEdit) {
-          feedbackForm.classList.add("d-none"); //AGGIUNTA
+          feedbackForm.classList.add("d-none");
         }
       } else if (status === "_waiting_for_edit") {
         isWaitingForEdit = true;
@@ -461,17 +442,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.plan_url) {
           updateFileLinks({ plan_url: data.plan_url });
         }
-        //currentState = { ...(currentState || {}), _plan_generated: true };
       } else if (data.status === "failed") {
         append(`❌ Planning fallito: ${data.error || 'Nessun piano trovato'}`, "bot");
         
         if (data.plan_log) {
           showPlanResult(null, data.plan_log, true);
         }
-      }// } else if (data.status === "error") {
-      //   append(`❌ Errore durante planning: ${data.error}`, "bot");
-      //   console.error("Planning error:", data.exception);
-      // }
+      }
       expectingEvents = true;
     });
 
@@ -493,8 +470,7 @@ document.addEventListener("DOMContentLoaded", () => {
       isPaused = false;
       isWaitingForEdit = false;
       
-      // ⭐ CHIUDI SOLO DOPO PIPELINE COMPLETATA
-       setTimeout(() => {
+      setTimeout(() => {
         if (source && source.readyState === EventSource.OPEN) {
           console.log("⏰ Timeout post-completamento, chiusura stream");
           closeEventSource();
@@ -513,7 +489,6 @@ document.addEventListener("DOMContentLoaded", () => {
         feedbackForm.classList.add("d-none");
       }
       
-      // ⭐ CHIUDI SOLO SE NON STIAMO ASPETTANDO ALTRI EVENTI
       setTimeout(() => closeEventSource(), 1000);
       
       isPaused = false;
@@ -521,7 +496,6 @@ document.addEventListener("DOMContentLoaded", () => {
       currentState = { ...(currentState || {}), _done_received: true };
     });
 
-    // ⭐ AGGIUNTA: Gestione esplicita di fine stream
     es.addEventListener("stream_complete", e => {
       console.log("🎌 Stream completato definitivamente");
       append("🎌 Streaming completato.", "system");
@@ -534,7 +508,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (source.readyState === EventSource.CLOSED) {
         console.log("🔌 EventSource chiuso dal server");
         
-        // Se stavamo aspettando eventi (dopo feedback), prova a riconnettersi
         if (expectingEvents && reconnectAttempts < maxReconnectAttempts) {
           console.log(`🔄 Tentativo riconnessione ${reconnectAttempts + 1}/${maxReconnectAttempts}`);
           setTimeout(() => {
@@ -559,7 +532,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const reset  = resetCheckbox.checked;
     const story  = (lore === "_free_") ? storyTA.value.trim() : null;
 
-    // Validazione input
     if (!lore) {
       append("❗ Devi prima selezionare una lore.", "bot");
       return;
@@ -568,31 +540,20 @@ document.addEventListener("DOMContentLoaded", () => {
       append("❗ Inserisci la tua storia prima di avviare.", "bot");
       return;
     }
-
-    // Controlla stato corrente se non è un reset
-    // if (!reset) {
-    //   await checkPipelineStatus();
-    // }
-
-    // Reset UI e stato solo se necessario
     if (reset) {
       resetAll();
     }
 
-    // Costruzione URL con parametro reset corretto
     const qsStory = story ? `&custom_story=${encodeURIComponent(story)}` : "";
     const resetParam = reset ? "&reset=true" : "";
     const url = `/stream?lore=${encodeURIComponent(lore)}&thread_id=${threadId}${resetParam}${qsStory}`;
 
     console.log(`🚀 Apertura stream: ${url}`);
     
-    // Chiudi stream precedente se esiste
     if (source) {
       closeEventSource();
     }
     
-    //source = new EventSource(url);
-    //attachPipelineListeners(source);
     expectingEvents = true;
     pipelineActive = true;
     createEventSource(url);
@@ -659,20 +620,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       append("✅ Feedback inviato con successo", "system");
       
-      // Nascondi pannello di editing
       hideEditPanel();
       isPaused = false;
       isWaitingForEdit = false;
 
       expectingEvents = true;
 
-      // Riavvia stream per continuare la pipeline
-      //await resumeStream(); DA RIVEDERE
-      // if (source) source.close();
-      // source = new EventSource(
-      //   `/stream?lore=${encodeURIComponent(loreSelect.value)}&thread_id=${threadId}&resume=true`
-      // );
-      // attachPipelineListeners(source);
       if (!source || source.readyState === EventSource.CLOSED) {
         console.log("🔄 EventSource non attivo dopo feedback, riconnessione...");
         append("🔌 Riconnessione stream per eventi finali...", "system");
@@ -698,13 +651,11 @@ document.addEventListener("DOMContentLoaded", () => {
   try {
     console.log("🔄 Ripresa stream dopo feedback...");
     
-    // Chiudi stream corrente solo se necessario
     if (source && source.readyState !== EventSource.CONNECTING) {
       console.log("🔌 Chiusura stream precedente...");
       closeEventSource();
     }
     
-    // Riapri stream con parametro specifico per ripresa
     const url = `/stream?lore=${encodeURIComponent(loreSelect.value)}&thread_id=${encodeURIComponent(threadId)}&resume_after_feedback=true`;
     
     console.log(`🚀 Riapertura stream: ${url}`);
@@ -713,7 +664,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     append("💫 Stream ripreso, continuando pipeline...", "system");
     
-    // ⭐ TIMEOUT di sicurezza per eventi finali
     setTimeout(() => {
       if (source && source.readyState === EventSource.OPEN && !isPaused) {
         console.log("⏰ Timeout sicurezza - controllo stato pipeline...");
@@ -729,10 +679,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ───────────── event listeners ──────────────────────────────────────── */
   
-  // Avvio pipeline
   runBtn.addEventListener("click", startStreaming);
 
-  // Cambio lore
   loreSelect.addEventListener("change", () => {
     resetAll();
     if (loreSelect.value === "_free_") {
@@ -744,7 +692,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Feedback testuale
   feedbackForm.addEventListener("submit", async e => {
     e.preventDefault();
     const msg = feedbackInput.value.trim();
@@ -775,7 +722,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         append("✅ Feedback ricevuto.", "system");
         
-        // Se il backend ha messo in pausa per editing, gestisci
         if (data.waiting_for_edit && (data.domain || data.problem)) {
           showEditPanel(data.domain || "", data.problem || "");
         } else {
@@ -790,11 +736,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // AGGIORNATO: Invio PDDL modificati
   sendEditBtn.addEventListener("click", async () => {
     const domain  = domainTA.value.trim();
     const problem = problemTA.value.trim();
-    const message = feedbackInput.value.trim(); // Prendi messaggio se presente
+    const message = feedbackInput.value.trim();
     
     if (!domain || !problem) {
       append("❗ Domain e problem non possono essere vuoti", "bot");
@@ -809,7 +754,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
       if (success) {
         append("✅ PDDL inviati. Pipeline ripresa...", "system");
-        feedbackInput.value = ""; // Pulisci input messaggio
+        feedbackInput.value = "";
       }
     } catch (err) {
       console.error("Errore durante invio edit:", err);
@@ -853,7 +798,6 @@ document.addEventListener("DOMContentLoaded", () => {
       let html = "";
       
       if (plan && !isError) {
-        // Piano trovato
         html += `
           <div class="alert alert-success">
             <h6 class="alert-heading">✅ Piano trovato!</h6>
@@ -862,7 +806,6 @@ document.addEventListener("DOMContentLoaded", () => {
           <pre class="bg-light p-3 border rounded">${escapeHtml(plan)}</pre>
         `;
       } else if (isError) {
-        // Errore
         html += `
           <div class="alert alert-danger">
             <h6 class="alert-heading">❌ Planning fallito</h6>
@@ -879,14 +822,12 @@ document.addEventListener("DOMContentLoaded", () => {
       
       planContent.innerHTML = html;
       
-      // Espandi automaticamente l'accordion del piano
       if (planAccordion && planAccordion.classList.contains("collapse")) {
         const bsCollapse = new bootstrap.Collapse(planAccordion, { show: true });
       }
     }
   }
 
-// Helper per escape HTML
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
@@ -907,7 +848,6 @@ async function checkFinalPipelineStatus() {
           showPlanResult(status.plan, status.plan_log);
         }
         
-        // Aggiorna file links finali
         if (status.plan_url) {
           updateFileLinks({ plan_url: status.plan_url });
         }
@@ -922,14 +862,12 @@ async function checkFinalPipelineStatus() {
 
   /* ───────────── cleanup e inizializzazione ─────────────────────────── */
   
-  // Cleanup alla chiusura della pagina
   window.addEventListener("beforeunload", () => {
     expectingEvents = false;
     pipelineActive = false;
     closeEventSource();
   });
 
-  // Inizializzazione
   feedbackForm.classList.add("d-none");
   hideEditPanel();
   updateFileLinks();

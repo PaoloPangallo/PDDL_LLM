@@ -1,0 +1,8 @@
+(fuggi studente lab_longo aula_reti)
+(disattiva_sistema studente sistema_sicurezza aula_reti)
+(fuggi studente aula_reti smartlab)
+(prendi_codice studente codice_quantum smartlab sistema_sicurezza assistente)
+(fuggi studente smartlab tunnel_dimes)
+(fuggi studente tunnel_dimes lab_longo)
+(consegna_codice studente codice_quantum lab_longo)
+; cost = 7 (unit cost)

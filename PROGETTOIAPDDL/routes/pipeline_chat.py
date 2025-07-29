@@ -15,20 +15,17 @@ from db.schema import Base, GenerationSession
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-# Cache globali per gestione unificata dello stato
 _graph_cache: Dict[str, Any] = {}
 
 pipeline_chat_bp = Blueprint("pipeline_chat", __name__)
 logger = logging.getLogger(__name__)
 
-# Setup logging se necessario
 if not logger.handlers:
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s"))
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
 
-# Setup database - SOLO per GenerationSession
 def get_db_session(thread_id: str) -> Session:
     """Crea una sessione database per GenerationSession"""
     db_path = f"memory/{thread_id}.db"
@@ -97,15 +94,12 @@ def load_lore(lore_param: Optional[str], custom_story: Optional[str] = None) -> 
 def get_pipeline_state_from_langgraph(thread_id: str) -> Optional[Dict[str, Any]]:
     """Ottiene lo stato corrente SOLO da LangGraph"""
     try:
-        # Ottieni il grafo con memoria esistente
         graph = get_pipeline_with_memory(thread_id, reset=False)
         
-        # Ottieni lo stato corrente dal checkpoint
         config: RunnableConfig = {
             "configurable": {"thread_id": thread_id}
         }
         
-        # Usa get_state per ottenere lo stato corrente
         state_snapshot = graph.get_state(config)
         
         if state_snapshot and state_snapshot.values:
@@ -129,7 +123,6 @@ def update_generation_session(thread_id: str, **kwargs) -> None:
                 session = GenerationSession(session_id=thread_id)
                 db_session.add(session)
             
-            # Aggiorna campi forniti
             for key, value in kwargs.items():
                 if hasattr(session, key):
                     if isinstance(value, (dict, list)):
@@ -160,19 +153,16 @@ def apply_user_feedback(thread_id: str, domain: str, problem: str, user_message:
         Risultato dell'esecuzione della pipeline
     """
     try:
-        # Ottieni il grafo con memoria
         graph = get_pipeline_with_memory(thread_id, reset=False)
         
         config: RunnableConfig = {
             "configurable": {"thread_id": thread_id}
         }
         
-        # Ottieni lo stato corrente
         current_state = graph.get_state(config)
         if not current_state or not current_state.values:
             raise ValueError(f"Nessuno stato trovato per thread_id: {thread_id}")
         
-        # IMPORTANTE: Salva anche i file edited su disco per compatibilità
         state_values = dict(current_state.values)
         tmp_dir = state_values.get("tmp_dir")
         if tmp_dir:
@@ -189,27 +179,23 @@ def apply_user_feedback(thread_id: str, domain: str, problem: str, user_message:
             
             logger.info("✅ PDDL editati salvati in: %s", edited_dir)
         
-        # Prepara il nuovo stato con il feedback
         updated_state = dict(current_state.values)
         updated_state.update({
-            "domain": domain,           # CRITICO: Aggiorna domain nello stato
-            "problem": problem,         # CRITICO: Aggiorna problem nello stato
+            "domain": domain,
+            "problem": problem,
             "_waiting_for_edit": False,
-            "_resume_after_feedback": True,  # Flag per indicare che stiamo riprendendo dopo feedback
+            "_resume_after_feedback": True,
         })
         
-        # Aggiungi messaggio utente se fornito
         if user_message:
             messages = updated_state.get("messages", [])
             messages.append(HumanMessage(content=user_message))
             updated_state["messages"] = messages
         
-        # Aggiorna lo stato in LangGraph
         graph.update_state(config, updated_state)
         
         logger.info("✅ Stato LangGraph aggiornato con PDDL editati per thread: %s", thread_id)
         
-        # Riprendi l'esecuzione della pipeline
         empty_state: PipelineState = cast(PipelineState, {
             "messages": [],
             "thread_id": thread_id
@@ -235,34 +221,26 @@ def handle_pipeline_chat() -> ResponseReturnValue:
             "configurable": {"thread_id": thread_id}
         }
 
-        # Ottieni il grafo
         graph = get_pipeline_with_memory(thread_id, reset=reset)
 
-        # ═══════ NUOVO: Reset esplicito ═══════
         if reset:
             logger.info("🔄 Reset esplicito richiesto per thread: %s", thread_id)
             
-            # Pulisci cache grafo
             _graph_cache.pop(thread_id, None)
             
-            # Rimuovi database LangGraph
             mem_db = f"memory/{thread_id}.sqlite"
             if os.path.exists(mem_db):
                 os.remove(mem_db)
                 logger.info("🧹 Database LangGraph rimosso: %s", mem_db)
             
-            # Rimuovi directory temporanee
             tmp_dir = os.path.join("static", "uploads", thread_id)
             if os.path.exists(tmp_dir):
                 import shutil
                 shutil.rmtree(tmp_dir)
                 logger.info("🧹 Directory temporanea rimossa: %s", tmp_dir)
             
-            # Ottieni nuovo grafo pulito
             graph = get_pipeline_with_memory(thread_id, reset=True)
             
-            # Se c'è anche un messaggio o lore, procedi normalmente
-            # Altrimenti ritorna conferma di reset
             if not data.get("message") and not data.get("lore"):
                 return jsonify({
                     "response": "✅ Pipeline resettata con successo.",
@@ -270,7 +248,6 @@ def handle_pipeline_chat() -> ResponseReturnValue:
                     "thread_id": thread_id
                 })
 
-        # ═══════ A) RIPRESA DOPO EDIT UTENTE ═══════
         if "domain" in data and "problem" in data:
             logger.info("✍️ Resume con domain/problem modificati")
             
@@ -281,7 +258,6 @@ def handle_pipeline_chat() -> ResponseReturnValue:
                 data.get("message")
             )
 
-        # ═══════ B) GESTIONE MESSAGGI TESTUALI ═══════
         elif "message" in data:
             logger.info("💬 Messaggio testuale ricevuto")
             
@@ -289,16 +265,14 @@ def handle_pipeline_chat() -> ResponseReturnValue:
             message_state: PipelineState = cast(PipelineState, {
                 "messages": [user_message],
                 "thread_id": thread_id,
-                "_explicit_reset": reset  # Passa il flag di reset
+                "_explicit_reset": reset 
             })
             
             result = graph.invoke(message_state, config=config)
 
-        # ═══════ C) AVVIO INIZIALE ═══════
         else:
             logger.info("⚡ Avvio pipeline completa")
             
-            # Carica lore per nuove pipeline
             lore_dict = load_lore(data.get("lore"), data.get("custom_story"))
             
             initial_state: PipelineState = cast(PipelineState, {
@@ -306,12 +280,11 @@ def handle_pipeline_chat() -> ResponseReturnValue:
                 "lore": lore_dict,
                 "messages": [],
                 "config": lore_dict,
-                "_explicit_reset": reset  # Passa il flag di reset
+                "_explicit_reset": reset
             })
             
             result = graph.invoke(initial_state, config=config)
             
-            # Salva risultato per tracking (opzionale)
             if result:
                 update_generation_session(
                     thread_id,
@@ -323,14 +296,12 @@ def handle_pipeline_chat() -> ResponseReturnValue:
                     refined_problem=result.get("refined_problem")
                 )
 
-        # Estrai ultimo messaggio AI
         response_text: Optional[str] = None
         for msg in result.get("messages", []):
             if isinstance(msg, dict) and msg.get("type") == "ai":
                 response_text = str(msg["content"])
                 break
 
-        # Copia file generati
         urls = copy_generated_files(result, thread_id)
 
         return jsonify({
@@ -367,7 +338,6 @@ def handle_feedback() -> ResponseReturnValue:
         if thread_id is None:
             return jsonify({"error": "thread assente."})
 
-        # Validazione input
         state = get_pipeline_state_from_langgraph(thread_id)
         if state is None:
             return jsonify({"error": "Impossibile recuperare lo stato della pipeline."}), 400
@@ -398,20 +368,16 @@ def handle_feedback() -> ResponseReturnValue:
         
         logger.info("📝 Feedback ricevuto per thread: %s", thread_id)
         
-        # Applica il feedback e riprendi la pipeline
         result = apply_user_feedback(thread_id, domain, problem, user_message)
         
-        # Estrai messaggio di risposta
         response_text: Optional[str] = None
         for msg in result.get("messages", []):
             if isinstance(msg, dict) and msg.get("type") == "ai":
                 response_text = str(msg["content"])
                 break
         
-        # Copia file generati
         urls = copy_generated_files(result, thread_id)
         
-        # Aggiorna GenerationSession per tracking
         update_generation_session(
             thread_id,
             domain=result.get("domain"),
@@ -438,7 +404,6 @@ def handle_feedback() -> ResponseReturnValue:
 def stream_pipeline() -> ResponseReturnValue:
     """Endpoint per streaming della pipeline (GET)"""
     try:
-        # Parametri
         thread_id = request.args.get("thread_id", "session-1")
         lore_param = request.args.get("lore")
         custom_story = request.args.get("custom_story")
@@ -451,26 +416,12 @@ def stream_pipeline() -> ResponseReturnValue:
 
         logger.info("🎬 Stream request - thread_id: %s, reset: %s", thread_id, reset)
 
-        # NUOVO: Reset esplicito più aggressivo per stream
         if reset:
             logger.info("🔄 Reset esplicito per stream thread: %s", thread_id)
             
-            # Pulisci tutto
             _graph_cache.pop(thread_id, None)
             
-            # mem_db = f"memory/{thread_id}.sqlite"
-            # if os.path.exists(mem_db):
-            #     os.remove(mem_db)
-            #     logger.info("🧹 Database LangGraph rimosso per stream: %s", mem_db)
-            
-            # tmp_dir = os.path.join("static", "uploads", thread_id)
-            # if os.path.exists(tmp_dir):
-            #     import shutil
-            #     shutil.rmtree(tmp_dir)
-            #     logger.info("🧹 Directory temporanea rimossa per stream: %s", tmp_dir)
-        
         elif not resume:
-            # Controlla se pipeline è in attesa di editing tramite LangGraph
             current_state = get_pipeline_state_from_langgraph(thread_id)
             waiting_for_edit = current_state and current_state.get("_waiting_for_edit", False) if current_state is not None else False
             
@@ -479,16 +430,13 @@ def stream_pipeline() -> ResponseReturnValue:
                 
                 def edit_resume_stream() -> Generator[str, None, None]:
                     try:
-                        # FIX: Controlla che current_state non sia None
                         if current_state is None:
                             yield f"event: error\ndata: {json.dumps({'message': 'Stato non disponibile'}, ensure_ascii=False)}\n\n"
                             return
                             
-                        # Invia i PDDL correnti per editing
                         domain = current_state.get("domain", "")
                         problem = current_state.get("problem", "")
                         
-                        # Usa refined se disponibili, altrimenti originali
                         if current_state.get("refined_domain"):
                             domain = current_state["refined_domain"]
                         if current_state.get("refined_problem"):
@@ -503,7 +451,6 @@ def stream_pipeline() -> ResponseReturnValue:
                         yield f"event: ChatFeedback\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
                         yield "event: PauseForFeedback\ndata: {}\n\n"
                         yield "event: stream_paused\ndata: {}\n\n"
-                        #yield "event: done\ndata: {}\n\n"
                         
                     except Exception as e:
                         logger.exception("Errore durante edit resume stream")
@@ -515,19 +462,15 @@ def stream_pipeline() -> ResponseReturnValue:
                     headers={'Cache-Control': 'no-cache', 'Connection': 'keep-alive'}
                 )
 
-        # Carica lore per nuove pipeline
         lore_dict = load_lore(lore_param, custom_story)
         
-        # Ottieni grafo
         graph = get_pipeline_with_memory(thread_id, reset=reset)
         
         def unified_event_stream() -> Generator[str, None, None]:
             """Generator unificato per Server-Sent Events con stato preservato"""
             try:
-                # OTTIENI STATO CORRENTE DA LANGGRAPH PRIMA DI CREARE initial_state
                 current_state = get_pipeline_state_from_langgraph(thread_id)
                 
-                # Crea initial_state base
                 initial_state: PipelineState = cast(PipelineState, {
                     "thread_id": thread_id,
                     "lore": lore_dict,
@@ -536,11 +479,9 @@ def stream_pipeline() -> ResponseReturnValue:
                     "_explicit_reset": reset
                 })
                 
-                # CRITICAL FIX: Preserva stato critico se esiste
                 if current_state:
                     logger.info("🔄 Stato LangGraph esistente trovato, preservando dati critici")
                     
-                    # Preserva flag di ripresa
                     if current_state.get("_resume_after_feedback"):
                         initial_state["_resume_after_feedback"] = True
                         logger.info("✅ Flag _resume_after_feedback preservato")
@@ -549,12 +490,10 @@ def stream_pipeline() -> ResponseReturnValue:
                         initial_state["_waiting_for_edit"] = True
                         logger.info("✅ Flag _waiting_for_edit preservato")
                     
-                    # Preserva tmp_dir esistente
                     if current_state.get("tmp_dir"):
                         initial_state["tmp_dir"] = current_state["tmp_dir"]
                         logger.info("✅ tmp_dir preservata: %s", current_state["tmp_dir"])
                     
-                    # CRITICAL: Preserva PDDL editati se esistono file edited/
                     tmp_dir = current_state.get("tmp_dir")
                     if tmp_dir:
                         edited_dir = os.path.join(tmp_dir, "edited")
@@ -576,7 +515,6 @@ def stream_pipeline() -> ResponseReturnValue:
                                 except Exception as e:
                                     logger.warning("⚠ Errore caricamento PDDL editati: %s", e)
                     
-                    # Preserva altri dati importanti
                     for key in ["status", "attempt", "validation", "refined_domain", "refined_problem"]:
                         if current_state.get(key) is not None:
                             initial_state[key] = current_state[key]
@@ -588,17 +526,13 @@ def stream_pipeline() -> ResponseReturnValue:
                 for chunk in graph.stream(initial_state, config=config):
                     chunk_events = list(process_stream_chunk(chunk, thread_id))
                     
-                    # Controlla se la pipeline è stata messa in pausa
                     for event_line in chunk_events:
                         if "event: pause_for_editing" in event_line:
                             pipeline_paused = True
                             
-                    # Emetti tutti gli eventi del chunk
                     for event_line in chunk_events:
                         yield event_line
                     
-                    # Se la pipeline è in pausa, non continuare l'iterazione
-                    # La connessione rimane aperta per future continuazioni
                     if pipeline_paused:
                         logger.info("🛑 Pipeline in pausa, connessione mantenuta aperta")
                         return
@@ -628,7 +562,6 @@ def stream_pipeline() -> ResponseReturnValue:
 def process_stream_chunk(chunk: Dict[str, Any], thread_id: str) -> Generator[str, None, None]:
     """Processa un singolo chunk dello stream"""
     try:
-        # Aggiorna GenerationSession per tracking (opzionale)
         chunk_data = {}
         for key in ["domain", "problem", "validation", "refined_domain", "refined_problem"]:
             if key in chunk:
@@ -641,7 +574,6 @@ def process_stream_chunk(chunk: Dict[str, Any], thread_id: str) -> Generator[str
         if chunk_data:
             update_generation_session(thread_id, **chunk_data)
 
-        # IMPORTANTE: Gestisci il prompt PRIMA delle interruzioni
         if "prompt" in chunk:
             logger.info("📝 [SSE] Emettendo evento prompt")
             prompt_payload = {
@@ -650,7 +582,6 @@ def process_stream_chunk(chunk: Dict[str, Any], thread_id: str) -> Generator[str
             }
             yield f"event: prompt\ndata: {json.dumps(prompt_payload, ensure_ascii=False)}\n\n"
         
-        # GESTISCI PIANO CON PIÙ ATTENZIONE
         if "plan" in chunk:
             logger.info("🎯 [SSE] chunk contiene piano! Emissione GeneratePlan...")
             payload = {
@@ -664,12 +595,10 @@ def process_stream_chunk(chunk: Dict[str, Any], thread_id: str) -> Generator[str
             yield f"event: GeneratePlan\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
             logger.info("✅ [SSE] GeneratePlan emesso")
 
-        # Gestisci interruzioni per feedback
         if "__interrupt__" in chunk:
             interrupt_item = chunk["__interrupt__"]
             interrupt_obj: Optional[Interrupt] = None
             
-            # Estrai oggetto Interrupt
             if isinstance(interrupt_item, Interrupt):
                 interrupt_obj = interrupt_item
             elif isinstance(interrupt_item, list) and interrupt_item:
@@ -683,7 +612,6 @@ def process_stream_chunk(chunk: Dict[str, Any], thread_id: str) -> Generator[str
             if interrupt_obj:
                 payload = interrupt_obj.value
                 
-                # Solo interruzioni con domain/problem vanno in editing
                 if isinstance(payload, dict) and "domain" in payload and "problem" in payload:
                     logger.info("🛑 Interruzione stream per editing")
                     
@@ -692,13 +620,11 @@ def process_stream_chunk(chunk: Dict[str, Any], thread_id: str) -> Generator[str
                     yield "event: stream_paused\ndata: {}\n\n"
                     return
                 else:
-                    # Altre interruzioni sono normali eventi di stato
                     logger.info("📊 Interruzione di stato normale")
                     yield f"event: status_interrupt\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
-        # Emetti TUTTI gli altri eventi normalmente (incluso prompt se non gestito sopra)
         for key, val in chunk.items():
-            if key not in ["__interrupt__", "plan"]:  # Escludi quelli già gestiti
+            if key not in ["__interrupt__", "plan"]:
                 logger.info(f"📤 [SSE] Emettendo evento: {key}")
                 yield f"event: {key}\ndata: {json.dumps(serialize_value(val), ensure_ascii=False)}\n\n"
                 
@@ -712,7 +638,6 @@ def resume_pipeline() -> ResponseReturnValue:
     try:
         data: Dict[str, Any] = request.get_json(force=True) or {}
         
-        # Delega al nuovo endpoint /feedback
         return handle_feedback()
 
     except Exception as e:
@@ -723,10 +648,8 @@ def resume_pipeline() -> ResponseReturnValue:
 def get_pipeline_status(thread_id: str) -> ResponseReturnValue:
     """Endpoint per controllare lo stato della pipeline - SOLO tramite LangGraph"""
     try:
-        # Ottieni stato SOLO da LangGraph
         state = get_pipeline_state_from_langgraph(thread_id)
         
-        # Ottieni anche informazioni dalla GenerationSession per tracking
         session_info = {}
         try:
             db_session = get_db_session(thread_id)
@@ -749,14 +672,12 @@ def get_pipeline_status(thread_id: str) -> ResponseReturnValue:
             logger.error("Errore lettura GenerationSession: %s", e)
             session_info = {"error": str(e)}
         
-        # Costruisci risposta basata SOLO su stato LangGraph
         status_response = {
             "thread_id": thread_id,
             "has_state": bool(state),
             "session_info": session_info
         }
         
-        # Aggiungi dettagli dello stato se disponibile
         if state:
             status_response.update({
                 "status": state.get("status", "unknown"),

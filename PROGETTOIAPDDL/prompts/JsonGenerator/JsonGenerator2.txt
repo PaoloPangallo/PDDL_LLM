@@ -20,7 +20,7 @@ STEP 5 – “OBJECTS_AND_TYPES”
 STEP 6 – “ACTIONS_PDDL”  
 STEP 7 – “VISION_JSON”  *(the consolidated JSON for later steps)*
 
-⚠️ **CONSTRAINTS**  
+**CONSTRAINTS**  
 1. *No generic types* — every object ends with a concrete subtype (e.g., `oak_door – door_wooden`).  
 2. Every predicate appearing in INIT or GOAL must also appear in at least one action *precondition* **and** *effect*.  
 3. Include `(connected Lx Ly)` facts so the agent can traverse the entire map.  
