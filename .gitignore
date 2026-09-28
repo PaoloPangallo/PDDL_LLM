@@ -1,19 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
 venv.zip
 .venv.zip
 
-# Ignora i log di questmaster
-**/questmaster.log
+# Runtime / generated artifacts
+*.log
+*.db
+*.sqlite3
+sas_plan*
+llm_debug/
+memory/
+static/uploads/
 
-# Python bytecode e cache
-PROGETTOIAPDDL/**/__pycache__/
-*.py[cod]
+# Secrets
+.env
+.env.*
+!.env.example
 
-# Virtualenv
-venv/
-
-# Session DB e log
-PROGETTOIAPDDL/memory/
-questmaster.log
-
-# Uploads (file utente)
-PROGETTOIAPDDL/static/uploads/
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
