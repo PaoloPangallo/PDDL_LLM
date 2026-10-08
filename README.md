@@ -4,29 +4,41 @@
 
 This project explores the intersection between **Large Language Models and classical automated planning**. It turns structured narrative or "lore" input into PDDL domain/problem files, validates them with a symbolic planner and uses an LLM-based reflection step when corrections are required.
 
+## Why this project?
+
+**A classical planner needs formal PDDL, but people naturally describe tasks in prose.**
+An LLM can propose the PDDL translation, yet plausible-looking output is not necessarily
+valid or usable. This project explores a *neuro-symbolic feedback loop*: let the LLM
+generate, let Fast Downward check translation and search for a plan, and use validation
+feedback to inform refinement.
+
 ## What it does
 
-The core pipeline is implemented with **LangGraph** and follows a generate–validate–refine workflow:
+The Flask application uses a **LangGraph stateful workflow** with these stages:
 
 ```text
-Structured lore
-      ↓
-Retrieve similar examples (RAG)
-      ↓
-Build planning prompt
-      ↓
-Generate PDDL with a local LLM
-      ↓
-Validate with Fast Downward
-      ↓
-   valid?
-   /   \
- yes   no
-  ↓     ↓
- end   LLM reflection / refinement
+Lore + similar stored examples → Prompt → Local LLM → Domain + Problem PDDL
+                                                       ↓
+                                          Fast Downward translation
+                                             ↙               ↘
+                                          accepted          rejected
+                                             ↓                 ↓
+                                       plan search      LLM refinement
+                                             ↓                 ↺
+                                            result
 ```
 
-The aim is not to trust generated planning code blindly. Symbolic validation is used as an external check, while failed generations can be sent through a refinement loop.
+The graph also includes a **prototype human-feedback branch** after the refinement
+limit. Translator acceptance, plan existence and faithfulness to the original lore
+are different questions; the system does not claim to solve all three.
+
+**Architecture and explanations**
+- [System design, component boundaries and LangGraph flow](docs/SYSTEM_DESIGN.md)
+- [Motivazione e guida in italiano per raccontare il progetto](docs/PROJECT_WALKTHROUGH_IT.md)
+
+LangGraph handles graph transitions and state; **LangChain Core** supplies message
+types and a declared tool, while RAG and Ollama HTTP inference are implemented in
+custom Python code.
 
 ## Main components
 
@@ -61,12 +73,14 @@ PDDL_LLM/
 
 ## Pipeline
 
-The main workflow in `pddl_pipeline.py` contains four stages:
+The Flask application runs the checkpoint-aware graph in
+[`graphs/pddl_pipeline_graph.py`](PROGETTOIAPDDL/graphs/pddl_pipeline_graph.py):
+`BuildPrompt`, `Generate`, `Validate`, `Refine`, `ChatFeedback`,
+`GeneratePlan`, and `End`. It uses conditional edges to decide when to refine
+and when to proceed to planning.
 
-1. **BuildPrompt** — retrieves a similar example and builds the generation prompt.
-2. **GeneratePDDL** — asks the configured local LLM for a domain and problem.
-3. **Validate** — checks the generated PDDL using Fast Downward.
-4. **Refine** — when validation fails, a reflection agent receives the generated files and validation feedback and proposes a corrected version.
+[`pddl_pipeline.py`](PROGETTOIAPDDL/pddl_pipeline.py) is a **separate historical,
+simplified experiment** retained for reference; it is not the active Flask graph.
 
 ## Tech stack
 
@@ -90,13 +104,13 @@ pip install -r requirements.txt
 
 Make sure Ollama is available locally and configure the desired model in the project settings.
 
-Run the pipeline directly with:
+To run the historical simplified pipeline directly (experimental path):
 
 ```bash
 python pddl_pipeline.py
 ```
 
-or start the Flask application with:
+To use the checkpoint-aware graph with the Flask UI, start the application:
 
 ```bash
 python app.py
@@ -115,9 +129,9 @@ University of Calabria
 ## Reliability fixes and reproducibility
 
 The project keeps the original LangGraph workflow, Flask interface, sample lore,
-PDDL examples, and historic generated artifacts. The review branch adds safer
-session and lore paths, restores structured RAG examples to prompts, and corrects
-the Fast Downward invocation; it does **not** replace the project with a demo.
+PDDL examples and historic generated artifacts. Recent reliability changes added
+safer session paths, restored structured RAG examples and corrected the planner
+adapter without replacing the original project.
 
 ### Planning dependencies
 
