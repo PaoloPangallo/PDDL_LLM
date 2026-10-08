@@ -23,7 +23,7 @@ if '--translate' in args:
     sys.exit(0)
 if '--plan-file' in args:
     plan_file = Path(args[args.index('--plan-file') + 1])
-    plan_file.write_text('(walk a b)\n', encoding='utf-8')
+    plan_file.write_text('(walk a b)\\n', encoding='utf-8')
     print('Solution found.')
     sys.exit(0)
 sys.exit(5)
