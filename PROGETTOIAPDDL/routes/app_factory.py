@@ -38,6 +38,8 @@ class QuestMasterApp:
         # 3) Carica la configurazione, se passata
         if config_object:
             self.app.config.from_object(config_object)
+            if hasattr(config_object, "init_app"):
+                config_object.init_app(self.app)
 
         # 4) Prepara uploads dir
         uploads_dir = os.path.join(project_root, "uploads")
