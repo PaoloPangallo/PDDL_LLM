@@ -32,7 +32,7 @@ The value is the **feedback loop between probabilistic generation and symbolic c
 
 The diagram is intentionally minimal. It distinguishes **control flow** (LangGraph) from **work done by external services and Python modules**.
 
-\`\`\`mermaid
+```mermaid
 flowchart LR
     USER["User / browser"] --> WEB["Flask UI + API"]
     WEB --> GRAPH["LangGraph workflow<br/>PipelineState"]
@@ -47,25 +47,25 @@ flowchart LR
     GRAPH <--> STATE[("SQLite<br/>session checkpoints")]
     GRAPH --> FILES[("Generated PDDL<br/>and run artifacts")]
     WEB --> FILES
-\`\`\`
+```
 
 **Ownership of responsibilities**
 
 | Component | Responsibility | Real implementation |
 | --- | --- | --- |
-| Flask | Accept lore/feedback, launch workflow, return JSON or server-sent events | \`routes/pipeline_chat.py\`, \`routes/app_factory.py\` |
-| **LangGraph** | Model stages as nodes, maintain typed state, route by validation result, attach checkpointing | \`graphs/pddl_pipeline_graph.py\` |
-| Prompt + RAG | Retrieve similar stored examples; add PDDL exemplars to a structured prompt | \`db/db.py\`, \`core/safe_paths.py\`, \`core/generator.py\` |
-| Ollama adapter | Make local-model requests over HTTP; extract the marked domain/problem sections | \`core/utils.py\`, \`agents/reflection_agent.py\` |
-| Fast Downward | Translate the generated PDDL task, then separately try to produce a plan | \`core/validator.py\` |
-| SQLite checkpoint | Keep workflow state under a \`thread_id\` | LangGraph \`SqliteSaver\` |
+| Flask | Accept lore/feedback, launch workflow, return JSON or server-sent events | `routes/pipeline_chat.py`, `routes/app_factory.py` |
+| **LangGraph** | Model stages as nodes, maintain typed state, route by validation result, attach checkpointing | `graphs/pddl_pipeline_graph.py` |
+| Prompt + RAG | Retrieve similar stored examples; add PDDL exemplars to a structured prompt | `db/db.py`, `core/safe_paths.py`, `core/generator.py` |
+| Ollama adapter | Make local-model requests over HTTP; extract the marked domain/problem sections | `core/utils.py`, `agents/reflection_agent.py` |
+| Fast Downward | Translate the generated PDDL task, then separately try to produce a plan | `core/validator.py` |
+| SQLite checkpoint | Keep workflow state under a `thread_id` | LangGraph `SqliteSaver` |
 | Local files | Retain raw output and domain/problem/refinement artifacts | File writes in the graph and web route |
 
 **Two different SQLite roles:** generation-history records used for TF-IDF retrieval are stored through SQLAlchemy; LangGraph execution checkpoints use a separate SQLite checkpointer. These are *not* the same logical store.
 
 ## 3. The LangGraph decision workflow
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     START["Structured lore"] --> B["BuildPrompt<br/>retrieve examples + assemble prompt"]
     B --> G["Generate<br/>call Ollama + extract PDDL"]
@@ -77,18 +77,18 @@ flowchart TD
     V -->|"Refinement limit reached"| H["ChatFeedback<br/>prototype feedback branch"]
     H -->|"Positive feedback"| E
     H -->|"Requested correction"| R
-\`\`\`
+```
 
 This is a **conditional graph**, not merely a fixed sequence of LLM calls.
 
 - **BuildPrompt:** assembles a prompt from the input lore and similar PDDL examples (when the history database contains suitable records).
-- **Generate:** asks Ollama to produce two tagged sections, then saves \`domain.pddl\` and \`problem.pddl\`.
-- **Validate:** calls the Fast Downward translator. Translator success is recorded in the field \`valid_syntax\` (a historical field name; it means *translator accepted the input*).
+- **Generate:** asks Ollama to produce two tagged sections, then saves `domain.pddl` and `problem.pddl`.
+- **Validate:** calls the Fast Downward translator. Translator success is recorded in the field `valid_syntax` (a historical field name; it means *translator accepted the input*).
 - **Refine:** passes generated files and validation feedback to a second LLM prompt and tries validation again.
 - **GeneratePlan:** separately invokes Fast Downward planning; success means a plan file was produced, not that it matches the narrative intent.
 - **ChatFeedback:** an explicit branch for user feedback exists, but the implementation's pause/resume semantics have **not** been verified as a robust LangGraph interrupt workflow.
 
-**Failure nuance:** a planning failure currently returns a failed result and reaches \`End\`; it does not automatically re-enter \`Refine\`. A failed refinement operation may also need stronger handling of the attempt limit. Both are implementation limits, not hidden branches in this diagram.
+**Failure nuance:** a planning failure currently returns a failed result and reaches `End`; it does not automatically re-enter `Refine`. A failed refinement operation may also need stronger handling of the attempt limit. Both are implementation limits, not hidden branches in this diagram.
 
 ## 4. Why these technology choices?
 
@@ -107,47 +107,47 @@ A precise technical explanation matters more than a long technology list.
 
 **LangGraph — central to the architecture**
 
-- \`StateGraph(PipelineState)\` defines the workflow's shared, typed state.
-- \`add_node\`, \`add_edge\` and \`add_conditional_edges\` express the processing logic.
-- \`compile(checkpointer=...)\` and \`SqliteSaver\` support state persistence.
-- Flask invokes \`graph.invoke(...)\` and streams \`graph.stream(...)\` updates.
+- `StateGraph(PipelineState)` defines the workflow's shared, typed state.
+- `add_node`, `add_edge` and `add_conditional_edges` express the processing logic.
+- `compile(checkpointer=...)` and `SqliteSaver` support state persistence.
+- Flask invokes `graph.invoke(...)` and streams `graph.stream(...)` updates.
 
 **LangChain Core — used in a smaller, supporting role**
 
-- \`HumanMessage\`, \`AIMessage\` and \`BaseMessage\` represent feedback/message content.
-- \`@tool\` decorates \`generate_pddl_tool\` in \`core/generator.py\`; **this tool is not wired into the main LangGraph workflow as an autonomous tool-calling agent**.
+- `HumanMessage`, `AIMessage` and `BaseMessage` represent feedback/message content.
+- `@tool` decorates `generate_pddl_tool` in `core/generator.py`; **this tool is not wired into the main LangGraph workflow as an autonomous tool-calling agent**.
 
 **Not LangChain-managed in the main workflow**
 
-- The LLM request uses \`requests.post()\` to the Ollama endpoint, **not** a \`ChatOllama\` runnable or LangChain chain.
-- Retrieval uses \`TfidfVectorizer\` and \`cosine_similarity\` from scikit-learn, **not** a LangChain vector store/retriever.
+- The LLM request uses `requests.post()` to the Ollama endpoint, **not** a `ChatOllama` runnable or LangChain chain.
+- Retrieval uses `TfidfVectorizer` and `cosine_similarity` from scikit-learn, **not** a LangChain vector store/retriever.
 - Planning and validation use subprocess calls to Fast Downward, **not** LLM-generated tool calls.
 
 The honest summary is: **a LangGraph-orchestrated neuro-symbolic pipeline with selected LangChain Core abstractions and custom Python integrations**.
 
 ## 6. Data and state design
 
-The graph works on a \`PipelineState\` typed dictionary with these important fields:
+The graph works on a `PipelineState` typed dictionary with these important fields:
 
 | Fields | Meaning |
 | --- | --- |
-| \`lore\`, \`thread_id\` | Structured input and session identifier |
-| \`prompt\`, \`tmp_dir\` | Constructed request and run artifact location |
-| \`domain\`, \`problem\` | Current generated PDDL |
-| \`refined_domain\`, \`refined_problem\` | Candidate corrections |
-| \`validation\`, \`error_message\`, \`status\` | Last checker result and control status |
-| \`attempt\` | Refinement counter (configured limit: 3) |
-| \`messages\` | LangChain Core messages for feedback |
-| \`plan\`, \`plan_log\` | Planning result and diagnostic output |
+| `lore`, `thread_id` | Structured input and session identifier |
+| `prompt`, `tmp_dir` | Constructed request and run artifact location |
+| `domain`, `problem` | Current generated PDDL |
+| `refined_domain`, `refined_problem` | Candidate corrections |
+| `validation`, `error_message`, `status` | Last checker result and control status |
+| `attempt` | Refinement counter (configured limit: 3) |
+| `messages` | LangChain Core messages for feedback |
+| `plan`, `plan_log` | Planning result and diagnostic output |
 
-LangGraph state reducers such as \`last\` and \`non_empty_or_last\` control how values are updated. The checkpoint is keyed by \`thread_id\`, whereas \`questmaster.db\` stores example-generation records used in retrieval.
+LangGraph state reducers such as `last` and `non_empty_or_last` control how values are updated. The checkpoint is keyed by `thread_id`, whereas `questmaster.db` stores example-generation records used in retrieval.
 
 ## 7. Example request (illustrative, not a measured result)
 
 Suppose a user describes an agent who must reach a location and collect an object. The intended behavior is:
 
 1. Read the input lore and select a similar stored example, if one exists.
-2. Request a PDDL \`domain\` describing general actions and a \`problem\` describing this scenario.
+2. Request a PDDL `domain` describing general actions and a `problem` describing this scenario.
 3. Pass both outputs to Fast Downward's translator.
 4. If rejected, feed errors to the refinement prompt and repeat, subject to the retry logic.
 5. If accepted, try to calculate a plan and return the result and supporting files.
@@ -157,11 +157,11 @@ The example is **conceptual**; it does not imply that any particular model-gener
 ## 8. Operational and evaluation limitations
 
 - **Translation vs planning vs semantics:** acceptance by the Fast Downward translator, existence of a plan and faithfulness to the input lore are three different properties. Current translation checks do not prove lore–PDDL semantic equivalence.
-- **Human feedback:** the graph contains a \`ChatFeedback\` node, but its actual pause/resume behavior should be tested and ideally implemented using explicit interrupt/resume primitives.
+- **Human feedback:** the graph contains a `ChatFeedback` node, but its actual pause/resume behavior should be tested and ideally implemented using explicit interrupt/resume primitives.
 - **Retry failure modes:** the three-attempt rule is present, but exceptions during refinement may require additional protection against repeated failure.
 - **RAG availability:** retrieved examples depend on historical records in the generation database; the repository does not demonstrate a pretrained embedding index.
 - **Execution evidence:** syntax, mocked planner and graph/Flask construction smoke tests exist. They do **not** amount to a demonstrated end-to-end benchmark using a real local LLM and installed Fast Downward.
-- **Legacy code:** \`pddl_pipeline.py\` is a separate, older simplified graph. The documented Flask path uses \`graphs/pddl_pipeline_graph.py\`; the two implementations should not be combined when describing a single tested pipeline.
+- **Legacy code:** `pddl_pipeline.py` is a separate, older simplified graph. The documented Flask path uses `graphs/pddl_pipeline_graph.py`; the two implementations should not be combined when describing a single tested pipeline.
 - **Deployability:** the project remains an experimental local prototype, not an audited multi-user production service.
 
 ## 9. Source map
