@@ -1,49 +1,63 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-WORKDIR=$1  # La cartella della run, es. uploads/<session_id>
+# Standalone planner wrapper: paths are independent of the working directory.
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 <session_directory>" >&2
+  exit 2
+fi
+
+WORKDIR="$(realpath "$1")"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+PLANNER="${FAST_DOWNWARD_PATH:-$PROJECT_DIR/downward/fast-downward.py}"
+VAL_BIN="${VAL_BIN:-$HOME/VAL/build/bin/Validate}"
+PYTHON_BIN="${PYTHON_BIN:-python3}"
+
 DOMAIN="$WORKDIR/domain.pddl"
 PROBLEM="$WORKDIR/problem.pddl"
-PLANNER=/home/paolop/downward/fast-downward.py
-VAL_BIN=$HOME/VAL/build/bin/Validate
+PLAN="$WORKDIR/plan.txt"
 
-# Estrai il nome del dominio dal file domain.pddl
-DOMAIN_NAME=$(grep -i "define (domain" "$DOMAIN" | sed 's/.*(domain[[:space:]]*\([^ )]*\).*/\1/')
+if [ ! -f "$PLANNER" ]; then
+  echo "Fast Downward missing: set FAST_DOWNWARD_PATH to fast-downward.py" >&2
+  exit 127
+fi
+if [ ! -f "$DOMAIN" ] || [ ! -f "$PROBLEM" ]; then
+  echo "Missing PDDL files in: $WORKDIR" >&2
+  exit 2
+fi
+
+DOMAIN_NAME="$(sed -nE 's/.*\([Dd][Oo][Mm][Aa][Ii][Nn][[:space:]]+([^[:space:])]+)\).*/\1/p' "$DOMAIN" | head -n1)"
 if [ -z "$DOMAIN_NAME" ]; then
-  echo "❌ Impossibile estrarre il nome del dominio da $DOMAIN"
+  echo "Cannot extract PDDL domain name from $DOMAIN" >&2
+  exit 2
+fi
+
+HEURISTIC="lazy_greedy([ff()])"
+if [ -f "$WORKDIR/heuristic.txt" ]; then
+  HEURISTIC="$(cat "$WORKDIR/heuristic.txt")"
+fi
+
+rm -f "$WORKDIR/plan.txt" "$WORKDIR/plan.csv" "$WORKDIR/plan.json" \
+  "$WORKDIR/plan.soln" "$WORKDIR/validation.txt"
+
+echo "Running Fast Downward on $DOMAIN / $PROBLEM ($DOMAIN_NAME)"
+"$PYTHON_BIN" "$PLANNER" --plan-file "$PLAN" "$DOMAIN" "$PROBLEM" --search "$HEURISTIC"
+
+if [ ! -f "$PLAN" ]; then
+  echo "No plan produced for task." >&2
   exit 1
 fi
 
-# Euristica
-if [ -f "$WORKDIR/heuristic.txt" ]; then
-  HEURISTIC=$(cat "$WORKDIR/heuristic.txt")
-else
-  HEURISTIC="lazy_greedy([ff()])"
-fi
+echo "Plan found: $PLAN"
+"$PYTHON_BIN" "$SCRIPT_DIR/format_plan.py" "$PLAN" "$WORKDIR" "$DOMAIN_NAME"
 
-echo "==> Eseguo Fast Downward su $DOMAIN $PROBLEM con $HEURISTIC (dominio: $DOMAIN_NAME)"
-
-# Pulizia dei vecchi file nella cartella della run
-rm -f "$WORKDIR/sas_plan" "$WORKDIR/plan.txt" "$WORKDIR/plan.csv" "$WORKDIR/plan.json" "$WORKDIR/plan.soln" "$WORKDIR/validation.txt"
-
-# Esegui il planner
-python3 "$PLANNER" "$DOMAIN" "$PROBLEM" --search "$HEURISTIC"
-
-if [ -f sas_plan ]; then
-  mv sas_plan "$WORKDIR/plan.txt"
-  echo "✅ Piano salvato in $WORKDIR/plan.txt"
-
-  # Formatta ed esporta il piano in JSON e CSV, passando anche il nome del dominio
-  python3 "$(dirname "$0")/format_plan.py" "$WORKDIR/plan.txt" "$WORKDIR" "$DOMAIN_NAME"
-
-  # Validazione con VAL (opzionale)
-  if [ -x "$VAL_BIN" ]; then
-    echo "🔍 Validazione..."
-    cp "$WORKDIR/plan.txt" "$WORKDIR/plan.soln"
-    "$VAL_BIN" "$DOMAIN" "$PROBLEM" "$WORKDIR/plan.soln" > "$WORKDIR/validation.txt" 2>&1 \
-      && echo "✅ Validazione completata" \
-      || echo "⚠️  Validazione fallita. Controlla $WORKDIR/validation.txt"
+if [ -x "$VAL_BIN" ]; then
+  cp "$PLAN" "$WORKDIR/plan.soln"
+  if "$VAL_BIN" "$DOMAIN" "$PROBLEM" "$WORKDIR/plan.soln" > "$WORKDIR/validation.txt" 2>&1; then
+    echo "Plan validated with VAL"
+  else
+    echo "VAL rejected the plan; see $WORKDIR/validation.txt" >&2
+    exit 1
   fi
-else
-  echo "❌ Nessun piano trovato."
 fi

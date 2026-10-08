@@ -1,0 +1,3 @@
+[submodule "PROGETTOIAPDDL/downward"]
+	path = PROGETTOIAPDDL/downward
+	url = https://github.com/aibasel/downward.git

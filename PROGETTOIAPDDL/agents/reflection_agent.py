@@ -24,8 +24,8 @@ OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 #FALLBACK_MODEL = "mistral"
 #DEFAULT_MODEL = "devstral:24b"
 #FALLBACK_MODEL = "devstral:24b"
-DEFAULT_MODEL = "deepseek-coder-v2:16b"
-FALLBACK_MODEL = "deepseek-coder-v2:16b"
+DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "deepseek-coder-v2:16b")
+FALLBACK_MODEL = os.getenv("OLLAMA_FALLBACK_MODEL", DEFAULT_MODEL)
 HEADERS = {"Content-Type": "application/json"}
 DEBUG_LLM = True  # Attiva salvataggio completo per debug
 
