@@ -53,7 +53,7 @@ Non sarebbe corretto affermare che qui LangChain gestisce tutto il RAG o l'infer
 
 ## 4. Presentazione breve — circa 30 secondi
 
-> Ho realizzato un progetto che unisce LLM e pianificazione simbolica. L'obiettivo è trasformare descrizioni narrative in problemi PDDL che possano essere controllati da un planner classico. L'LLM, eseguito localmente con Ollama, genera dominio e problema; Fast Downward verifica la traducibilità del task e prova a trovare un piano. Con LangGraph orchestri i passaggi e il ciclo di correzione quando la generazione non è valida. L'idea fondamentale è usare l'LLM per la flessibilità linguistica, senza affidargli anche la verifica del proprio output.
+> Ho realizzato un progetto che unisce LLM e pianificazione simbolica. L'obiettivo è trasformare descrizioni narrative in problemi PDDL che possano essere controllati da un planner classico. L'LLM, eseguito localmente con Ollama, genera dominio e problema; Fast Downward verifica la traducibilità del task e prova a trovare un piano. Con LangGraph organizzo i passaggi e il ciclo di correzione quando la generazione non è valida. L'idea fondamentale è usare l'LLM per la flessibilità linguistica, senza affidargli anche la verifica del proprio output.
 
 ## 5. Presentazione tecnica — circa 90 secondi
 
