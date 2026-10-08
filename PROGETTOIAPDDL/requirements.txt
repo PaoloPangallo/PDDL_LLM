@@ -15,6 +15,8 @@ jsonschema
 
 # Utils
 scikit-learn
+sqlalchemy
+langchain-core
 langchain
 langchain_community
 langchain_ollama
