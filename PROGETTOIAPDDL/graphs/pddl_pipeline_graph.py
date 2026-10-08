@@ -15,6 +15,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 
 from core.generator import build_prompt_from_lore
+from core.safe_paths import validate_thread_id, retrieved_pddl_examples
 from db.db import retrieve_similar_examples_from_db
 from core.utils import ask_ollama, extract_between, save_text_file
 from core.validator import validate_pddl, generate_plan_with_fd
@@ -90,17 +91,14 @@ def is_positive_feedback(msg: str) -> bool:
 def node_build_prompt(state: PipelineState) -> PipelineState:
     print("\n=== Enter node_build_prompt ===")
     print(f"Stato in ingresso: attempt={state.get('attempt')}, status={state.get('status')}")
-    thread_id = state["thread_id"]
+    thread_id = validate_thread_id(state["thread_id"])
     upload_dir = os.path.join("static", "uploads", thread_id)
-    if os.path.exists(upload_dir):
-        shutil.rmtree(upload_dir)
+    # Do not delete earlier artifacts when re-entering the same session.
     os.makedirs(upload_dir, exist_ok=True)
 
-    examples = [
-        str(e)
-        for e in retrieve_similar_examples_from_db(state["lore"], k=1)
-        if isinstance(e, str)
-    ]
+    examples = retrieved_pddl_examples(
+        retrieve_similar_examples_from_db(state["lore"], k=1)
+    )
     prompt, _ = build_prompt_from_lore(state["lore"], examples=examples)
 
     new_state = {**state,
@@ -199,13 +197,15 @@ def node_refine(state: PipelineState) -> PipelineState:
     try:
         print("Chiamata a refine_pddl()...")
         updated = refine_pddl(
-            domain_path=os.path.join(tmp, "domain.pddl"),
-            problem_path=os.path.join(tmp, "problem.pddl"),
+            domain_path=os.path.join(tmp, "domain_refined.pddl" if state.get("refined_domain") else "domain.pddl"),
+            problem_path=os.path.join(tmp, "problem_refined.pddl" if state.get("refined_problem") else "problem.pddl"),
             error_message=state.get("error_message") or "",
             lore=state["lore"]
         )
         rd = extract_between(updated, "=== DOMAIN START ===", "=== DOMAIN END ===") or ""
         rp = extract_between(updated, "=== PROBLEM START ===", "=== PROBLEM END ===") or ""
+        if not rd.strip() or not rp.strip():
+            raise ValueError("Refinement did not return both PDDL documents")
         save_text_file(os.path.join(tmp, "domain_refined.pddl"), rd)
         save_text_file(os.path.join(tmp, "problem_refined.pddl"), rp)
 
@@ -307,9 +307,9 @@ def validate_decision(state: PipelineState) -> str:
     if not em:
         print("→ nessun errore → GeneratePlan")
         return "GeneratePlan"
-    if attempt <= MAX_REFINE_ATTEMPTS:
-        state["attempt"] = attempt + 1
-        print(f"→ errore ma attempt < MAX → Refine (ora attempt={state['attempt']})")
+    # Branch decisions must not mutate checkpointed LangGraph state.
+    if attempt < MAX_REFINE_ATTEMPTS:
+        print(f"→ errore ma attempt < MAX → Refine (attempt={attempt})")
         return "Refine"
     print("→ attempt >= MAX → ChatFeedback")
     return "ChatFeedback"
@@ -332,7 +332,7 @@ def node_generate_plan(state: PipelineState) -> PipelineState:
     # call your Fast-Downward wrapper
     result = generate_plan_with_fd(dom, prob)
     if result.get("found_plan"):
-        print(f"\n{result["plan"]}\n")
+        print(f"\n{result['plan']}\n")
         print("=== Exit GeneratePlan_node ===\n")
         return {
             **state,
@@ -390,6 +390,7 @@ def build_pipeline(checkpointer=None):
 # ---------------------
 
 def get_pipeline_with_memory(thread_id: str, reset: bool=False):
+    thread_id = validate_thread_id(thread_id)
     db = f"memory/{thread_id}.sqlite"
     os.makedirs(os.path.dirname(db), exist_ok=True)
     if reset and os.path.exists(db):
