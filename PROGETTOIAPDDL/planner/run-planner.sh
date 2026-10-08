@@ -10,9 +10,9 @@ fi
 WORKDIR="$(realpath "$1")"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-PLANNER="\${FAST_DOWNWARD_PATH:-$PROJECT_DIR/downward/fast-downward.py}"
-VAL_BIN="\${VAL_BIN:-$HOME/VAL/build/bin/Validate}"
-PYTHON_BIN="\${PYTHON_BIN:-python3}"
+PLANNER="${FAST_DOWNWARD_PATH:-$PROJECT_DIR/downward/fast-downward.py}"
+VAL_BIN="${VAL_BIN:-$HOME/VAL/build/bin/Validate}"
+PYTHON_BIN="${PYTHON_BIN:-python3}"
 
 DOMAIN="$WORKDIR/domain.pddl"
 PROBLEM="$WORKDIR/problem.pddl"
