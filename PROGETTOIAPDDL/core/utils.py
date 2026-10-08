@@ -27,12 +27,12 @@ if not logger.hasHandlers():
 # ----------------------------
 # Configurazione LLM
 # ----------------------------
-OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434/api/generate")
 #MODEL = "llama3:8b-instruct-q5_K_M"
 
 #MODEL = "llama3:8b-instruct-q5_K_M"
 #MODEL = "devstral:24b"
-MODEL = "deepseek-coder-v2:16b"
+MODEL = os.getenv("OLLAMA_MODEL", "deepseek-coder-v2:16b")
 
 
 # ----------------------------
@@ -56,8 +56,9 @@ def clear_directory(folder: str) -> None:
 
 
 def run_planner(session_dir: str, timeout: int = 60) -> Tuple[bool, str]:
-    planner_script = Path("planner/run-planner.sh")
-    session_path = Path(session_dir)
+    planner_script = Path(__file__).resolve().parents[1] / "planner" / "run-planner.sh"
+    session_path = Path(session_dir).resolve()
+    session_path.mkdir(parents=True, exist_ok=True)
     log_path = session_path / "planner.log"
     error_path = session_path / "planner_error.txt"
 
@@ -86,7 +87,7 @@ def run_planner(session_dir: str, timeout: int = 60) -> Tuple[bool, str]:
         log_path.write_text(log_content, encoding="utf-8")
         error_path.write_text(result.stderr.strip(), encoding="utf-8")
 
-        success = result.returncode == 0 and "found legal plan" in result.stdout.lower()
+        success = result.returncode == 0 and (session_path / "plan.txt").is_file()
         return success, result.stderr.strip() if not success else ""
 
     except subprocess.TimeoutExpired:
