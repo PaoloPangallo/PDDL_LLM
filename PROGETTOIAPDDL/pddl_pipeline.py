@@ -12,6 +12,7 @@ from typing import TypedDict, Optional, Union
 from langgraph.graph import StateGraph
 
 from core.generator import build_prompt_from_lore
+from core.safe_paths import retrieved_pddl_examples
 from db.db import retrieve_similar_examples_from_db
 from core.utils import ask_ollama, extract_between, save_text_file
 from core.validator import validate_pddl
@@ -52,7 +53,7 @@ def node_build_prompt(state: InputState) -> dict:
 
     # 2) Recupera esempi simili
     examples_raw = retrieve_similar_examples_from_db(state["lore"], k=1)
-    examples = [e for e in examples_raw if isinstance(e, str)]
+    examples = retrieved_pddl_examples(examples_raw)
     prompt, _ = build_prompt_from_lore(state["lore"], examples=examples)
 
     logger.debug("📚 [BuildPrompt] Prompt (prime 300 char): %s", prompt[:300])
