@@ -18,7 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function append(text, cls = "system") {
     const d = document.createElement("div");
     d.className = `chat-message ${cls}`;
-    d.innerHTML = text;
+    // Lore, LLM output and PDDL are untrusted text, never HTML.
+    d.textContent = text;
+    d.style.whiteSpace = 'pre-wrap';
     chatLog.appendChild(d);
     chatLog.scrollTop = chatLog.scrollHeight;
   }
@@ -37,8 +39,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loreSelect.addEventListener("change", () => {
     resetAll();
-    append(`📘 Lore selezionata: <strong>${loreSelect.value}</strong>`, "system");
+    append(`📘 Lore selezionata: ${loreSelect.value}`, "system");
   });
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[char]));
+  }
 
   function attachPipelineListeners(source) {
   const allValidations = [];
@@ -102,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div id="valCollapse${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}"
            aria-labelledby="valHead${idx}">
         <div class="accordion-body">
-          <pre>${JSON.stringify(val, null, 2)}</pre>
+          <pre>${escapeHtml(JSON.stringify(val, null, 2))}</pre>
         </div>
       </div>
     `;
@@ -121,9 +129,9 @@ function renderRefineTimeline(refines) {
         <div class="card-header">Refine #${idx + 1}</div>
         <div class="card-body">
           <h6 class="text-muted">domain.pddl</h6>
-          <pre class="small bg-light p-2 border rounded">${r.domain}</pre>
+          <pre class="small bg-light p-2 border rounded">${escapeHtml(r.domain)}</pre>
           <h6 class="text-muted mt-3">problem.pddl</h6>
-          <pre class="small bg-light p-2 border rounded">${r.problem}</pre>
+          <pre class="small bg-light p-2 border rounded">${escapeHtml(r.problem)}</pre>
         </div>
       </div>
     `;
@@ -230,11 +238,11 @@ function startStreaming() {
 
   if (data.refined_domain) {
     append("🔧 Nuovo domain.pddl:", "bot");
-    append(`<pre>${data.refined_domain}</pre>`);
+    append(data.refined_domain, "bot");
   }
   if (data.refined_problem) {
     append("🔧 Nuovo problem.pddl:", "bot");
-    append(`<pre>${data.refined_problem}</pre>`);
+    append(data.refined_problem, "bot");
   }
 
   append("✅ Feedback ricevuto. La pipeline è terminata correttamente.", "system");
